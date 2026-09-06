@@ -101,6 +101,12 @@ t() {
       "Версия") printf %s "Version" ;;
       "движок не ставится: указать путь после установки") printf %s "the core is not installed: set the path afterwards" ;;
       "движок не ставится: система не подходит, см. выше") printf %s "the core is not installed: this system does not qualify, see above" ;;
+      "GitHub напрямую не отвечает — узнаю его адреса по DoH") printf %s "GitHub does not answer directly — resolving its addresses over DoH" ;;
+      "адреса получены — иду напрямую, минуя подменённый DNS") printf %s "addresses resolved — going direct, bypassing the spoofed DNS" ;;
+      "GitHub недоступен, а зеркало запрещено (NO_MIRROR=1) — установка не пойдёт") printf %s "GitHub is unreachable and the mirror is forbidden (NO_MIRROR=1) — the install will not proceed" ;;
+      "ни напрямую, ни по адресам из DoH — иду через зеркало gh-proxy") printf %s "neither directly nor by the DoH addresses — going through the gh-proxy mirror" ;;
+      "  это ЧУЖОЙ посредник: он видит, что вы качаете, и может отдать не то.") printf %s "  it is a THIRD PARTY: it sees what you download and may serve you something else." ;;
+      "  запретить: NO_MIRROR=1 sh install.sh (тогда установка просто не пойдёт)") printf %s "  to forbid it: NO_MIRROR=1 sh install.sh (the install will then simply not proceed)" ;;
       "не понял ответ «%s» -- беру вариант 1") printf %s "did not understand the answer «%s» -- taking option 1" ;;
       "ставлю xray-core из фида") printf %s "installing xray-core from the feed" ;;
       "Xray не поставился из фида") printf %s "Xray did not install from the feed" ;;
@@ -151,7 +157,7 @@ FATAL=0   # непоправимое: система не того поколе�
 # а не «последняя»: установщик и файлы, которые он кладёт, обязаны быть одного
 # тега, иначе панель окажется новее программы или наоборот.
 REPO=Tomonj1/byway
-VER=0.0.0
+VER=0.1.0
 # Версия движка, на которой byway проверялся целиком -- на живом роутере, с
 # поднятым туннелем и реальным трафиком. Правится вместе с выпуском: протухшая
 # «проверенная» хуже её отсутствия.
@@ -182,10 +188,108 @@ WAS_INSTALLED=0
 # сразу.
 PXP=$(uci -q get byway.main.local_proxy_port 2>/dev/null || true)
 PXP=${PXP:-1603}
+# Зеркало -- ТРЕТЬЯ попытка, после прокси byway и прямого пути.
+#
+# Зачем оно вообще. README предлагает ставить через зеркало тому, у кого
+# `raw.githubusercontent.com` недоступен. Но одной строкой на роутер попадает
+# ТОЛЬКО install.sh, а поставку он тянул с `github.com` напрямую -- то есть
+# человек, которому зеркало и понадобилось, получал скрипт и упирался на
+# втором шаге. Способ из README работал наполовину. Поймано вопросом владельца
+# «а на ссылке с прокси тестировал? вдруг вообще не работает».
+#
+# Зеркало ЧУЖОЕ: публичный gh-proxy, тот же, что у Zapret-Manager. Мы его не
+# держим и не проверяем, что он отдаёт. Поэтому оно не подставляется молча --
+# о переходе говорится вслух, и его можно запретить: NO_MIRROR=1 sh install.sh
+MIRROR=https://v4.gh-proxy.org
+
 dl() {   # аргументы curl как есть, --max-time задаёт вызывающий
     curl -fsSL --proxy "http://127.0.0.1:$PXP" "$@" 2>/dev/null && return 0
-    curl -fsSL "$@" 2>/dev/null
+    # $GH_RES не в кавычках НАМЕРЕННО: это набор отдельных аргументов вида
+    # `--resolve host:443:1.2.3.4`, и разбиение по пробелам здесь и нужно.
+    # Опасности нет -- значения собираются нами из цифр, точек и имён, чужого
+    # текста в них не бывает.
+    # shellcheck disable=SC2086
+    curl -fsSL $GH_RES "$@" 2>/dev/null
 }
+
+# Доступен ли GitHub напрямую -- решается ОДНОЙ пробой, в начале, и дальше все
+# его адреса строятся уже с учётом ответа.
+#
+# Приём подсмотрен у Zapret-Manager и он лучше отката на каждой загрузке: на
+# закрытой сети откат заставлял КАЖДОЕ скачивание сперва дважды упереться в
+# таймаут, а их у установщика несколько. Здесь ожидание одно и короткое.
+#
+# Зачем вообще: README предлагает ставить через зеркало тому, у кого
+# `raw.githubusercontent.com` недоступен. Но одной строкой на роутер попадает
+# ТОЛЬКО install.sh, а поставку он тянул с `github.com` напрямую -- то есть
+# человек, которому зеркало и понадобилось, упирался на втором шаге. Способ из
+# README работал наполовину.
+# Адрес имени через DoH. Спрашиваем у публичного резолвера по HTTPS: он
+# отвечает на 443, а не на 53, и потому переживает подмену ответов у
+# провайдера -- ту самую, ради обхода которой Zapret-Manager прибивает адреса
+# в /etc/hosts гвоздями. Гвоздей не ставим: прибитый адрес однажды протухнет,
+# а CDN их меняет.
+doh_a() {   # 1 -- имя
+    for _dq in "https://dns.google/resolve?name=$1&type=A" \
+               "https://cloudflare-dns.com/dns-query?name=$1&type=A"; do
+        _da=$(curl -fsSL --max-time 8 -H "accept: application/dns-json" "$_dq" 2>/dev/null |
+              tr ',' '\n' | sed -n 's/.*"data":"\([0-9][0-9.]*\)".*/\1/p' | head -1)
+        case "$_da" in
+          [0-9]*.[0-9]*.[0-9]*.[0-9]*) printf '%s' "$_da"; return 0 ;;
+        esac
+    done
+    return 1
+}
+
+gh_probe() {
+    GH=""
+    GH_RES=""
+    # Через dl, а НЕ голым curl: dl ходит сперва через локальный прокси
+    # byway, и на роутере, где byway уже работает, это ЕДИНСТВЕННЫЙ путь к
+    # GitHub -- его домены лежат в списке, а собственный трафик роутера в
+    # перехват не попадает. Голая проба на таком роутере объявляла GitHub
+    # недоступным и уводила установку на чужое зеркало без всякой нужды.
+    # Поймано прогоном на боевом роутере, а не разбором.
+    dl --max-time 6 -o /dev/null \
+        "https://raw.githubusercontent.com/$REPO/refs/heads/main/install.sh" && return 0
+
+    # Вторая ступень: имя не разрешается или ответ подменён -- спрашиваем
+    # адрес по HTTPS и подставляем его curl напрямую. Соединение при этом
+    # идёт к НАСТОЯЩЕМУ узлу GitHub, сертификат проверяется как обычно, и
+    # никакой посредник в середине не появляется.
+    say "GitHub напрямую не отвечает — узнаю его адреса по DoH"
+    _gr=""
+    for _gh in raw.githubusercontent.com github.com api.github.com \
+               codeload.github.com objects.githubusercontent.com; do
+        _gi=$(doh_a "$_gh") || continue
+        _gr="$_gr --resolve $_gh:443:$_gi"
+    done
+    if [ -n "$_gr" ]; then
+        GH_RES=$_gr
+        if dl --max-time 8 -o /dev/null \
+              "https://raw.githubusercontent.com/$REPO/refs/heads/main/install.sh"; then
+            say "адреса получены — иду напрямую, минуя подменённый DNS"
+            return 0
+        fi
+        GH_RES=""
+    fi
+
+    # Третья ступень -- чужое зеркало, и только если предыдущие не вышли.
+    [ "${NO_MIRROR:-0}" = 1 ] && {
+        warn "GitHub недоступен, а зеркало запрещено (NO_MIRROR=1) — установка не пойдёт"
+        return 0
+    }
+    # Зеркало ЧУЖОЕ: публичный gh-proxy, тот же, что у Zapret-Manager. Мы его
+    # не держим и не проверяем, что он отдаёт, -- поэтому говорим вслух.
+    warn "ни напрямую, ни по адресам из DoH — иду через зеркало gh-proxy"
+    warn "  это ЧУЖОЙ посредник: он видит, что вы качаете, и может отдать не то."
+    warn "  запретить: NO_MIRROR=1 sh install.sh (тогда установка просто не пойдёт)"
+    GH=$MIRROR/
+}
+
+# Адрес GitHub с учётом решения пробы. Зовётся ВМЕСТО прямого адреса везде,
+# где установщик ходит на github.com, raw и api.
+gh() { printf '%s%s' "$GH" "$1"; }
 
 # Код ответа, а не «получилось или нет». Нужен там, где различие существенно:
 # 404 на теге -- это «тега нет», а любой другой отказ -- «сеть подвела», и
@@ -198,7 +302,8 @@ http_code() {
     _hc=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 25 \
           --proxy "http://127.0.0.1:$PXP" "$1" 2>/dev/null || true)
     case "$_hc" in ''|000) ;; *) printf '%s' "$_hc"; return 0 ;; esac
-    _hc=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 25 "$1" 2>/dev/null || true)
+    # shellcheck disable=SC2086
+    _hc=$(curl -sSL $GH_RES -o /dev/null -w '%{http_code}' --max-time 25 "$1" 2>/dev/null || true)
     printf '%s' "${_hc:-000}"
 }
 
@@ -374,10 +479,10 @@ fetch_src() {
     # оборванная сеть на теге молча уводила бы установку на непомеченную
     # ветку -- ровно то, чего README обещает не делать («ссылка ведёт на тег,
     # а не на ветку»).
-    _urls="https://github.com/$REPO/archive/refs/tags/v$VER.tar.gz"
+    _urls=$(gh "https://github.com/$REPO/archive/refs/tags/v$VER.tar.gz")
     if [ "$(http_code "$_urls")" = 404 ]; then
         warnf "тега v%s ещё нет — беру ветку main" "$VER"
-        _urls="https://github.com/$REPO/archive/refs/heads/main.tar.gz"
+        _urls=$(gh "https://github.com/$REPO/archive/refs/heads/main.tar.gz")
     fi
     for _u in $_urls; do
         dl --max-time 120 -o "$_sd/src.tgz" "$_u" || continue
@@ -393,6 +498,10 @@ fetch_src() {
     done
     return 1
 }
+
+# Проба до первой загрузки. Раньше нельзя: она сама ходит через curl, а его
+# установщик доставляет чуть выше.
+gh_probe
 
 if ! have_src; then
     if [ "$_got" -gt 0 ]; then
@@ -542,7 +651,7 @@ xray_from_github() {
     command -v unzip >/dev/null 2>&1 || { warn "нет unzip, распаковать нечем"; return 1; }
 
     if [ "$_ver" = "latest" ]; then
-        _ver=$(dl --max-time 25 https://api.github.com/repos/XTLS/Xray-core/releases/latest |
+        _ver=$(dl --max-time 25 "$(gh https://api.github.com/repos/XTLS/Xray-core/releases/latest)" |
                sed -n 's/.*"tag_name"[^"]*"v\([^"]*\)".*/\1/p' | head -1)
         [ -n "$_ver" ] || { warn "не удалось спросить у GitHub последнюю версию"; return 1; }
         sayf "последний выпуск: %s" "$_ver"
@@ -558,7 +667,8 @@ xray_from_github() {
     _z=/tmp/xray.$$.zip
     rm -f "$_z" 2>/dev/null || true
     sayf "качаю Xray %s (%s)" "$_ver" "$_as"
-    dl --max-time 300 -o "$_z" "https://github.com/XTLS/Xray-core/releases/download/v$_ver/Xray-$_as.zip" ||
+    dl --max-time 300 -o "$_z" \
+       "$(gh "https://github.com/XTLS/Xray-core/releases/download/v$_ver/Xray-$_as.zip")" ||
         { warn "не скачался"; rm -f "$_z"; return 1; }
 
     mkdir -p /usr/local/bin

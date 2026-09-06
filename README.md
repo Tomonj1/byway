@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.0.0 — первый публичный выпуск.** byway каждый день работает на
+> **Версия 0.1.0 — первый публичный выпуск.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -134,7 +134,7 @@ sing-box планируем и в byway — обвязка от движка н�
 Одной строкой:
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.0.0/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh)"
 ```
 
 Если `raw.githubusercontent.com` недоступен, то же через зеркало. **Зеркало
@@ -145,7 +145,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.0.0/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -153,8 +153,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.0.0.tar.gz
-tar xzf byway.tar.gz && cd byway-0.0.0
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.0.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.0
 sh install.sh
 ```
 
