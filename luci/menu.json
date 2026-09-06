@@ -1,0 +1,37 @@
+{
+	"admin/services/byway": {
+		"title": "Byway",
+		"order": 60,
+		"action": { "type": "alias", "path": "admin/services/byway/overview" },
+		"depends": {
+			"acl": [ "luci-app-byway" ],
+			"fs": { "/usr/local/bin/byway": "executable" },
+			"uci": { "byway": true }
+		}
+	},
+	"admin/services/byway/overview": {
+		"title": "Основное",
+		"order": 1,
+		"action": { "type": "view", "path": "byway/overview" }
+	},
+	"admin/services/byway/lists": {
+		"title": "Маршруты",
+		"order": 2,
+		"action": { "type": "view", "path": "byway/lists" }
+	},
+	"admin/services/byway/settings": {
+		"title": "Сеть",
+		"order": 3,
+		"action": { "type": "view", "path": "byway/settings" }
+	},
+	"admin/services/byway/maint": {
+		"title": "Обслуживание",
+		"order": 4,
+		"action": { "type": "view", "path": "byway/maint" }
+	},
+	"admin/services/byway/advanced": {
+		"title": "Дополнительное",
+		"order": 5,
+		"action": { "type": "view", "path": "byway/advanced" }
+	}
+}

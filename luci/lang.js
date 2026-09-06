@@ -1,0 +1,261 @@
+'use strict';
+'require baseclass';
+'require uci';
+
+/* Словарь панели byway.
+
+   Устроен так же, как словарь консоли: ключ -- русская строка прямо из кода,
+   перевод лежит рядом. Ни gettext, ни отдельного пакета luci-i18n здесь нет,
+   и это выбор, а не упрощение: пакет перевода пришлось бы собирать и ставить
+   отдельно, а без него панель осталась бы английской у того, кто перевода не
+   ставил. С этим словарём пропущенная строка выводится по-русски -- то есть
+   всегда осмысленно.
+
+   Язык берётся из той же настройки, что и в консоли: byway.main.lang.
+   Значит переключение одно на обе. */
+
+var DICT = {
+	en: {
+		"(без имени)": "(unnamed)",
+		"Служба": "Service",
+		"Связь с VPN": "Link to the VPN",
+		"Трафик через VPN": "Traffic through the VPN",
+		"DNS": "DNS",
+		"нет данных": "no data",
+		"подключение": "connection",
+		"сейчас": "now",
+		"  ·  сейчас ": "  ·  now ",
+		"нода": "node",
+		"(ключ не задан)": "(no key set)",
+		"транспорт": "transport",
+		"Адрес подписки указывается в поле выше.": "The subscription address goes in the field above.",
+		"Список загружается…": "Loading the list…",
+		"Ключей не пришло. Либо адрес неверен, либо ответ не успел прийти — вторая причина вероятнее, если подписка обычно работает.": "No keys arrived. Either the address is wrong, or the answer did not come in time — the second is more likely if the subscription usually works.",
+		"Найдено ключей: ": "Keys found: ",
+		". Нужный отмечается ниже:": ". Pick the one to use below:",
+		" — byway такое не умеет": " — byway cannot do that",
+		"После выбора — кнопка «Применить» внизу страницы.": "Once picked — the «Save & Apply» button at the bottom of the page.",
+		"Загрузить список ключей": "Load the list of keys",
+		"Ключ не принят — работает прежняя настройка.": "Key not accepted — the previous setting is running.",
+		"Применено, но byway есть что сказать:": "Applied, but byway has something to say:",
+		"Применено": "Applied",
+		"Часть трафика идёт через VPN, остальное напрямую.": "Part of the traffic goes through the VPN, the rest goes directly.",
+		"Проверка": "Check",
+		"Состояние": "Status",
+		"Подключение": "Connection",
+		"Перезапустить": "Restart",
+		"Перезапуск уже идёт — дождитесь его.": "A restart is already running — wait for it.",
+		"Перезапуск": "Restart",
+		"Идёт перезапуск": "Restarting",
+		"Перезапустить не удалось: ": "Restart failed: ",
+		"Перезапуск идёт дольше, чем панель готова ждать. На роутере он продолжается — проверка обновится сама.": "The restart is taking longer than the panel will wait. It carries on at the router — the check will refresh itself.",
+		"Проверить сейчас": "Check now",
+		"Включить": "Enable",
+		"Выключить — интернет останется, VPN не будет.": "Turn it off — the internet stays, the VPN does not.",
+		"Если VPN не поднялся": "If the VPN does not come up",
+		"Нода не отвечает, ключ устарел. Пустить напрямую — дом остаётся с интернетом, но трафик для VPN идёт мимо него. Не пускать — доступа к списку не будет, пока VPN не вернётся.": "The node is silent, the key is stale. Let it go direct — the house keeps its internet, but traffic meant for the VPN goes around it. Do not let it through — the list stays unreachable until the VPN is back.",
+		"Пустить напрямую": "Let it go direct",
+		"Не пускать": "Do not let it through",
+		"Откуда взять ключ": "Where the key comes from",
+		"byway понимает vless, vmess, trojan, shadowsocks и socks. Автоматически — Xray замеряет задержку и ведёт трафик через самый быстрый живой ключ.": "byway understands vless, vmess, trojan, shadowsocks and socks. Automatic — Xray measures the latency and routes through the fastest key that answers.",
+		"Один ключ": "One key",
+		"Загрузка из подписки": "Loaded from a subscription",
+		"Несколько, вручную": "Several, by hand",
+		"Несколько, автоматически": "Several, automatic",
+		"Свой конфиг": "Own config",
+		"Ключ": "Key",
+		"Ссылка целиком. Имя после решётки станет названием подключения.": "The whole link. The name after the hash becomes the connection name.",
+		"Адрес подписки": "Subscription address",
+		"Адрес https://…, по которому сервис отдаёт список ключей. Это не сам ключ.": "An https://… address where the service hands out a list of keys. Not a key itself.",
+		"Ключ из подписки": "Key from the subscription",
+		"Ключи": "Keys",
+		"По одному на строку. Подписка заполняет их сама.": "One per line. A subscription fills them in by itself.",
+		"Каким подключаться": "Which one to use",
+		"Ключи добавляются ниже или загружаются из подписки.": "Keys are added below or loaded from a subscription.",
+		"Конфиг аутбаунда": "Outbound config",
+		"Кусок конфигурации Xray объектом: protocol, settings, при нужде streamSettings. Тег byway подставит сам.": "A piece of Xray config as an object: protocol, settings, streamSettings if needed. byway adds the tag itself.",
+		"Название подключения": "Connection name",
+		"Показывается в проверке вместо имени из ключа.": "Shown in the check instead of the name from the key.",
+		"свой конфиг": "custom config",
+		"Сеть": "Network",
+		"Интерфейсы": "Interfaces",
+		"Чей трафик заворачивать в VPN. На обычном роутере это один br-lan; остальные мосты появляются в списке, если они заведены.": "Whose traffic to send through the VPN. On a plain router that is just br-lan; other bridges show up in the list once you create them.",
+		"Сколько потоков в одно соединение. 0 — выключено, разумно 4–8. Помогает WebSocket, HTTPUpgrade и HTTP/2, где каждое соединение обходится дорого. XHTTP, gRPC и xtls-rprx-vision мультиплексируют сами — им второй слой мешает, и byway отключает mux.": "How many streams into one connection. 0 — off, 4–8 is sensible. Helps WebSocket, HTTPUpgrade and HTTP/2, where every new connection is expensive. XHTTP, gRPC and xtls-rprx-vision multiplex on their own — a second layer only gets in their way, so byway turns mux off.",
+		"Сейчас не действует: у транспорта ": "Not in effect right now: ",
+		" своё мультиплексирование, byway отключает mux сам. ": " multiplexes on its own, so byway turns mux off. ",
+		"DNS-сервер": "DNS server",
+		"Шифрованный DoH: обычные запросы провайдер подменяет. Свой — только адресом, не именем.": "Encrypted DoH: plain queries get forged by the provider. Your own — by address only, not by name.",
+		"Google, запасной — 8.8.4.4": "Google, backup — 8.8.4.4",
+		"Cloudflare, запасной — 1.0.0.1": "Cloudflare, backup — 1.0.0.1",
+		"Quad9, режет вредоносные — 9.9.9.9": "Quad9, blocks malicious — 9.9.9.9",
+		"Quad9, запасной — 149.112.112.112": "Quad9, backup — 149.112.112.112",
+		"AdGuard, режет рекламу — 94.140.14.14": "AdGuard, blocks ads — 94.140.14.14",
+		"AdGuard без фильтров — 94.140.14.140": "AdGuard, no filtering — 94.140.14.140",
+		"Путь к DNS-серверу": "Path to the DNS server",
+		"Напрямую — быстрее, резолв не зависит от VPN. Через VPN — провайдер не видит и самих запросов. Домены из списка это не затрагивает: на них отвечают локально.": "Directly — faster, and resolution does not depend on the VPN. Through the VPN — the provider does not even see the queries. Domains from the list are unaffected: they are answered locally.",
+		"Напрямую": "Directly",
+		"Через VPN": "Through the VPN",
+		"Пул подставных адресов": "Pool of stand-in addresses",
+		"byway выдаёт домену из списка адрес отсюда, чтобы отличить его трафик от остального. Эти адреса нигде в интернете не существуют и наружу не уходят.": "byway hands a domain from the list an address out of this range, to tell its traffic apart from the rest. These addresses do not exist anywhere on the internet and never leave the router.",
+		"Адрес резолвера byway": "Address of the byway resolver",
+		"Куда dnsmasq пересылает запросы. Отдельный адрес нужен, чтобы не столкнуться с самим dnsmasq на том же порту.": "Where dnsmasq forwards queries. A separate address is needed so as not to collide with dnsmasq itself on the same port.",
+		"Порт перехвата": "Interception port",
+		"Порт прокси роутера": "Router proxy port",
+		"Роутер не может обращаться к сайтам из списка напрямую — его собственный трафик перехват не ловит. Через этот порт он ходит сам, когда нужно что-то скачать.": "The router cannot reach the sites from the list directly — interception does not catch its own traffic. It uses this port when it needs to download something itself.",
+		"Метка пакетов": "Packet mark",
+		"Служебное значение, которым помечается перехваченный трафик. Менять только при столкновении с другой службой.": "A service value that marks intercepted traffic. Change it only on a collision with another service.",
+		"Настройки не подошли — работает прежняя рабочая.": "The settings did not work out — the previous ones are running.",
+		"Что пускать через VPN": "What goes through the VPN",
+		"По спискам — через VPN идёт только перечисленное ниже. Всё через VPN — весь трафик, включая загрузки и обновления.": "By lists — only what is listed below goes through the VPN. Everything through the VPN — all traffic, downloads and updates included.",
+		"Режим": "Mode",
+		"По спискам": "By lists",
+		"Всё через VPN": "Everything through the VPN",
+		".ru, .su и .рф — напрямую": ".ru, .su and .рф — directly",
+		"Российские сайты мимо VPN. Выключать почти всегда ошибка.": "National sites bypass the VPN. Turning this off is almost always a mistake.",
+		"Важно": "Important",
+		"Через VPN пойдёт весь трафик: загрузки, видео, обновления. Если у VPN есть ограничение по объёму, оно кончится быстро.": "All traffic will go through the VPN: downloads, video, updates. If the VPN has a data cap, it will run out fast.",
+		"Готовые списки": "Ready-made lists",
+		"Работает вместе со своим, записи объединяются. Список разработчика приносит и подсети, чужие списки только доменные. Чужие списки никем не проверяются.": "Works alongside your own, the entries are merged. The developer's list brings subnets as well; the third-party ones are domains only. Third-party lists are checked by nobody.",
+		"byway — основной список разработчика": "byway — the developer's own list",
+		"itdoginfo: сервисы, закрытые для РФ": "itdoginfo: services closed to Russia",
+		"itdoginfo: заблокированное в РФ": "itdoginfo: what is blocked in Russia",
+		"itdoginfo: подсети сервисов и хостеров — широкие, byway скажет насколько": "itdoginfo: subnets of services and hosting providers — wide ones, byway will say how wide",
+		"Обновлять сами": "Refresh on their own",
+		"Пусто — только по кнопке. Словами: 12h, 2h37m, 1d, 90m; число — минуты. Меньше 30m нельзя.": "Empty — button only. In words: 12h, 2h37m, 1d, 90m; a bare number means minutes. Less than 30m is not allowed.",
+		"Пишется как 12h, 2h37m, 1d или числом минут.": "Write it as 12h, 2h37m, 1d, or a number of minutes.",
+		"Обновить готовые списки": "Update the ready-made lists",
+		"Идёт загрузка…": "Loading…",
+		"готово": "done",
+		"Загрузка идёт дольше, чем панель готова ждать. На роутере она продолжается — обновите страницу через минуту.": "The download is taking longer than the panel waits. It continues on the router — reload the page in a minute.",
+		"Скачать сейчас": "Download now",
+		"Домены (": "Domains (",
+		"По одному на строку. Строки, начинающиеся с // или #, — пояснения, они не учитываются. Обычная запись — просто домен, и она покрывает поддомены: example.com ловит и mail.example.com. Поэтому короткие имена вроде scdn.co здесь нормальны, даже если сам сайт по такому адресу не открывается. Кириллические домены писать в пуникоде: xn--80ak6aa92e.com, а не пример.рф. Если нужно точнее, годятся формы Xray: full: — только это имя, без поддоменов; keyword: — совпадение по куску имени; regexp: — регулярное выражение. Формы geosite: и ext: не принимаются: им нужен файл данных, которого byway не поставляет. Всё остальное — адреса, пути со слешем, имена без точки — в список не берётся, и byway называет такие строки вслух при сборке.": "One per line. Lines starting with // or # are notes and are not counted. A plain entry is just a domain, and it covers subdomains: example.com catches mail.example.com as well. That is why short names such as scdn.co belong here even when the site itself does not open at that address. Write internationalised domains in punycode: xn--80ak6aa92e.com, not the Cyrillic spelling. When you need to be more precise, the Xray forms work: full: — this name only, without subdomains; keyword: — a match on a part of the name; regexp: — a regular expression. The geosite: and ext: forms are not accepted: they need a data file byway does not ship. Anything else — addresses, paths with a slash, names without a dot — is left out of the list, and byway names such lines out loud when it builds the config.",
+		"Подсети (": "Subnets (",
+		"Диапазоны адресов, по одному на строку, в виде 1.2.3.0/24; одиночный адрес тоже годится. Только IPv4: октеты до 255, префикс до 32, IPv6 не поддерживается. Нужны для сервисов, которые работают не по именам, — например Telegram. Слишком широкие диапазоны вредны: они уводят в VPN чужой трафик и замедляют его.": "Address ranges, one per line, written as 1.2.3.0/24; a single address works too. IPv4 only: octets up to 255, prefix up to 32, IPv6 is not supported. Needed for services that do not work by name — Telegram, for one. Ranges that are too wide do harm: they pull other people's traffic into the VPN and slow it down.",
+		"Направления": "Routes",
+		"Свой список для отдельного ключа: перечисленное в нём пойдёт не в основную ноду, а в выбранную. Имя направления — латиницей, оно же имя файла со списком.": "A separate list for a separate key: whatever is in it goes to the chosen node instead of the main one. The route name is in Latin letters and doubles as the list file name.",
+		"Добавить направление": "Add a route",
+		"Направление": "Route",
+		"Направление «%s» будет удалено вместе со своим списком. Продолжить?": "Route «%s» will be removed together with its list. Continue?",
+		"сначала добавьте ключи на «Основном»": "add keys on the Overview tab first",
+		"Включено": "Enabled",
+		"Записей": "Entries",
+		"Список": "List",
+		"Домены и подсети вперемешку, по одному на строку. Что похоже на адрес — пойдёт правилом по адресам, остальное по именам. Форма записи та же, что в общих списках выше, включая full:, keyword: и regexp:.": "Domains and subnets mixed, one per line. Whatever looks like an address goes into the address rule, the rest goes by name. The entry form is the same as in the lists above, full:, keyword: and regexp: included.",
+		"Применение": "Applying",
+		"Идёт пересборка и перезапуск": "Rebuilding and restarting",
+		"Не применилось — работает прежняя настройка.": "Not applied — the previous setting is running.",
+		"Обслуживание": "Maintenance",
+		"Чем пользуются": "What is actually used",
+		"Какими записями списка пользуются на самом деле. Нужна, когда решаешь, что убрать. Всё остаётся на роутере.": "Which entries of the list are actually used. Handy when deciding what to drop. Everything stays on the router.",
+		"Собирать статистику": "Collect statistics",
+		"Статистика": "Statistics",
+		"Не собирается: в режиме «Всё через VPN» туда попадает каждый открытый домен.": "Not collected: in «Everything through the VPN» mode every domain you open lands there.",
+		"загружается…": "loading…",
+		"пока пусто": "empty so far",
+		"Записи": "Records",
+		"Соединения к подсетям идут по адресам и к домену не привязываются — они одной строкой «(по IP)».": "Connections to subnets go by address and are not tied to a domain — they show as a single «(by IP)» line.",
+		"Очистить": "Clear",
+		"Очистить статистику": "Clear the statistics",
+		"Накопленная статистика будет стёрта без возможности вернуть. Продолжить?": "The collected statistics will be erased for good. Continue?",
+		"Журнал состояния": "State log",
+		"Пишется раз в пять минут и только когда что-то изменилось. Смена pid — это перезапуск службы.": "Written every five minutes and only when something changed. A new pid means the service restarted.",
+		"пока пусто — значит ничего не менялось": "empty so far — which means nothing has changed",
+		"Очистить журнал": "Clear the log",
+		"Записи об отвалах и перезапусках будут стёрты без возможности вернуть. Продолжить?": "The record of drops and restarts will be erased for good. Continue?",
+		"Экспорт настроек": "Export settings",
+		"Все настройки и списки одним текстом. Такой текст переносят на другой роутер, сохраняют перед опытами или прикладывают к вопросу о поломке.": "All settings and lists as one text. Such a text is moved to another router, kept before experiments, or attached to a question about a fault.",
+		"Без ключа от VPN": "Without the VPN key",
+		"Со снятой галочкой в текст попадёт ключ, и показывать такой файл нельзя никому.": "With the box cleared the key goes into the text, and such a file must not be shown to anyone.",
+		"Выгрузка": "Export",
+		"здесь появится выгрузка": "the export will appear here",
+		"Показать": "Show",
+		"идёт сбор…": "collecting…",
+		"не получилось": "did not work",
+		"Скачать файлом": "Download as a file",
+		"Сначала нужно нажать «Показать».": "«Show» first.",
+		"Галочка «Без ключа» изменилась после сбора — нажмите «Показать» ещё раз, иначе в файл уйдёт не то, что вы видите.": "The «without the key» box changed after the export was made — press «Show» again, otherwise the file will not hold what you see.",
+		"Импорт настроек": "Import settings",
+		"Списки будут заменены целиком. Прежние сохраняются в /etc/byway/before-import/ — если новая настройка не соберётся, byway вернёт всё как было.": "The lists will be replaced whole. The previous ones are kept in /etc/byway/before-import/ — if the new setting does not build, byway puts everything back.",
+		"При приёме галочка «без ключа» означает «взять всё, кроме подключения»: нынешний ключ останется прежним.": "On import the «without the key» box means «take everything but the connection»: the current key stays as it is.",
+		"сюда вставляется текст выгрузки": "paste the text of an export here",
+		"Ответ": "Reply",
+		"Принять": "Import",
+		"Это не выгрузка byway: в первой строке должно быть «# byway export».": "This is not a byway export: the first line must be «# byway export».",
+		"Настройки и списки будут заменены содержимым выгрузки. Продолжить?": "The settings and lists will be replaced by the contents of the export. Continue?",
+		"идёт применение…": "applying…",
+		"нет ответа": "no answer",
+		"Не принято — осталось как было.": "Not imported — everything stayed as it was.",
+		"Принято и применено": "Imported and applied",
+		"Приём идёт дольше, чем панель готова ждать. На роутере он продолжается — откройте вкладку заново через минуту и посмотрите «Полное состояние».": "The import is taking longer than the panel waits. It continues on the router — reopen the tab in a minute and look at «Full state».",
+		"Обновление": "Updates",
+		"Кнопка спрашивает GitHub прямо сейчас. Ниже — то же самое по расписанию, и его можно выключить. Ставить найденное всё равно придётся командой byway update из консоли: установка дольше, чем панель готова ждать.": "The button asks GitHub right now. Below is the same thing on a schedule, and it can be turned off. Installing what is found still takes byway update from the console: an install lasts longer than the panel is willing to wait.",
+		"Проверять самому раз в сутки": "Check once a day on its own",
+		"byway раз в сутки спрашивает GitHub, нет ли версии новее, и говорит об этом в сводке. Ничего не скачивает и не ставит. Плата за удобство: с домашнего адреса раз в сутки уходит запрос к GitHub — по нему видно, что здесь стоит byway, и видно это без всякого разбора трафика.": "Once a day byway asks GitHub whether a newer version exists and says so in the summary. It downloads nothing and installs nothing. The price of the convenience: once a day a request to GitHub leaves your home address — it shows that byway runs here, and it shows that without any traffic inspection.",
+		"И ставить найденное самому": "And install what it finds",
+		"Выключено намеренно: обновление перезапускает службу, то есть на минуту отнимает туннель у всего дома. Включив, вы соглашаетесь, что это произойдёт ночью, в 04:00–05:00, и не раньше чем через трое суток после выхода версии — важные ставятся сразу. Обновление идёт только внутри минорной версии, а если туннель не поднялся за минуту, byway сам возвращает прежнюю. След утром — строка «ночью …» в сводке.": "Off on purpose: an update restarts the service, which takes the tunnel away from the whole house for a minute. By turning this on you agree that it happens at night, between 04:00 and 05:00, and no sooner than three days after a release — important ones go in at once. Updates stay within the minor version, and if the tunnel does not come up within a minute byway puts the previous one back. The trace in the morning is the «last night ...» line in the summary.",
+		"Проверить": "Check",
+		"Проверить обновление": "Check for an update",
+		"идёт проверка…": "checking…",
+		"Спросить не вышло — byway ничего не ответил.": "Could not ask — byway said nothing.",
+		"Полное состояние": "Full state",
+		"То же, что показывает byway status в консоли.": "The same thing byway status prints in the console.",
+		"Сводка": "Summary",
+		"Дополнительное": "Advanced",
+		"Значения по умолчанию подобраны и работают. Менять их стоит, только если понятна причина.": "The defaults were chosen and they work. Changing them makes sense only when the reason is clear.",
+		"Подробность журнала": "Log detail",
+		"Подробные уровни имеет смысл включать на время разбирательства: журнал живёт в памяти и при большом трафике быстро вытесняет сам себя. Начиная с «каждого соединения» в него попадают ещё и адреса, к которым обращаются из сети.": "The detailed levels are worth switching on for the length of an investigation: the log lives in memory and at high traffic quickly pushes itself out. From «every connection» upwards it also records the addresses being reached from the network.",
+		"ничего": "nothing",
+		"только ошибки": "errors only",
+		"ошибки и предупреждения": "errors and warnings",
+		"каждое соединение": "every connection",
+		"всё подряд": "everything",
+		"Как часто мерить ключи": "How often to measure the keys",
+		"Только для режима автовыбора: с каким шагом Xray проверяет задержку до каждого ключа. Чаще — быстрее заметит отвал, но больше лишнего трафика.": "For the automatic mode only: how often Xray checks the latency to every key. More often means an outage is noticed sooner, but there is more idle traffic.",
+		"Язык": "Language",
+		"Язык панели и вывода команды byway в консоли. Непереведённые строки остаются русскими.": "The language of the panel and of the byway command in the console. Untranslated strings stay in Russian.",
+		"Движок Xray": "Xray engine",
+		"Пусто — брать тот, что установлен пакетом. Свой путь имеет смысл, когда нужна версия, совпадающая с сервером.": "Empty means the one installed by the package. A path of your own makes sense when the version has to match the server.",
+		"Восстанавливать перехват": "Restore the interception",
+		"Раз в пять минут проверяется, на месте ли правила перехвата при работающем движке, и если их снесли снаружи — они ставятся обратно. Сносят их не только руками: чужой скрипт, обновление пакета firewall4, соседняя служба. Снятый вручную перехват (byway plumb off) сторож не трогает до перезагрузки.": "Every five minutes byway checks whether the interception rules are still in place while the engine runs, and puts them back if something removed them. That happens without anyone touching them: another script, a firewall4 upgrade, a neighbouring service. Interception taken down by hand (byway plumb off) is left alone until the next reboot.",
+		"Очистить не удалось: ": "Could not clear: ",
+		"Основное": "Overview",
+		"Маршруты": "Routes",
+	}
+};
+
+return baseclass.extend({
+	dict: DICT,
+
+	/* uci.load('byway') делает каждая вкладка в load(), поэтому здесь
+	   значение уже есть. Если вдруг нет -- вернём русский, а не пустоту. */
+	lang: function () {
+		try { return uci.get('byway', 'main', 'lang') || 'ru'; }
+		catch (e) { return 'ru'; }
+	},
+
+	/* Названия вкладок приходят из menu.json и рисуются ДО того, как
+	   вкладка загрузится: их LuCI берёт с сервера и переводит своим
+	   механизмом .po, которого у byway нет. Поэтому переписываем их в
+	   разметке -- по своим же ссылкам и только их.
+
+	   Если разметка окажется другой, ничего не произойдёт: элементов не
+	   найдётся, названия останутся русскими. Это и есть цена приёма --
+	   он не может сломать страницу, но может однажды перестать работать. */
+	tabs: function () {
+		if (this.lang() === 'ru') return;
+		var self = this;
+		document.querySelectorAll('a[href*="/services/byway/"]')
+			.forEach(function (a) {
+				var v = self.tr(a.textContent.trim());
+				if (v !== a.textContent.trim()) a.textContent = v;
+			});
+	},
+
+	tr: function (s) {
+		var l = this.lang();
+		if (l === 'ru') return s;
+		var d = DICT[l];
+		return (d && d[s]) || s;
+	}
+});

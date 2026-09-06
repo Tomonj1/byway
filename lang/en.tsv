@@ -1,0 +1,410 @@
+byway %s — проверка окружения\n\n	byway %s — environment check\n\n
+Система\n	System\n
+\nЧего требует byway\n	\nWhat byway needs\n
+\nНастройка\n	\nSetup\n
+\nЧужие правила и службы\n	\nOther rules and services\n
+конфиг отвергнут ядром\n	the engine rejected the config\n
+РАБОТАЕТ  выход %-16s %s c\n	WORKS     exit %-16s %s s\n
+НЕ РАБОТАЕТ (код %s)\n	DOES NOT WORK (code %s)\n
+    доменов в правиле: %s\n	    domains in the rule: %s\n
+    подсетей:          %s\n	    subnets:             %s\n
+конфиг      %s\n	config      %s\n
+подключение автовыбор из %s ключей\n	connection  auto-pick out of %s keys\n
+сейчас      %s\n	now         %s\n
+xray        не запущен\n	xray        not running\n
+таблица nft %s\n	nft table   %s\n
+fakeip      НЕ выдаётся на %s\n	fakeip      NOT issued for %s\n
+ПРИНЯТ\n	ACCEPTED\n
+ОТВЕРГНУТ\n	REJECTED\n
+\n  всего в учёте %s доменов из %s в списке\n	\n  %s domains counted, out of %s in the list\n
+service\twarn\tзапускается\n	service\twarn\tstarting\n
+service\tok\tработает\n	service\tok\trunning\n
+service\tfail\tне запущена\n	service\tfail\tnot running\n
+vpn\tfail\tпроверять нечем\n	vpn\tfail\tnothing to check\n
+tunnel\tfail\tпроверять нечем\n	tunnel\tfail\tnothing to check\n
+dns\tfail\tпроверять нечем\n	dns\tfail\tnothing to check\n
+vpn\tfail\tссылка не разобрана\n	vpn\tfail\tlink not parsed\n
+vpn\tok\t%s мс\n	vpn\tok\t%s ms\n
+vpn\twarn\t%s мс, медленно\n	vpn\twarn\t%s ms, slow\n
+tunnel\tok\tтрафик проходит\n	tunnel\tok\ttraffic passes\n
+tunnel\twarn\tсписок пуст\n	tunnel\twarn\tlist is empty\n
+dns\tok\tотвечает\n	dns\tok\tanswers\n
+ещё запускается	still starting
+\n  \033[2mEnter — назад\033[0m	\n  \033[2mEnter — back\033[0m
+  \033[1;33m%s\033[0m [д/Н]: 	  \033[1;33m%s\033[0m [y/N]: 
+\n  \033[1;32mприменено\033[0m — движок стартует до 15 секунд\n	\n  \033[1;32mapplied\033[0m — the engine needs up to 15 seconds to start\n
+\n  \033[1;31mне применилось\033[0m — работает прежняя настройка\n	\n  \033[1;31mnot applied\033[0m — the previous settings stay in effect\n
+подключение не настроено\n	no connection is set up\n
+пока пусто\n	empty so far\n
+пусто\n	empty\n
+byway %s — раздельное туннелирование через VPN\n\n	byway %s — split tunnelling through a VPN\n\n
+Команды:	Commands:
+архитектура: %s	architecture: %s
+свободно на флеше: %s МБ	free flash space: %s MB
+модуль %s	module %s
+нет модуля %s	no module %s
+движок: %s (%s)	engine: %s (%s)
+не найден Xray (%s)	Xray not found (%s)
+есть %s	%s is present
+нет %s	no %s
+конфигурация %s	configuration %s
+ключ задан, режим: %s	key is set, mode: %s
+правил firewall с меткой %s: %s	firewall rules with mark %s: %s
+правил firewall с нашей меткой: %s	firewall rules with our mark: %s
+%s байт	%s bytes
+служба: %s     режим: %s	service: %s     mode: %s
+Русские сайты мимо VPN: %s	Russian sites bypass the VPN: %s
+Автозапуск: %s	Autostart: %s
+byway: неизвестная команда «%s». Список: byway\n	byway: unknown command «%s». The list: byway\n
+транспорт   %s / %s%s\n	transport   %s / %s%s\n
+нода        %s\n	node        %s\n
+ВНИМАНИЕ    конфиг собран для другого режима, пересобрать: byway gen\n	WARNING     config was built for another mode, rebuild it: byway gen\n
+движок      %s\n	engine      %s\n
+в tproxy    %s пакетов\n	in tproxy   %s packets\n
+последний раз	last seen
+не запущена	not running
+всё через VPN	everything through the VPN
+по спискам	by lists
+  Ссылка целиком: vless://… trojan://… ss://… vmess://…\n	  The whole link: vless://… trojan://… ss://… vmess://…\n
+  Ключ никуда не отправляется и в журнал не пишется.\n\n	  The key is not sent anywhere and is not written to the log.\n\n
+  \033[1;32mключ принят\033[0m\n	  \033[1;32mkey accepted\033[0m\n
+  \033[1;31mключ не разобран\033[0m, вот что говорит проверка:\n\n	  \033[1;31mkey not parsed\033[0m, here is what the check says:\n\n
+\n  Ключи выше. Вписать нужный — пункт 2.\n	\n  The keys are above. Item 2 writes the chosen one in.\n
+  Сейчас: \033[1m%s\033[0m\n\n	  Now: \033[1m%s\033[0m\n\n
+  Через VPN пойдёт весь трафик, включая загрузки и обновления.\n	  All traffic will go through the VPN, downloads and updates included.\n
+  доменов %s, подсетей %s\n\n	  %s domains, %s subnets\n\n
+\n  уже есть\n	\n  already there\n
+\n  добавлено\n	\n  added\n
+\n  убрано\n	\n  removed\n
+\n  такой записи нет\n	\n  no such entry\n
+\n  перезапущена\n	\n  restarted\n
+  Туннеля не станет, интернет продолжит работать напрямую.\n	  The tunnel will be gone, the internet keeps working directly.\n
+\n  остановлена\n	\n  stopped\n
+\n  запущена\n	\n  started\n
+\n  автозапуск выключен\n	\n  autostart off\n
+\n  автозапуск включён\n	\n  autostart on\n
+  Все настройки и списки одним текстом: перенести на другой\n	  All settings and lists as a single text: move them to another\n
+  роутер, сохранить перед опытами, приложить к вопросу.\n\n	  router, keep them before experiments, attach them to a question.\n\n
+  Настройки и списки будут заменены содержимым файла.\n	  Settings and lists will be replaced by the contents of the file.\n
+  Прежние сохраняются в %s/before-import/\n\n	  The previous ones are kept in %s/before-import/\n\n
+    проверка занимает несколько секунд…\n\n	    the check takes a few seconds…\n\n
+НЕТ	NO
+домен	domain
+обращений	hits
+работает	running
+включено	on
+выключено	off
+включён	on
+выключен	off
+для этой ссылки нужен декодер base64: %s	this link needs a base64 decoder: %s
+%s: записей %s, беру первые %s — остальное отброшено	%s: %s entries, taking the first %s — the rest is dropped
+выбран свой конфиг, но он пуст	a custom config is selected, but it is empty
+ключ не задан	no key is set
+%s эта сборка Xray не поддерживает (проверено на 26.7.11)	%s is not supported by this Xray build (checked on 26.7.11)
+неизвестный вид ссылки: %s	unknown link type: %s
+vmess-ссылка не раскодировалась	the vmess link did not decode
+параметр ссылки «%s» byway в конфиг не переносит — стоит проверить, важен ли он	byway does not carry link parameter «%s» into the config — worth checking whether it matters
+encryption=%s не поддержан этой сборкой Xray: убрать параметр из ссылки либо обновить движок	encryption=%s is not supported by this Xray build: remove the parameter from the link or update the engine
+протокол %s не собран	protocol %s is not built in
+mkcp УДАЛЁН начиная с 26.7 (замена: finalmask/udp header-*, mkcp-original); в РФ UDP душат первым делом	mkcp REMOVED since 26.7 (replacement: finalmask/udp header-*, mkcp-original); UDP is the first thing throttled in Russia
+HTTP/2 УДАЛЁН начиная с 26.7, замена: xhttp в режиме stream-one	HTTP/2 REMOVED since 26.7, replacement: xhttp in stream-one mode
+QUIC УДАЛЁН начиная с 26.7, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC REMOVED since 26.7, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
+транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp
+allowInsecure=1: проверка сертификата ноды отключена, соединение можно подменить	allowInsecure=1: the node certificate is not verified, the connection can be spoofed
+security=%s не поддержан	security=%s is not supported
+flow=%s с транспортом %s не работает: Xray примет конфиг и сломается в бою	flow=%s does not work with transport %s: Xray will accept the config and break in use
+mux отключён: он не сочетается с flow=%s (Vision делит поток сам)	mux off: it does not go together with flow=%s (Vision splits the stream itself)
+mux отключён: у транспорта %s своё мультиплексирование, второй слой поверх только вредит	mux off: transport %s multiplexes on its own, a second layer on top only hurts
+выбран автовыбор, но ни одного ключа не добавлено	auto-pick is selected, but not a single key was added
+ключ пропущен: не разобрался	key skipped: could not be parsed
+ни один ключ не разобрался	not a single key parsed
+неизвестный пресет: %s	unknown preset: %s
+%s: не скачался, остаётся прежняя копия	%s: did not download, the previous copy stays
+%s: %s записей	%s: %s entries
+  %s записей ЛЕЖАТ И В ХОСТЛИСТЕ ZAPRET — домен должен быть в одном месте:	  %s entries ARE ALSO IN THE ZAPRET HOSTLIST — a domain belongs in one place only:
+  иначе одна сессия разъедется на два выхода: это видно не отказом, а сбоями при входе в аккаунт	  otherwise a single session splits between two exits: this shows up as sign-in failures, not as a refusal
+окружение в порядке	the environment is fine
+неисправностей: %s — способ лечения указан у каждой	failures: %s — a cure is named for each one
+журнал состояния очищен	the state log has been cleared
+статистика использования очищена	the usage statistics have been cleared
+журнал и статистика очищены	the log and the statistics have been cleared
+byway export [файл] [--no-key]	byway export [file] [--no-key]
+сюда писать нельзя: системные каталоги закрыты	cannot write there: system directories are closed
+выгружено: %s (%s байт)	exported: %s (%s bytes)
+ключ не записан — файл можно показывать кому угодно	the key was not written — this file is safe to show
+в файле лежит ключ от VPN — никуда не выкладывать	the file holds the VPN key — do not publish it anywhere
+byway import ФАЙЛ [--no-key]	byway import FILE [--no-key]
+byway import ФАЙЛ [--no-key] — файл от byway export	byway import FILE [--no-key] — a file made by byway export
+отсюда читать нельзя: системные каталоги закрыты	cannot read from there: system directories are closed
+не читается: %s	cannot read: %s
+это не выгрузка byway: в первой строке нет заголовка	this is not a byway export: the first line has no header
+настройки неизвестны и пропущены:%s	unknown settings, skipped:%s
+принято настроек: %s	settings accepted: %s
+ключ оставлен прежний	the key was left as it was
+применено. Перезапустить: /etc/init.d/byway restart	applied. To restart: /etc/init.d/byway restart
+конфиг не собрался — прежние настройки возвращаются на место	the config did not build — the previous settings are put back
+настройки из файла не приняты, прежние на месте	the settings from the file were not accepted, the previous ones are in place
+ссылка не задана: передать аргументом либо записать в byway.main.node_url	no link given: pass it as an argument or write it into byway.main.node_url
+сборка не освободилась за 30 секунд	the build did not finish within 30 seconds
+xray не найден	xray not found
+нет списка доменов %s	no domain list %s
+нет списка подсетей %s — правило по адресам не будет создано	no subnet list %s — the address rule will not be created
+движок: %s	engine: %s
+записей отброшено как неподходящие: %s	entries dropped as unsuitable: %s
+  причина: не похоже ни на домен (буквы, цифры, дефис и точки; последняя часть — не короче двух букв), ни на подсеть IPv4, либо длиннее 253 знаков	  reason: it looks neither like a domain (letters, digits, hyphen and dots; the last part at least two letters) nor like an IPv4 subnet, or it is longer than 253 characters
+конфиг собран и проверен движком: %s (%s байт)	config built and verified by the engine: %s (%s bytes)
+  доменов %s (свои %s + пресеты), подсетей %s	  %s domains (%s own + presets), %s subnets
+  доменов %s, подсетей %s	  %s domains, %s subnets
+  подключение: %s — Xray выбирает живую по задержке	  connection: %s — Xray picks a live one by latency
+  подключение: %s (%s:%s), транспорт %s, защита %s	  connection: %s (%s:%s), transport %s, security %s
+  пул fakeip %s, DNS-вход %s:53, tproxy %s, прокси роутера 127.0.0.1:%s	  fakeip pool %s, DNS input %s:53, tproxy %s, router proxy 127.0.0.1:%s
+движок отверг конфиг, черновик остался в %s:	the engine rejected the config, the draft is left in %s:
+конфиг не собран, собрать: byway gen	the config is not built, build it: byway gen
+%s — %s байт	%s — %s bytes
+в таблице маршрутизации %s есть чужие маршруты -- byway их не трогает	routing table %s holds other routes -- byway leaves them alone
+Xray не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
+правила не приняты ядром, ничего не изменено	the kernel did not accept the rules, nothing was changed
+обвязка поднята: таблица inet %s, правило fwmark, dnsmasq -> %s	plumbing is up: table inet %s, fwmark rule, dnsmasq -> %s
+обвязка снята, dnsmasq возвращён	plumbing is down, dnsmasq returned
+xray не запущен, считать нечего	xray is not running, nothing to count
+учтено соединений: %s, всего доменов в учёте: %s	connections counted: %s, domains in the tally: %s
+новых соединений в журнале нет	no new connections in the log
+учёт пуст. Собирается задачей cron; вручную: byway stat	the tally is empty. It is filled by a cron job; by hand: byway stat
+byway sub <адрес подписки>	byway sub <subscription address>
+это не адрес подписки: ожидается http:// или https://	this is not a subscription address: http:// or https:// expected
+подписка не скачалась: стоит проверить адрес и связь	the subscription did not download: worth checking the address and the link
+меню работает только с терминала: byway menu	the menu only works from a terminal: byway menu
+не OpenWrt	not OpenWrt
+byway рассчитан на OpenWrt, на другом может не работать	byway is made for OpenWrt, elsewhere it may not work
+есть base64 (нужен для ключей vmess и ss)	base64 is present (needed for vmess and ss keys)
+нет base64	no base64
+ключи vmess и ss разобрать не выйдет: %s	vmess and ss keys cannot be parsed: %s
+вписать на вкладке «Основное» или: uci set byway.main.node_url=vless://…	write it on the «Overview» tab, or: uci set byway.main.node_url=vless://…
+ключ не заполнен	the key is still a placeholder
+вписать настоящий ключ вместо заглушки	write a real key in place of the placeholder
+списки не нужны: режим «всё через VPN»	lists are not needed: mode «everything through the VPN»
+список доменов пуст	the domain list is empty
+через VPN не пойдёт ничего: наполнить или включить пресет	nothing will go through the VPN: fill the list or enable a preset
+dnsmasq направлен на byway	dnsmasq points at byway
+dnsmasq не направлен на byway	dnsmasq does not point at byway
+обвязка снята: byway plumb on	the plumbing is down: byway plumb on
+Показать текущее	Show the current one
+Вписать ключ	Enter a key
+Загрузить из подписки	Load from a subscription
+Проверить в изоляции — боевое не трогая	Check in isolation — without touching the live setup
+Назад	Back
+По спискам — через VPN только перечисленное	By lists — only what is listed goes through the VPN
+Всё через VPN	Everything through the VPN
+Показать домены	Show the domains
+Добавить домен	Add a domain
+Убрать домен	Remove a domain
+Обновить готовые списки	Update the ready-made lists
+Перезапустить	Restart
+Остановить	Stop
+Запустить	Start
+Журнал состояния — что и когда менялось	State log — what changed and when
+Чем пользуются	What is actually used
+Журнал движка	Engine log
+Выгрузить без ключа — такой файл можно показывать	Export without the key — such a file is safe to show
+Выгрузить вместе с ключом	Export together with the key
+Принять из файла	Import from a file
+Что сейчас происходит	What is going on right now
+Проверка связи	Connection check
+Проверка окружения	Environment check
+Подключение к VPN	VPN connection
+Режим работы	Mode
+Списки	Lists
+Служба	Service
+Журнал и статистика	Log and statistics
+Экспорт и импорт настроек	Export and import settings
+Выход	Exit
+Выбор	Choice
+Ключ	Key
+Адрес подписки	Subscription address
+Домен	Domain
+Куда сохранить [/tmp/byway-settings.txt]	Where to save [/tmp/byway-settings.txt]
+Файл	File
+Включить?	Enable?
+Остановить?	Stop?
+Принять?	Import?
+меню: то же самое, но видно, что можно	menu: the same things, but you can see what there is
+что сейчас работает	what is working right now
+быстрая проверка: служба, VPN, трафик, DNS	quick check: service, VPN, traffic, DNS
+проверка окружения: модули, утилиты, место, конфликты	environment check: modules, tools, space, conflicts
+пересобрать конфиг из настроек и списков	rebuild the config from the settings and the lists
+поднять или снять обвязку	raise or drop the plumbing
+разобрать ключ и проверить конфиг, без соединений	parse a key and verify the config, no connections made
+проверить VPN в изоляции, боевое не трогая	check the VPN in isolation, without touching the live setup
+скачать подписку	download a subscription
+обновить готовые списки	update the ready-made lists
+чем реально пользуются	what is actually used
+выгрузить настройки; --no-key — без ключа от VPN	export the settings; --no-key leaves out the VPN key
+принять настройки из выгрузки	import settings from an export
+очистить журнал состояния, статистику или то и другое	clear the state log, the statistics, or both
+версия	version
+check [ссылка]	check [link]
+probe [ссылка]	probe [link]
+sub АДРЕС	sub ADDRESS
+export [файл]	export [file]
+import ФАЙЛ	import FILE
+рядом включён %s	%s is installed and enabled next door
+рядом РАБОТАЕТ %s	%s is RUNNING right next to byway
+%s установлен, но выключен	%s is installed but disabled
+он метит трафик и перехватывает те же порты — оставить что-то одно	it marks traffic and intercepts the same ports — keep only one of them
+%s (порт %s) свободен или наш	%s (port %s) is free or ours
+%s (порт %s) занят: %s	%s (port %s) is taken: %s
+сменить порт в настройках byway либо убрать чужую службу	change the port in byway settings, or remove the other service
+правил ip rule на таблицу %s: %s	ip rule entries for table %s: %s
+лишние копятся при перезапусках — снять: byway plumb off && byway plumb on	spares pile up across restarts — clear them: byway plumb off && byway plumb on
+порт в ссылке недопустим: %s	the port in the key is not valid: %s
+на флеше свободно %s КБ, для конфига нужно %s -- рабочий не тронут	%s KB free on flash, the config needs %s -- the working one is untouched
+vpn\twarn\tсвой конфиг: адрес ноды неизвестен\n	vpn\twarn\town config: node address unknown\n
+меньше двух мегабайт: списки и конфиг могут не записаться	less than two megabytes: the lists and the config may fail to write
+%s xray-core либо задать byway.main.xray_bin	%s xray-core, or point byway.main.xray_bin at a binary
+переустановить byway	install byway again
+лишнее оставит дыру после удаления byway — проверить: uci show firewall | grep mark	a spare one leaves a hole once byway is removed — check: uci show firewall | grep mark
+конфиг не изменился, рабочий оставлен как есть	the config has not changed, the working one is left alone
+свой конфиг: адрес ноды лежит внутри чужого JSON, byway его не знает и из перехвата не исключит — проверить, что адрес ноды не попал в списки, иначе туннель замкнётся сам на себя	own config: the node address sits inside your JSON, byway does not know it and will not exclude it from interception — make sure the node address is not in the lists, or the tunnel closes on itself
+сюда писать нельзя: %s	cannot write here: %s
+отчёт записан: %s	report written: %s
+  секреты вычищены по белому списку, но перед отправкой стоит взглянуть глазами	  secrets are stripped by a whitelist, but give it a look before you send it
+Собрать отчёт для обращения — без ключа, но с диагностикой	Build a report to ask for help — no key, but with diagnostics
+Куда сохранить [/tmp/byway-report.txt]	Where to save it [/tmp/byway-report.txt]
+собрать отчёт для обращения, без ключа от VPN	build a report to ask for help, without the VPN key
+report [файл]	report [file]
+снято	taken
+# ключ от VPN, адрес ноды и адрес подписки сюда НЕ попадают	# the VPN key, the node address and the subscription address are NOT included
+== устройство ==	== device ==
+прошивка	firmware
+железо	hardware
+ядро	kernel
+флеш	flash
+память	memory
+== окружение ==	== environment ==
+== состояние ==	== state ==
+== проверка ==	== check ==
+== подключение (без значений) ==	== connection (values omitted) ==
+протокол	protocol
+транспорт	transport
+защита	security
+порт	port
+ключ не разбирается -- это и есть повод для обращения	the key does not parse -- that is the very thing to ask about
+== настройки ==	== settings ==
+== списки ==	== lists ==
+своих доменов	own domains
+всего доменов	domains total
+пресеты	presets
+отброшено строк	lines dropped
+== обвязка ==	== interception ==
+таблицы нет	no table
+правила ip rule нет	no ip rule entry
+== журнал состояния (последние 20) ==	== state log (last 20) ==
+пусто	empty
+== системный журнал byway (последние 30) ==	== byway syslog (last 30) ==
+== системный журнал движка (последние 20) ==	== engine syslog (last 20) ==
+ни одного готового списка не подключено	no ready-made list is connected
+ни один из подключённых списков не обновился — прежние копии остались на месте	none of the connected lists were refreshed — the previous copies stay in place
+версия %s -- новее нет	version %s -- nothing newer
+есть новая версия: %s (у вас %s)	there is a new version: %s (you have %s)
+качаю	downloading
+не скачалось -- ничего не тронуто	download failed -- nothing was touched
+не распаковалось -- ничего не тронуто	unpacking failed -- nothing was touched
+в пакете нет install.sh -- ничего не тронуто	there is no install.sh in the package -- nothing was touched
+ставлю	installing
+посмотреть, есть ли новая версия, и поставить её	see whether there is a new version, and install it
+GitHub не ответил -- похоже, нет связи	GitHub did not answer -- looks like there is no connection
+на GitHub нет ни репозитория %s, ни его выпусков	GitHub has neither the %s repository nor its releases
+GitHub ответил «слишком часто спрашиваете» -- подождать час	GitHub answered «too many requests» -- wait an hour
+GitHub ответил %s, но версии в ответе нет	GitHub answered %s, but there is no version in the answer
+адрес ноды %s не разрешился -- DNS через туннель не включён, иначе туннель замкнулся бы сам на себя	the node address %s did not resolve -- DNS through the tunnel is not enabled, or the tunnel would close on itself
+kill switch: каталог добавок dnsmasq не найден, домены закрыть нечем	kill switch: the dnsmasq drop-in directory was not found, there is no way to close the domains
+kill switch: dnsmasq не принял список, домены остались открыты	kill switch: dnsmasq refused the list, the domains stayed open
+направления %s со своим выходом\n	routes with their own exit: %s\n
+направление «%s»: ключа с меткой «%s» нет	route «%s»: there is no key labelled «%s»
+выбрать существующий ключ либо убрать направление	pick a key that exists, or remove the route
+направление «%s»: список пуст	route «%s»: the list is empty
+список «%s» лежит без направления и не читается	list «%s» has no route and is never read
+убрать файл, если направление удалено	remove the file if the route is gone
+наполнить список -- пустое направление не делает ничего	fill the list -- an empty route does nothing
+направление «%s» ведёт в «%s»	route «%s» leads to «%s»
+направление «%s»: список %s пуст, пропускаю	route «%s»: the list %s is empty, skipping
+направление «%s»: ключа с меткой «%s» среди добавленных нет	route «%s»: none of the added keys is labelled «%s»
+направление «%s»: ключ не разбирается, пропускаю	route «%s»: the key does not parse, skipping
+направлений со своим выходом: %s	routes with their own exit: %s
+есть	yes
+провайдер	ISP
+в поле «%s» ссылки кавычка или обратная косая: значения уходят в конфиг как есть, и такая ссылка подменяет его поля	field «%s» of the link contains a quote or a backslash: values go into the config verbatim, so such a link can rewrite its fields
+IPv6 поднят, а перехват только по IPv4	IPv6 is up, interception is IPv4 only
+в режиме «всё через VPN» соединения по IPv6 идут мимо туннеля: выключить IPv6 на WAN либо вернуться к режиму по спискам	in «everything through the VPN» mode IPv6 connections bypass the tunnel: turn IPv6 off on WAN or go back to list mode
+без имени	unnamed
+направление «%s» пропущено: имя не годится	route "%s" skipped: the name is not usable
+ВНИМАНИЕ    доступ к списку ЗАКРЫТ: туннеля нет, так велит «не пускать мимо VPN»\n	WARNING     the list is CLOSED: no tunnel, and "no traffic outside the VPN" says so\n
+параметр extra в ссылке -- не один объект JSON: он подставляется в конфиг как есть, и такая ссылка переписывает соседние поля, включая адрес ноды и защиту	the extra parameter in the key is not a single JSON object: it goes into the config as it is, so such a key rewrites the neighbouring fields, the node address and the security among them
+%s: не скачался, и прежней копии нет — список пуст	%s: not downloaded, and there is no earlier copy — the list is empty
+%s: скачанное не похоже на список (%s записей против %s) — прежняя копия оставлена	%s: what was downloaded does not look like a list (%s entries against %s) — the earlier copy is kept
+готовый список «%s» не обновлялся больше месяца	the ready-made list "%s" has not been refreshed for over a month
+готовый список «%s» отключён, а копия лежит во флеше	the ready-made list "%s" is switched off, but its copy still sits in flash
+обновить и заодно свериться с zapret: byway presets	refresh it and check against zapret while at it: byway presets
+включить обратно или убрать файл из /etc/byway/presets	switch it back on, or remove the file from /etc/byway/presets
+замок «%s» остался от прерванного прогона -- снимаю	the "%s" lock is left over from an interrupted run -- releasing it
+%s уже идёт -- жду	%s is already running -- waiting
+обвязка занята другим прогоном -- пропускаю	the plumbing is busy with another run -- skipping
+метка сменилась (%s -> %s) — переписываю правило firewall	the mark has changed (%s -> %s) — rewriting the firewall rule
+  подсетей: %s	  subnets: %s
+своих подсетей	own subnets
+всего подсетей	subnets in total
+  ВНИМАНИЕ: %s адресов, крупнейший блок /%s — в туннель уйдёт и чужой трафик, и скорость упадёт	  WARNING: %s addresses, the widest block is /%s — other people's traffic will go through the tunnel too, and the speed will drop
+  свой список: %s записей пересекаются с хостлистом zapret	  your own list: %s entries also sit in the zapret hostlist
+  домен должен быть в одном месте: иначе одна сессия разъедется на два выхода	  a domain belongs in exactly one place: otherwise one session splits across two exits
+  пинов из /etc/hosts внутри наших подсетей: %s	  pins from /etc/hosts that fall inside our subnets: %s
+  их адреса уйдут в туннель, хотя пин ставят затем, чтобы шли мимо	  those addresses will go through the tunnel, though a pin exists to keep them out of it
+  что бывает:	  what exists:
+  подключить: uci add_list byway.main.preset=ИМЯ && uci commit byway && byway presets	  switch one on: uci add_list byway.main.preset=NAME && uci commit byway && byway presets
+движка нет (%s) — ключ проверить нечем, это не про сам ключ	no core (%s) — there is nothing to check the key with; this is not about the key
+файрвол firewall4	firewall4
+firewall4 не найден — вероятно firewall3, 21.02 и старше	firewall4 not found — probably firewall3, 21.02 or older
+обновление  %s доступна (у вас %s)\n	update      %s is available (you have %s)\n
+            поставить: byway update\n	            install it: byway update\n
+важное обновление: %s	important update: %s
+есть новая версия: %s	a new version is available: %s
+ночью      %s\n	overnight  %s\n
+автообновление включено, но происхождение файла неизвестно	auto-update is on, but the origin of the file is unknown
+автообновление включено, но byway правлен руками	auto-update is on, but byway has been edited by hand
+автообновление включено	auto-update is on
+пул $1 без длины маски -- беру умолчание	pool $1 has no mask length -- falling back to the default
+пул %s: маска /%s не годится -- беру умолчание	pool %s: mask /%s is not usable -- falling back to the default
+пул %s лежит в приватном или зарезервированном -- он мёртв: цепочка nft отсекает такие адреса первым же правилом	pool %s is inside private or reserved space -- it is dead: the nft chain drops such addresses in its very first rule
+пул %s лежит в 172.16/12 -- он мёртв	pool %s is inside 172.16/12 -- it is dead
+пул %s лежит в 192.168/16 -- он мёртв	pool %s is inside 192.168/16 -- it is dead
+пул %s лежит в 169.254/16 -- он мёртв	pool %s is inside 169.254/16 -- it is dead
+пул %s лежит в 100.64/10 -- он мёртв	pool %s is inside 100.64/10 -- it is dead
+доменов %s, а адресов в пуле %s — часть будет вытесняться и уводить соединения к чужому хосту. Расширить пул (byway.main.fakeip_pool) либо укоротить список	domains %s, addresses in the pool %s — some will be evicted and send connections to the wrong host. Widen the pool (byway.main.fakeip_pool) or shorten the list
+%s: источники дали больше 32 МБ — отказываюсь, прежний список на месте	%s: sources returned more than 32 MB — refusing, the previous list is kept
+настройка %s = «%s» не годится для %s, беру %s	setting %s = "%s" is not usable for %s, falling back to %s
+карта: %s из %s доменов, адресов %s	map: %s of %s domains, addresses %s
+туннеля нет, и весь трафик мимо VPN закрыт: так велит настройка «не пускать мимо VPN»	no tunnel, and all traffic outside the VPN is blocked: the "no traffic outside the VPN" setting says so
+туннеля нет, и доступ к списку закрыт: доменов %s, подсети %s	no tunnel, and access to the list is blocked: domains %s, subnets %s
+«не пускать мимо VPN» включено, но закрывать нечего: списки пусты — трафик идёт НАПРЯМУЮ	"no traffic outside the VPN" is on, but there is nothing to block: the lists are empty — traffic goes DIRECT
+«не пускать мимо VPN»: ядро не приняло правило запрета — трафик идёт НАПРЯМУЮ	"no traffic outside the VPN": the kernel rejected the blocking rule — traffic goes DIRECT
+«не пускать мимо VPN»: ядро не приняло правило — %s	"no traffic outside the VPN": the kernel rejected the rule — %s
+«не пускать мимо VPN»: подсети закрыть не вышло — %s	"no traffic outside the VPN": blocking subnets failed — %s
+«не пускать мимо VPN»: %s записей списка нельзя закрыть по имени (keyword:, regexp: и подобные) — они останутся ОТКРЫТЫМИ	"no traffic outside the VPN": %s list entries cannot be blocked by name (keyword:, regexp: and the like) — they stay OPEN
+ВНИМАНИЕ    ВЕСЬ трафик мимо VPN ЗАКРЫТ: туннеля нет, так велит «не пускать мимо VPN»\n	WARNING     ALL traffic outside the VPN is BLOCKED: no tunnel, "no traffic outside the VPN" says so\n
+ВНИМАНИЕ    «не пускать мимо VPN» включено, но закрывать было нечего — трафик идёт НАПРЯМУЮ\n	WARNING     "no traffic outside the VPN" is on, but there was nothing to block — traffic goes DIRECT\n
+задачи cron на месте, crond работает	cron jobs are in place, crond is running
+задачи cron есть, но crond не работает	cron jobs are present, but crond is not running
+перехват и резолвер согласованы по сетям	interception and the resolver agree on which networks they cover
+часовой пояс роутера не задан (%s) — окно обновления придётся на 04:00 UTC	the router time zone is not set (%s) — the update window will fall on 04:00 UTC
+пояс %s (%s), обновление в 04:00 по часам роутера — сейчас %s	zone %s (%s), update at 04:00 by the router clock — now %s
+в cron не хватает задач byway (watch: %s, stat: %s)	cron is missing byway jobs (watch: %s, stat: %s)
+сети с нашим резолвером, но без перехвата:%s	networks served by our resolver but not intercepted:%s
+byway включён, движок работает	byway is on, the engine is running
+byway включён, но движка нет	byway is on, but there is no engine
+byway выключен настройкой	byway is switched off in the settings
+список доменов: %s записей (своих %s)	domain list: %s entries (%s of them your own)
+уровень журнала «%s» не годится, беру warning	log level "%s" is not usable, falling back to warning
+клиент со своим DNS проходит мимо туннеля	a client with its own DNS bypasses the tunnel
+замок «%s» занят не нами -- забираю	lock "%s" is held by someone else -- taking it over
+\n  \033[1;33mсобрано, но byway ВЫКЛЮЧЕН\033[0m — туннеля не будет\n	\n  \033[1;33mbuilt, but byway is OFF\033[0m — there will be no tunnel\n
+  включить: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart\n	  turn it on: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart\n
+dnsmasq не тронут — byway ещё не запущен, так и должно быть	dnsmasq is untouched — byway has not been started yet, which is correct
