@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.1.1 — первый публичный выпуск.** byway каждый день работает на
+> **Версия 0.1.2 — первый публичный выпуск.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -151,7 +151,7 @@ sing-box планируем и в byway — обвязка от движка н�
 **Способ 1 — одной строкой:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh)"
 ```
 
 **Способ 2 — через зеркало,** если `raw.githubusercontent.com` недоступен.
@@ -162,7 +162,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -170,8 +170,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.1.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.1
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.2.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.2
 sh install.sh
 ```
 
@@ -262,7 +262,9 @@ uci commit byway
 ### Подключение
 
 - **Ключи:** `vless`, `vmess`, `trojan`, `shadowsocks`, `socks`.
-  **Транспорты:** `tcp/raw`, `ws`, `grpc`, `httpupgrade`, `xhttp`.
+  **Транспорты:** `tcp/raw`, `ws`, `grpc`, `httpupgrade`, `xhttp`, `kcp`
+  (у последнего свежие Xray убрали `header` и `seed` — byway пишет их, только
+  если они есть в вашей ссылке, и говорит об этом).
   **Защита:** `tls`, `reality`.
 - **Несколько ключей сразу:** выбирать вручную или доверить Xray — он замеряет
   задержку и ведёт трафик через самый быстрый живой.
@@ -477,8 +479,9 @@ Xray, собранный softfloat, и работает — установщик
 
 **Если после обновления ядра перестал собираться конфиг** — byway проверяет
 каждую сборку самим движком, поэтому несовместимость не проходит молча: конфиг
-не заменяется, работает прежний. Так уже было, когда 26.7 убрала транспорты
-`kcp`, `h2` и `quic`. Что делать:
+не заменяется, работает прежний. Так уже было с транспортами `h2` и `quic`:
+движок их больше не принимает и отвечает, что они «removed and migrated to
+XHTTP». Что делать:
 
 ```sh
 V=26.7.28                       # версия, на которой работало

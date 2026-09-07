@@ -106,9 +106,10 @@ vmess-ссылка не раскодировалась	the vmess link did not de
 параметр ссылки «%s» byway в конфиг не переносит — стоит проверить, важен ли он	byway does not carry link parameter «%s» into the config — worth checking whether it matters
 encryption=%s не поддержан этой сборкой Xray: убрать параметр из ссылки либо обновить движок	encryption=%s is not supported by this Xray build: remove the parameter from the link or update the engine
 протокол %s не собран	protocol %s is not built in
-mkcp УДАЛЁН начиная с 26.7 (замена: finalmask/udp header-*, mkcp-original); в РФ UDP душат первым делом	mkcp REMOVED since 26.7 (replacement: finalmask/udp header-*, mkcp-original); UDP is the first thing throttled in Russia
-HTTP/2 УДАЛЁН начиная с 26.7, замена: xhttp в режиме stream-one	HTTP/2 REMOVED since 26.7, replacement: xhttp in stream-one mode
-QUIC УДАЛЁН начиная с 26.7, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC REMOVED since 26.7, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
+mkcp идёт поверх UDP, а в РФ UDP душат первым делом	mkcp runs over UDP, and in Russia UDP is the first thing throttled
+header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставляю как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
+HTTP/2 из Xray удалён, замена: xhttp в режиме stream-one	HTTP/2 has been removed from Xray, replacement: xhttp in stream-one mode
+QUIC из Xray удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC has been removed from Xray, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
 транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp
 allowInsecure=1: проверка сертификата ноды отключена, соединение можно подменить	allowInsecure=1: the node certificate is not verified, the connection can be spoofed
 security=%s не поддержан	security=%s is not supported

@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.1 — the first public release.** byway runs every day on one
+> **Version 0.1.2 — the first public release.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -161,7 +161,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -172,7 +172,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -180,8 +180,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.1.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.1
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.2.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.2
 sh install.sh
 ```
 
@@ -273,7 +273,9 @@ cure for every fault.
 ### Connection
 
 - **Keys:** `vless`, `vmess`, `trojan`, `shadowsocks`, `socks`.
-  **Transports:** `tcp/raw`, `ws`, `grpc`, `httpupgrade`, `xhttp`.
+  **Transports:** `tcp/raw`, `ws`, `grpc`, `httpupgrade`, `xhttp`, `kcp`
+  (recent Xray versions dropped `header` and `seed` from the last one — byway
+  writes them only if your link has them, and says so).
   **Security:** `tls`, `reality`.
 - **Several keys at once:** pick one by hand or let Xray do it — it measures
   latency and routes through the fastest live one.
@@ -495,7 +497,8 @@ point at the path.
 **If the config stopped building after an engine update** — byway verifies every
 build with the engine itself, so an incompatibility does not pass silently: the
 config is simply not replaced and the previous one keeps working. That already
-happened when 26.7 removed the `kcp`, `h2` and `quic` transports. What to do:
+happened with the `h2` and `quic` transports: the engine no longer accepts them
+and says they were "removed and migrated to XHTTP". What to do:
 
 ```sh
 V=26.7.28                       # the version that worked
