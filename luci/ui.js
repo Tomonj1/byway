@@ -88,7 +88,9 @@ return baseclass.extend({
 		var pre = E('pre', {
 			'style': 'white-space:pre-wrap;font-size:90%;margin:0'
 		}, [ text || '' ]);
-		var box = E('div', { 'style': 'max-width:100%' }, pre);
+		var box = E('div', {
+			'class': 'byway-out', 'style': 'max-width:100%'
+		}, pre);
 		if (!text) box.style.display = 'none';
 		return box;
 	},
@@ -100,15 +102,43 @@ return baseclass.extend({
 		var pre = E('pre', {
 			'style': 'white-space:pre;font-size:90%;margin:0'
 		}, [ text || '' ]);
-		var box = E('div', { 'style': 'overflow-x:auto;max-width:100%' }, pre);
+		var box = E('div', {
+			'class': 'byway-out', 'style': 'overflow-x:auto;max-width:100%'
+		}, pre);
 		if (!text) box.style.display = 'none';
 		return box;
 	},
 
 	/* Переписать блок, отданный output()/table(), и показать его, если было
-	   что сказать. */
+	   что сказать.
+
+	   Прячется не только блок, но и ВСЯ строка формы с ярлыком. Прятать один
+	   блок мало: под «Ответ» оставалась подписанная пустая строка -- ярлык
+	   есть, содержимого нет, и человек читает её как «здесь что-то должно
+	   быть, но сломалось». Владелец показал это на приёмке 2026-09-07. */
+	row: function (box) {
+		return box && box.closest ? box.closest('.cbi-value') : null;
+	},
+
 	say: function (box, text) {
 		box.firstChild.textContent = text || '';
 		box.style.display = text ? '' : 'none';
+		var row = this.row(box);
+		if (row) row.style.display = text ? '' : 'none';
+	},
+
+	/* Разовая уборка после отрисовки: строки, чей блок вывода пуст, убрать
+	   целиком. Зовётся из вкладки, потому что до вставки в документ строки
+	   ещё нет -- box.closest() в момент сборки формы возвращает null. */
+	hideEmptyRows: function (node) {
+		try {
+			var boxes = node.querySelectorAll('.byway-out');
+			for (var i = 0; i < boxes.length; i++) {
+				if (boxes[i].style.display !== 'none') continue;
+				var row = this.row(boxes[i]);
+				if (row) row.style.display = 'none';
+			}
+		} catch (e) { /* строка просто останется видимой -- не поломка */ }
+		return node;
 	}
 });

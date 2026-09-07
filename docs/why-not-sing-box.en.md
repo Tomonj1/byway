@@ -130,4 +130,4 @@ come together the analysis is worth redoing:
 Until then byway stays on one engine. This is not about sing-box being worse; it
 is about a second engine helping nobody here while being able to confuse.
 
-If your experience differs, [tell us](https://github.com/Tomonj1/byway/issues).
+If your experience differs, [tell us](https://github.com/tomon-one/byway/issues).

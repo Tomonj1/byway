@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.4 — the first public release.** byway runs every day on one
+> **Version 0.1.5.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -35,7 +35,7 @@ your VPN, the rest goes direct. The engine is
 >
 > **A report that it did not work for you is worth more than any review.** A
 > failure report beats a success one:
-> [issues](https://github.com/Tomonj1/byway/issues).
+> [issues](https://github.com/tomon-one/byway/issues).
 
 ---
 
@@ -122,7 +122,7 @@ Worth knowing before installing, not after.
   > are **worse than no rules** in an interception path — they quietly send part
   > of the traffic the wrong way, and it can take weeks to notice. If you have
   > IPv6 and are willing to test on your own router,
-  > [say so](https://github.com/Tomonj1/byway/issues).
+  > [say so](https://github.com/tomon-one/byway/issues).
 
 - **No `hysteria2`, `tuic`, `wireguard`** — they are not in Xray-core.
 - **One engine — Xray-core, and no second one is planned.** byway's plumbing
@@ -164,7 +164,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -175,7 +175,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -183,8 +183,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.4.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.4
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.1.5.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.5
 sh install.sh
 ```
 
@@ -254,7 +254,7 @@ cure for every fault.
   fragment), `regexp:`. `geosite:` and `ext:` are **not yet** accepted: they need a
   geodata file of a dozen megabytes, and the router has forty in total. If it
   matters to you more than the free space —
-  [say so](https://github.com/Tomonj1/byway/issues), it is not hard to add. Non-Latin domains go in punycode. A line that does
+  [say so](https://github.com/tomon-one/byway/issues), it is not hard to add. Non-Latin domains go in punycode. A line that does
   not parse is named out loud at build time and left out of the list.
 - **Two modes.** "By lists" — only what is listed goes through the VPN.
   "Everything through the VPN" — all traffic, with a separate checkbox that
@@ -434,21 +434,18 @@ byway update --force     # reinstall the same version
 about the quirk below and works whatever your settings are; the install line
 does not.
 
-**The router reaches the listed sites on its own** — this is on by default, and
-the switch lives on the Network tab. It needs this to update the lists and
-itself: GitHub's domains are in the ready-made list, while interception only
-catches traffic from your home devices. The router's own traffic goes past
-interception, and without this setting `wget` on the router answers
-`Operation not permitted` — the resolver handed out a placeholder address and
-there is no road to it.
+**The router itself cannot reach the listed sites**, and that is not a fault:
+interception catches traffic from your home devices, while the router's own
+traffic goes past it. `wget` on the router answers `Operation not permitted` —
+the resolver handed out a placeholder address and there is no road to it.
 
-If you turned it off and still need the install line on a running router, go
-through byway's own proxy, and use `curl` rather than `wget` (busybox's wget
-cannot do proxies):
+`byway update` knows this and goes through byway's own proxy. If you need the
+install line on a running router, take the same route, and use `curl` rather
+than `wget` (busybox's wget cannot do proxies):
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
 ```
 
 An update does not touch settings or lists. Clear the browser cache afterwards —
@@ -559,7 +556,7 @@ feed: `apk add xray-core` or `opkg install xray-core`. **Two engines do not
 always fit side by side:** the binary is about 18 MB on flash, so remove the old
 one as soon as the new one works.
 
-And [tell us about it](https://github.com/Tomonj1/byway/issues): if the engine
+And [tell us about it](https://github.com/tomon-one/byway/issues): if the engine
 changed what byway generates, that is fixed in byway rather than worked around
 by every user separately.
 
@@ -579,7 +576,7 @@ DRY_RUN=1 byway-uninstall    # show what would be done, change nothing
 only appears at install time. Take it from the archive of the same tag:
 
 ```sh
-wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/uninstall.sh
+wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 
@@ -631,7 +628,7 @@ are verified, not operation.
 
 There was no other hardware. The list of devices byway has been run on lives in
 the [compatibility
-reports](https://github.com/Tomonj1/byway/issues?q=label%3Acompatibility).
+reports](https://github.com/tomon-one/byway/issues?q=label%3Acompatibility).
 If you ran it, add yours: that is the single most useful thing you can report
 right now — and a failure report beats a success one.
 

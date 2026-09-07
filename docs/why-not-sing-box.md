@@ -131,4 +131,4 @@ Softfloat-сборка решает задачу, которой на этом �
 sing-box хуже; это про то, что второе ядро в byway никому не помогает, а
 запутать может.
 
-Если у вас другой опыт — [расскажите](https://github.com/Tomonj1/byway/issues).
+Если у вас другой опыт — [расскажите](https://github.com/tomon-one/byway/issues).

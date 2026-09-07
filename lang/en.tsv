@@ -31,7 +31,6 @@ tunnel\twarn\tсписок пуст\n	tunnel\twarn\tlist is empty\n
 dns\tok\tотвечает\n	dns\tok\tanswers\n
 ещё запускается	still starting
 \n  \033[2mEnter — назад\033[0m	\n  \033[2mEnter — back\033[0m
-  \033[1;33m%s\033[0m [д/Н]: 	  \033[1;33m%s\033[0m [y/N]: 
 \n  \033[1;32mприменено\033[0m — движок стартует до 15 секунд\n	\n  \033[1;32mapplied\033[0m — the engine needs up to 15 seconds to start\n
 \n  \033[1;31mне применилось\033[0m — работает прежняя настройка\n	\n  \033[1;31mnot applied\033[0m — the previous settings stay in effect\n
 подключение не настроено\n	no connection is set up\n
@@ -174,6 +173,8 @@ xray не найден	xray not found
 Xray-core не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray-core does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
 правила не приняты ядром, ничего не изменено	the kernel did not accept the rules, nothing was changed
 обвязка поднята: таблица inet %s, правило fwmark, dnsmasq -> %s	plumbing is up: table inet %s, fwmark rule, dnsmasq -> %s
+движок не запущен — обвязку не поднимаю, жду не досиживая	the engine is not running — not raising the plumbing, no point sitting out the wait
+обвязка снята, резолвер оставлен на месте	plumbing is down, the resolver is left as it is
 обвязка снята, dnsmasq возвращён	plumbing is down, dnsmasq returned
 xray не запущен, считать нечего	xray is not running, nothing to count
 учтено соединений: %s, всего доменов в учёте: %s	connections counted: %s, domains in the tally: %s
@@ -393,7 +394,6 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 %s: источники дали больше 32 МБ — отказываюсь, прежний список на месте	%s: sources returned more than 32 MB — refusing, the previous list is kept
 настройка %s = «%s» не годится для %s, взято %s	setting %s = "%s" is not usable for %s, falling back to %s
 карта: %s из %s доменов, адресов %s	map: %s of %s domains, addresses %s
-туннеля нет, и весь трафик мимо VPN закрыт: так велит настройка «не пускать мимо VPN»	no tunnel, and all traffic outside the VPN is blocked: the "no traffic outside the VPN" setting says so
 туннеля нет, и доступ к списку закрыт: доменов %s, подсети %s	no tunnel, and access to the list is blocked: domains %s, subnets %s
 «не пускать мимо VPN» включено, но закрывать нечего: списки пусты — трафик идёт НАПРЯМУЮ	"no traffic outside the VPN" is on, but there is nothing to block: the lists are empty — traffic goes DIRECT
 «не пускать мимо VPN»: ядро не приняло правило запрета — трафик идёт НАПРЯМУЮ	"no traffic outside the VPN": the kernel rejected the blocking rule — traffic goes DIRECT
@@ -405,8 +405,9 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 задачи cron на месте, crond работает	cron jobs are in place, crond is running
 задачи cron есть, но crond не работает	cron jobs are present, but crond is not running
 перехват и резолвер согласованы по сетям	interception and the resolver agree on which networks they cover
-часовой пояс роутера не задан (%s) — окно обновления придётся на 04:00 UTC	the router time zone is not set (%s) — the update window will fall on 04:00 UTC
-пояс %s (%s), обновление в 04:00 по часам роутера — сейчас %s	zone %s (%s), update at 04:00 by the router clock — now %s
+час автообновления «%s» не годится, взято 04	auto-update hour «%s» will not do, 04 taken instead
+часовой пояс роутера не задан (%s) — окно обновления придётся на %s:00 UTC	the router time zone is not set (%s) — the update window will fall on %s:00 UTC
+пояс %s (%s), обновление в %s:00 по часам роутера — сейчас %s	zone %s (%s), update at %s:00 by the router clock — now %s
 в cron не хватает задач byway (watch: %s, stat: %s)	cron is missing byway jobs (watch: %s, stat: %s)
 сети с нашим резолвером, но без перехвата:%s	networks served by our resolver but not intercepted:%s
 byway включён, движок работает	byway is on, the engine is running
@@ -416,10 +417,13 @@ byway выключен настройкой	byway is switched off in the setting
 byway не поднимется ни сейчас, ни после перезагрузки: поставить заново	byway will not come up now or after a reboot: install it again
 служба в автозапуске	the service is in autostart
 служба НЕ в автозапуске	the service is NOT in autostart
-  записей списка перебиты пинами в /etc/hosts: %s	  list entries overridden by pins in /etc/hosts: %s
   dnsmasq ответит по пину, подставного адреса не будет — в туннель они НЕ пойдут	  dnsmasq will answer from the pin, there will be no placeholder address — they will NOT go through the tunnel
 сейчас работает, но после перезагрузки туннеля не будет: /etc/init.d/byway enable	it runs now, but after a reboot there will be no tunnel: /etc/init.d/byway enable
 список доменов: %s записей (своих %s)	domain list: %s entries (%s of them your own)
+порт %s занят другим входом byway — свой трафик роутер в туннель не пошлёт	port %s is taken by another byway inbound — the router will not send its own traffic into the tunnel
+роутер ходит к сайтам из списка сам	the router reaches the sites on the list on its own
+заворот трафика роутера включён, но цепочки в ядре нет	sending the router’s own traffic through the tunnel is on, but the kernel chain is missing
+переложить правила: byway plumb off && byway plumb on	reapply the rules: byway plumb off && byway plumb on
 уровень журнала «%s» не годится, взят warning	log level "%s" is not usable, falling back to warning
 клиент со своим DNS проходит мимо туннеля	a client with its own DNS bypasses the tunnel
 замок «%s» занят не нами -- забираю	lock "%s" is held by someone else -- taking it over
@@ -463,11 +467,27 @@ itdoginfo: подсети для сервисов, которые работаю
 автообновление: %s не скачалось, работает прежняя	auto-update: %s did not download, the previous one keeps running
 byway положен не установщиком -- обновление пропускается. Лечится запуском install.sh из поставки	byway was not put here by the installer -- the update is skipped. Cure: run install.sh from the delivery
 своя правка не будет перетёрта: обновление пропускается намеренно	your own edit will not be overwritten: the update is skipped on purpose
-у вас это не ночь: Москва 07:00, Екатеринбург 09:00, Владивосток 14:00 — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].zonename=...	for you that is not night: Moscow 07:00, Yekaterinburg 09:00, Vladivostok 14:00 -- a service restart in the middle of the day. Cure: LuCI (System -> General Settings -> Timezone) or uci set system.@system[0].zonename=...
+у вас это не ночь: в Москве это на три часа позже, во Владивостоке на десять — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].zonename=...	for you that is not night: three hours later in Moscow, ten in Vladivostok -- a service restart in the middle of the day. Cure: LuCI (System -> General Settings -> Timezone) or uci set system.@system[0].zonename=...
 движок не запущен или упал: /etc/init.d/byway restart, затем byway status и logread -e xray	the core is not running or has crashed: /etc/init.d/byway restart, then byway status and logread -e xray
 ничего работать и не должно: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart	nothing is supposed to work: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart
 без него не ходят ни сторож обвязки, ни учёт, ни обрезка журналов: /etc/init.d/cron enable && /etc/init.d/cron start	without it the plumbing watchdog, the usage count and the log trimming all stop: /etc/init.d/cron enable && /etc/init.d/cron start
 переустановить byway либо завести вручную: */5 * * * * /usr/local/bin/byway watch и 7 * * * * /usr/local/bin/byway stat	reinstall byway or add them by hand: */5 * * * * /usr/local/bin/byway watch and 7 * * * * /usr/local/bin/byway stat
 byway работает только на firewall4, это OpenWrt 22.03 и новее — на firewall3 правило по метке не встанет	byway works only on firewall4, that is OpenWrt 22.03 and newer -- on firewall3 a mark-based rule will not go in
 их клиенты получат подставной адрес, до туннеля не дойдут и потеряют ВЕСЬ список. Лечится одним из двух: добавить сеть в byway.main.interface либо выдать ей свой DNS через dhcp_option '6,…'	their clients will get a placeholder address, never reach the tunnel and lose the WHOLE list. Two cures: add the network to byway.main.interface, or give it its own DNS via dhcp_option '6,…'
-маршрут решает DNS: устройство с «Приватным DNS», DoH в браузере или чужим резолвером в настройках уйдёт напрямую, и byway этого не увидит. Лечится либо выключением шифрованного DNS на устройствах, либо перехватом 53-го порта в firewall, либо добавлением к доменам ПОДСЕТЕЙ сервиса: подсеть работает по адресу, а значит и для того, кто спросил адрес не у нас	DNS decides the route: a device with Private DNS, DoH in the browser or someone else’s resolver in its settings goes direct, and byway never sees it. Cures: turn encrypted DNS off on the devices, or intercept port 53 in the firewall, or add the service’s SUBNETS alongside its domains -- a subnet works by address, and so works for whoever asked someone else
+заворот трафика роутера включён, но список пуст — ловить нечего	router traffic redirect is on, but the list is empty - nothing to catch
+маршрут     %s\n	route       %s\n
+пинов в /etc/hosts перебивают записи списка: %s	/etc/hosts pins override list entries: %s
+режим «всё через VPN», а эти сети идут мимо него целиком:%s	"everything through the VPN" mode, yet these networks bypass it entirely:%s
+в таблице маршрутизации %s нет маршрута local default	routing table %s has no local default route
+движок старый: транспорт httpupgrade он может не знать, и тогда конфиг соберётся, а туннель не встанет	the engine is old: it may not know the httpupgrade transport, and then the config builds but the tunnel never comes up
+движку %s транспорт xhttp неизвестен — обновить Xray-core или взять ключ на ws	engine %s does not know the xhttp transport - update Xray-core or use a ws key
+  пинов в /etc/hosts перебивают записи списка: %s	  /etc/hosts pins override list entries: %s
+  и запрет «не пускать мимо VPN» их не закроет: пин старше address=/домен/0.0.0.0	  and the "no traffic outside the VPN" block will not cover them either: a pin outranks address=/domain/0.0.0.0
+туннеля нет, и трафик перечисленных сетей мимо VPN закрыт: так велит настройка «не пускать мимо VPN». Сети вне byway.main.interface запрет не закрывает	no tunnel, and traffic from the listed networks is blocked outside the VPN: the "no traffic outside the VPN" setting says so. Networks outside byway.main.interface are not covered by the block
+правила не легли в ядро — %s	rules did not reach the kernel - %s
+и домены, и подсети закрывают только IPv4: клиент, получивший AAAA, предпочтёт его и уйдёт напрямую. Выключить IPv6 на WAN -- либо помнить, что подсети сервиса его не покрывают	both domains and subnets cover IPv4 only: a client that got an AAAA record will prefer it and go direct. Turn IPv6 off on the WAN - or remember that the service subnets do not cover it
+dnsmasq отвечает по пину сам, подставного адреса не будет — эти домены в туннель не пойдут, и запрет «не пускать мимо VPN» их тоже не закроет	dnsmasq answers from the pin itself, so there will be no fake address - those domains will not enter the tunnel, and the "no traffic outside the VPN" block will not cover them either
+в этом режиме byway.main.interface -- граница ВСЕЙ защиты, а не только списков: что вне его, то мимо туннеля и мимо запрета «не пускать мимо VPN». Добавить сети в byway.main.interface	in this mode byway.main.interface is the boundary of ALL protection, not just of the lists: whatever is outside it bypasses both the tunnel and the "no traffic outside the VPN" block. Add the networks to byway.main.interface
+маршрут решает DNS: устройство с «Приватным DNS», DoH в браузере или чужим резолвером в настройках уйдёт напрямую, и byway этого не увидит. Лечится либо выключением шифрованного DNS на устройствах, либо перехватом 53-го порта в firewall, либо добавлением к доменам ПОДСЕТЕЙ сервиса: подсеть работает по адресу, а значит и для того, кто спросил адрес не у нас. Третий способ проще двух первых, но покрывает ТОЛЬКО IPv4: клиент, получивший AAAA, уйдёт мимо подсетей	DNS decides the route: a device with Private DNS, DoH in the browser or a foreign resolver in its settings goes direct, and byway will not see it. Fix it either by turning encrypted DNS off on the devices, or by intercepting port 53 in the firewall, or by adding the service SUBNETS next to the domains: a subnet works by address, and therefore also for whoever asked someone else for that address. The third way is simpler than the first two, but covers IPv4 ONLY: a client that got an AAAA record will bypass the subnets
+заворот работает по доменам списка: наполнить список либо подключить готовый	the redirect works by the domains of the list: fill the list in or connect a ready-made one
+поднять обвязку заново: byway plumb off && byway plumb on	bring the plumbing back up: byway plumb off && byway plumb on

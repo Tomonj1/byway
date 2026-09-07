@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.1.4 — первый публичный выпуск.** byway каждый день работает на
+> **Версия 0.1.5.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -32,7 +32,7 @@
 > начале, а не в примечании внизу: [что с этим делали](#написано-вместе-с-ии).
 >
 > **Отчёт о том, что у вас не заработало, полезнее любого разбора.** Неудачный
-> полезнее удачного: [issues](https://github.com/Tomonj1/byway/issues).
+> полезнее удачного: [issues](https://github.com/tomon-one/byway/issues).
 
 ---
 
@@ -115,7 +115,7 @@ byway хуже честного отказа.
   > Правила, написанные вслепую, в перехвате **хуже их отсутствия** — они молча
   > уводят часть трафика не туда, и заметить это можно спустя недели. Есть IPv6
   > и готовность проверять у себя —
-  > [напишите](https://github.com/Tomonj1/byway/issues).
+  > [напишите](https://github.com/tomon-one/byway/issues).
 
 - **Нет `hysteria2`, `tuic`, `wireguard`** — их нет в Xray-core.
 - **Одно ядро — Xray-core, и второго не планируется.** Обвязка byway от движка
@@ -154,7 +154,7 @@ byway хуже честного отказа.
 **Способ 1 — одной строкой:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
 ```
 
 **Способ 2 — через зеркало,** если `raw.githubusercontent.com` недоступен.
@@ -165,7 +165,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -173,8 +173,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.4.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.4
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.1.5.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.5
 sh install.sh
 ```
 
@@ -242,7 +242,7 @@ uci commit byway
   Xray-core: `full:` (только это имя), `keyword:` (совпадение по куску),
   `regexp:`. `geosite:` и `ext:` **пока** не принимаются: им нужен файл
   геоданных на десяток мегабайт, а флеша на роутере сорок. Нужнее свободного
-  места — [скажите](https://github.com/Tomonj1/byway/issues), сделать это
+  места — [скажите](https://github.com/tomon-one/byway/issues), сделать это
   несложно. Кириллические домены — в пуникоде (запись латиницей вида `xn--…`,
   её выдаёт любой онлайн-конвертер punycode). Неразобранную строку
   byway называет вслух при сборке и в список не берёт.
@@ -421,20 +421,18 @@ byway update --force     # переставить ту же версию зан�
 ⚠️ **Обновляйтесь именно так, а не строкой установки.** `byway update` знает
 про особенность ниже и работает при любых настройках; строка установки — нет.
 
-**Роутер и сам ходит к сайтам из списка** — это включено по умолчанию,
-переключатель на вкладке «Сеть». Нужно это ему, чтобы обновлять списки и
-самого себя: домены GitHub лежат в готовом списке, а перехват ловит только
-трафик домашних устройств. Собственный трафик роутера идёт мимо перехвата, и
-без этой настройки `wget` с роутера отвечает `Operation not permitted` —
+**Сам роутер до сайтов из списка не дотягивается**, и это не поломка:
+перехват ловит трафик домашних устройств, а собственный трафик роутера идёт
+мимо него. `wget` с роутера на такой сайт отвечает `Operation not permitted` —
 резолвер отдал подставной адрес, а дороги к нему нет.
 
-Если вы её выключили, а строка установки на работающем роутере всё-таки
-нужна — через прокси byway, и `curl`, а не `wget` (busybox-овый wget через
-прокси не умеет):
+`byway update` про это знает и ходит через собственный прокси. Если нужна
+строка установки на работающем роутере — тем же путём, и `curl`, а не `wget`
+(busybox-овый wget через прокси не умеет):
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
 ```
 
 **Проверка версии и установка — разные вещи, и следят они по-разному.**
@@ -540,7 +538,7 @@ sed -n "s/^DISTRIB_ARCH='\([^']*\)'.*/\1/p" /etc/openwrt_release
 всегда:** бинарник весит около 18 МБ на флеше, старое лучше удалить сразу
 после того, как новое заработало.
 
-И [напишите об этом](https://github.com/Tomonj1/byway/issues): если ядро
+И [напишите об этом](https://github.com/tomon-one/byway/issues): если ядро
 изменило то, что byway генерирует, это чинится в byway, а не обходится каждым
 пользователем по отдельности.
 
@@ -561,7 +559,7 @@ DRY_RUN=1 byway-uninstall    # показать, что было бы сдела
 
 ```sh
 wget -O /tmp/byway-uninstall \
-  https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/uninstall.sh
+  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 
@@ -611,7 +609,7 @@ sh /tmp/byway-uninstall
 вовсе: проверяются установка и уборка, а не работа.
 
 Другого железа не было. Список устройств, на которых byway запускали, ведётся в
-[отчётах о совместимости](https://github.com/Tomonj1/byway/issues?q=label%3Acompatibility).
+[отчётах о совместимости](https://github.com/tomon-one/byway/issues?q=label%3Acompatibility).
 Запустили у себя — добавьте свой: сейчас это самое полезное, что можно сообщить,
 и неудачный отчёт полезнее удачного.
 

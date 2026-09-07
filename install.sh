@@ -134,6 +134,8 @@ t() {
       "  весь вывод пакетного менеджера: cat %s") printf %s "  the package manager said it all here: cat %s" ;;
       "не поставился: ключи vmess и ss разобрать не выйдет") printf %s "did not install: vmess and ss keys will not parse" ;;
       "base64 не ставится -- ключи vless, trojan и socks работают без него") printf %s "base64 is skipped -- vless, trojan and socks keys work without it" ;;
+      "на разделе изменений %s МБ, а движку нужно около 30 -- сюда он не встанет") printf %s "%s MB on the overlay partition, and the engine needs about 30 -- it will not fit here" ;;
+      "  это не поправить настройкой: нужен роутер с большим флешем либо extroot на USB") printf %s "  no setting fixes this: you need a router with more flash, or extroot on USB" ;;
       "на флеше меньше 2 МБ свободно") printf %s "less than 2 MB free on flash" ;;
       "и главное: у роутера нет маршрута наружу — почти всё выше поэтому") printf %s "and the main thing: the router has no default route — that explains most of the above" ;;
       "  проверить: ifstatus wan, ip route, ip link") printf %s "  check: ifstatus wan, ip route, ip link" ;;
@@ -177,8 +179,8 @@ FATAL=0   # непоправимое: система не того поколе�
 # Откуда дотянуть поставку, если рядом со скриптом её нет. Версия константой,
 # а не «последняя»: установщик и файлы, которые он кладёт, обязаны быть одного
 # тега, иначе панель окажется новее программы или наоборот.
-REPO=Tomonj1/byway
-VER=0.1.4
+REPO=tomon-one/byway
+VER=0.1.5
 # Версия движка, на которой byway проверялся целиком -- на живом роутере, с
 # поднятым туннелем и реальным трафиком. Правится вместе с выпуском: протухшая
 # «проверенная» хуже её отсутствия.
@@ -512,6 +514,11 @@ fetch_src() {
     _sd=/tmp/byway-src.$$
     rm -rf "$_sd"
     mkdir -p "$_sd" || return 1
+    # Убираем за собой НА ВЫХОДЕ, а не здесь: из этого каталога идёт
+    # установка, он нужен до последнего шага. Без трапа каждый запуск
+    # оставлял мегабайт в tmpfs навсегда -- это ОПЕРАТИВНАЯ ПАМЯТЬ роутера,
+    # а не диск. На боевом 2026-09-07 набралось семь таких каталогов, 6.8 МБ.
+    trap 'rm -rf "$_sd"' EXIT INT TERM
     # Тег -- то, что обещано и на что рассчитан этот файл. Ветка нужна, пока
     # тега ещё нет, но уходить на неё можно ТОЛЬКО когда тега действительно
     # нет: различаем по коду ответа, а не по любому отказу curl. Иначе
@@ -881,9 +888,25 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
         add_pkg xray-core || true   # см. про set -e у вызова для модулей
         command -v xray >/dev/null 2>&1 || [ -x /usr/bin/xray ] || {
             warn "Xray-core не поставился из прошивки"
-            pkg_why
-            warn "  ${PKG:-apk} update && ${PKG:-apk} ${PKG_ADD:-add} xray-core -- либо положить бинарник вручную"
-            warn "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray"
+            # Сперва самая частая причина, и она не в сети. Движок -- это
+            # около тридцати мегабайт распакованными, а на дешёвых роутерах
+            # раздел под изменения бывает и меньше четырёх: у 8 МБ флеша
+            # overlay доходит до 768 КБ, у 16 МБ -- 3,5-8 МБ. Тогда не
+            # поставится НИ ОДИН движок, и советовать «повторите команду
+            # руками» -- значит отправить человека по кругу.
+            #
+            # Проверяем ПОСЛЕ неудачи, а не до: файловые системы роутеров
+            # жмут, и предсказать занятое место по размеру пакета нельзя.
+            # Судим по факту отказа плюс по остатку.
+            _fe=$(free_mb)
+            if [ -n "$_fe" ] && [ "$_fe" -lt 15 ]; then
+                warnf "на разделе изменений %s МБ, а движку нужно около 30 -- сюда он не встанет" "$_fe"
+                warn "  это не поправить настройкой: нужен роутер с большим флешем либо extroot на USB"
+            else
+                pkg_why
+                warn "  ${PKG:-apk} update && ${PKG:-apk} ${PKG_ADD:-add} xray-core -- либо положить бинарник вручную"
+                warn "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray"
+            fi
             BAD=$((BAD + 1))
         }
     fi
@@ -1046,8 +1069,10 @@ if [ -d "$SRC/lang" ]; then
     for l in "$SRC"/lang/*.tsv; do
         [ -f "$l" ] && cp "$l" /etc/byway/lang/ && chmod 644 "/etc/byway/lang/$(basename "$l")"
     done
-    _dl2=$(ls /etc/byway/lang/ 2>/dev/null | tr '
-' ' ')
+    # xargs, а не tr: перевод строки в конце вывода ls превращался в пробел,
+    # и строка печаталась как «словари перевода: en.tsv » -- с висящим
+    # пробелом перед концом. Мелочь, но её видит каждый, кто ставит.
+    _dl2=$(ls /etc/byway/lang/ 2>/dev/null | xargs echo)
     sayf "словари перевода: %s" "$_dl2"
 fi
 
