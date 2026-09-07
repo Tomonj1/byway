@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.0 — the first public release.** byway runs every day on one
+> **Version 0.1.1 — the first public release.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -145,7 +145,7 @@ Worth knowing before installing, not after.
 One line:
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh)"
 ```
 
 If `raw.githubusercontent.com` is unreachable, the same through a mirror. **The
@@ -156,7 +156,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -164,8 +164,8 @@ As an archive, if you want to read it first:
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.0.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.0
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.1.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.1
 sh install.sh
 ```
 
@@ -455,6 +455,15 @@ one — stable, but noticeably behind. `tested` gives the one byway was verified
 on end to end; that is a pre-release, and byway says so during installation. It
 is what runs on the developer's router.
 
+⚠️ **On MIPS without an FPU there is no GitHub engine at all.** XTLS publishes
+`mips32le` and `mips64le` hard-float only, while the common router cores — 24Kc
+on ath79, 1004Kc on mt7621 — have no coprocessor, and the binary dies on its
+first instruction with `Illegal instruction`. Picking another version does not
+help: a soft-float build does not exist in the release. The feed ships the same
+Xray built soft-float and it works — the installer recognises such a CPU
+**before** downloading and takes the feed instead of spending 35 MB of your link
+and flash. Verified on `mipsel_24kc`.
+
 **It is worth keeping the engine fresh.** Xray moves fast: transports get fixed
 and added. If the feed's version is old, put the binary next to it by hand and
 point at the path.
@@ -474,7 +483,9 @@ uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 ```
 
 Pick the archive for your architecture (`arm64-v8a`, `mips`, `mipsle` and so on
-— see the release's file list). **Two engines do not always fit side by side:**
+— see the release's file list); **on MIPS without an FPU this recipe does not
+work at all** — there the engine comes from the feed: `apk add xray-core` or
+`opkg install xray-core`. **Two engines do not always fit side by side:**
 the binary is about 18 MB on flash, so remove the old one as soon as the new one
 works.
 

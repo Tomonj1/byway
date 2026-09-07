@@ -408,3 +408,37 @@ byway выключен настройкой	byway is switched off in the setting
 \n  \033[1;33mсобрано, но byway ВЫКЛЮЧЕН\033[0m — туннеля не будет\n	\n  \033[1;33mbuilt, but byway is OFF\033[0m — there will be no tunnel\n
   включить: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart\n	  turn it on: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart\n
 dnsmasq не тронут — byway ещё не запущен, так и должно быть	dnsmasq is untouched — byway has not been started yet, which is correct
+курируемый список byway: сервисы, недоступные из РФ и блокирующие её	byway's curated list: services unreachable from Russia, and services that block it
+itdoginfo: сервисы, которые сами закрываются от российских адресов	itdoginfo: services that shut Russian addresses out themselves
+itdoginfo: заблокированное в РФ. Внимание: встречается мусор	itdoginfo: what is blocked in Russia. Careful: contains junk
+itdoginfo: подсети для сервисов, которые работают не по именам. Весь их набор: Telegram, Meta, Twitter, Roblox, Discord, Google Meet и диапазоны хостеров Cloudflare, CloudFront, DigitalOcean, Hetzner, OVH. Вместе около 21 миллиона адресов -- byway скажет точную цифру при загрузке	itdoginfo: subnets for services that do not work by name. The whole set: Telegram, Meta, Twitter, Roblox, Discord, Google Meet, plus hosting ranges of Cloudflare, CloudFront, DigitalOcean, Hetzner, OVH. About 21 million addresses altogether -- byway will give the exact figure when loading
+свой адрес	your own URL
+# БЕЗ КЛЮЧА: подключение к VPN придётся вписать заново	# NO KEY: the VPN connection will have to be entered again
+нет ответа	no answer
+обновлено до %s, %s\n	updated to %s, %s\n
+ОТКАТ с %s на %s, %s\n	ROLLBACK from %s to %s, %s\n
+он метит трафик и перехватывает те же порты — оставить что-то одно: /etc/init.d/%s stop && /etc/init.d/%s disable	it marks traffic and intercepts the same ports — keep one of the two: /etc/init.d/%s stop && /etc/init.d/%s disable
+%s=<скрыто>\n	%s=<hidden>\n
+# программа: byway %s\n	# program: byway %s\n
+# снято: %s с %s\n	# taken: %s from %s\n
+роутера	the router
+да	yes
+нет	no
+путь к движку отклонён: %s	the core path was rejected: %s
+движок не поднимается пять минут -- снимаю обвязку, запрет «не пускать мимо VPN» ОСТАЁТСЯ: доступа наружу нет	the core has not come up for five minutes -- removing the plumbing, the "no traffic outside the VPN" block STAYS: there is no way out
+движок не поднимается пять минут -- снимаю обвязку, дом остаётся с интернетом и без туннеля	the core has not come up for five minutes -- removing the plumbing, the house keeps the internet and loses the tunnel
+движок вернулся -- запрет «не пускать мимо VPN» снят	the core is back -- the "no traffic outside the VPN" block is lifted
+сторож: обвязки нет при работающем движке -- поднимаю	watchdog: the plumbing is missing while the core is running -- bringing it up
+автообновление: byway правлен руками -- не трогаю	auto-update: byway has been edited by hand -- leaving it alone
+автообновление: сумма выложенной версии неизвестна -- не трогаю	auto-update: the checksum of the published version is unknown -- leaving it alone
+журнал обращений перевалил 4 МБ и обрезан -- учёт не ходит?	the access log passed 4 MB and was truncated -- is the accounting not running?
+движок перезапустился — сбросил кэш dnsmasq: прежние подставные адреса недействительны	the core restarted — flushed the dnsmasq cache: the previous placeholder addresses are no longer valid
+журнал обращений перевалил 4 МБ и обрезан -- задачи cron на месте?	the access log passed 4 MB and was truncated -- are the cron jobs in place?
+пресет %s: %s записей, срез до %s	preset %s: %s entries, cut down to %s
+пресет %s: отказ, записей %s против %s	preset %s: refused, %s entries against %s
+обновляю готовые списки (промежуток %s мин)	refreshing the ready-made lists (interval %s min)
+новая версия byway %s (у вас %s): %s	new byway version %s (you have %s): %s
+автообновление: ставлю %s (было %s)	auto-update: installing %s (was %s)
+автообновление: %s поднялось	auto-update: %s came up
+автообновление: %s не поднялось -- откатился на %s	auto-update: %s did not come up -- rolled back to %s
+автообновление: %s не скачалось, работает прежняя	auto-update: %s did not download, the previous one keeps running

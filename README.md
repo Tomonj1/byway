@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.1.0 — первый публичный выпуск.** byway каждый день работает на
+> **Версия 0.1.1 — первый публичный выпуск.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -134,7 +134,7 @@ sing-box планируем и в byway — обвязка от движка н�
 Одной строкой:
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh)"
 ```
 
 Если `raw.githubusercontent.com` недоступен, то же через зеркало. **Зеркало
@@ -145,7 +145,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.0/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -153,8 +153,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.0.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.0
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.1.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.1
 sh install.sh
 ```
 
@@ -437,6 +437,15 @@ byway не привязан к версии Xray: если путь к движ�
 целиком; это предвыпуск, и byway говорит об этом при установке. На роутере
 разработчика работает именно она.
 
+⚠️ **На MIPS без сопроцессора движка с GitHub не будет.** XTLS выкладывает
+`mips32le` и `mips64le` только с аппаратной плавающей точкой, а ходовые
+роутерные ядра — 24Kc на ath79, 1004Kc на mt7621 — сопроцессора не имеют, и
+бинарник падает на первой инструкции с `Illegal instruction`. Выбором версии
+это не лечится: softfloat-сборки в выпуске нет вовсе. Из фида приезжает тот же
+Xray, собранный softfloat, и работает — установщик распознаёт такой процессор
+**до** загрузки и берёт фид, не тратя 35 МБ на канал и флеш. Проверено на
+`mipsel_24kc`.
+
 **Стоит держать свежее ядро.** Xray развивается быстро: чинят транспорты,
 добавляют новые. Если в фиде версия старая, бинарник кладут рядом руками и
 указывают путь.
@@ -456,7 +465,9 @@ uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 ```
 
 Архив выбирается под вашу архитектуру (`arm64-v8a`, `mips`, `mipsle` и так
-далее — смотрите список файлов релиза). **Два ядра рядом помещаются не
+далее — смотрите список файлов релиза); **на MIPS без сопроцессора этот
+рецепт не сработает вовсе**, там движок берут из фида — `apk add xray-core`
+либо `opkg install xray-core`. **Два ядра рядом помещаются не
 всегда:** бинарник весит около 18 МБ на флеше, старое лучше удалить сразу
 после того, как новое заработало.
 
