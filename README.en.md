@@ -137,12 +137,20 @@ Worth knowing before installing, not after.
   service's **subnets** alongside its domains: a subnet works by address, and so
   works for whoever asked someone else for it. One does not replace the other —
   subnets complement domains.
-- **On MIPS without an FPU the engine can only come from the feed.** XTLS
-  publishes MIPS hard-float, while the common router cores — 24Kc on ath79,
-  1004Kc on mt7621 — have no FPU, and the GitHub build dies with `Illegal
-  instruction`. The installer recognises such a CPU and takes the feed's
-  version, built soft-float; that one works. The price: there the engine's
-  freshness is set by the firmware, not by you.
+- **On many cheaper routers the engine can only come from the firmware.** That
+  means models with a MIPS processor — a sizeable share of inexpensive
+  hardware. Their processor cannot do fractional arithmetic on its own, and the
+  ready-made Xray builds on GitHub count on it, so they do not start at all.
+  The installer recognises such hardware and installs the version that ships
+  with the firmware: it is built differently and works. Nothing for you to do —
+  but there the firmware picks the engine version, not you.
+
+  To check your own (the same test the installer makes):
+
+  ```sh
+  if uname -m | grep -q mips && ! grep -qi fpu /proc/cpuinfo
+  then echo "engine from the firmware only"; else echo "GitHub is fine"; fi
+  ```
 
 ---
 
@@ -461,7 +469,8 @@ one — stable, but noticeably behind. `tested` gives the one byway was verified
 on end to end; that is a pre-release, and byway says so during installation. It
 is what runs on the developer's router.
 
-⚠️ **On MIPS without an FPU there is no GitHub engine at all.** XTLS publishes
+⚠️ **On MIPS without a floating-point unit there is no GitHub engine at all** —
+and that is almost every inexpensive MIPS router. XTLS publishes
 `mips32le` and `mips64le` hard-float only, while the common router cores — 24Kc
 on ath79, 1004Kc on mt7621 — have no coprocessor, and the binary dies on its
 first instruction with `Illegal instruction`. Picking another version does not
