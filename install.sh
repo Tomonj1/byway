@@ -116,6 +116,20 @@ t() {
       "     2) с GitHub -- НЕ для этого процессора: MIPS выкладывают только с аппаратной плавающей точкой") printf %s "     2) from GitHub -- NOT for this CPU: MIPS is published hard-float only" ;;
       "на этом процессоре сборка с GitHub не запустится: MIPS там только с аппаратной плавающей точкой, а сопроцессора здесь нет") printf %s "the GitHub build will not run on this CPU: MIPS is published hard-float only, and there is no FPU here" ;;
       "  из фида приезжает та же версия, собранная softfloat -- беру её") printf %s "  the feed ships the same version built soft-float -- taking that one" ;;
+      "Движок Xray. Какую версию поставить:") printf %s "Xray core. Which version to install:" ;;
+      "     1) проверенную с byway -- %s  (по умолчанию)") printf %s "     1) the one verified with byway -- %s  (default)" ;;
+      "     2) самую свежую, включая предвыпуски") printf %s "     2) the newest one, pre-releases included" ;;
+      "     3) самую свежую стабильную") printf %s "     3) the newest stable one" ;;
+      "     4) никакую -- путь укажу сам потом") printf %s "     4) none -- I will set the path myself later" ;;
+      "     либо впишите номер версии, например 26.3.27") printf %s "     or type a version number, for example 26.3.27" ;;
+      "версия: %s") printf %s "version: %s" ;;
+      "не понял ответ «%s» -- беру проверенную версию") printf %s "did not understand the answer «%s» -- taking the verified version" ;;
+      "не удалось спросить у GitHub номер версии -- беру из прошивки") printf %s "could not ask GitHub for a version number -- taking the firmware one" ;;
+      "Движок Xray. На этом процессоре сборки с GitHub не запускаются,") printf %s "Xray core. Builds from GitHub do not run on this CPU," ;;
+      "поэтому он берётся из прошивки:") printf %s "so it is taken from the firmware:" ;;
+      "     1) поставить из прошивки  -- по умолчанию") printf %s "     1) install from the firmware  -- default" ;;
+      "     2) никакой -- путь укажу сам потом") printf %s "     2) none -- I will set the path myself later" ;;
+      "непонятный номер версии «%s»") printf %s "unclear version number «%s»" ;;
       "ставлю xray-core из фида") printf %s "installing xray-core from the feed" ;;
       "Xray не поставился из фида") printf %s "Xray did not install from the feed" ;;
       "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray") printf %s "  and point byway at it: uci set byway.main.xray_bin=/path/to/xray" ;;
@@ -686,6 +700,27 @@ xray_asset() {
     esac
 }
 
+# Номер последнего выпуска у XTLS. Две ветки, и разница между ними -- та самая,
+# на которой человек спотыкается:
+#
+#   stable -- `releases/latest` у GitHub, а он предвыпуски ПРОПУСКАЕТ. У XTLS
+#             предвыпуском помечено всё, что новее 26.3.27, поэтому «latest»
+#             отдаёт мартовский выпуск, хотя по-русски это слово значит
+#             «самый свежий». Именно на этом слове владелец и споткнулся на
+#             приёмке 2026-09-07: в меню оно означало ровно противоположное
+#             тому, что читается. Слова latest в вопросах больше нет.
+#   any    -- первый в списке всех выпусков, то есть действительно самый
+#             свежий, включая предвыпуски.
+xray_ver_top() {   # 1 -- stable | any
+    if [ "$1" = stable ]; then
+        _vu=https://api.github.com/repos/XTLS/Xray-core/releases/latest
+    else
+        _vu="https://api.github.com/repos/XTLS/Xray-core/releases?per_page=1"
+    fi
+    dl --max-time 25 "$(gh "$_vu")" |
+        sed -n 's/.*"tag_name"[^"]*"v\([^"]*\)".*/\1/p' | head -1
+}
+
 # Движок с GitHub. Отдельно от фида, потому что в фиде версия та, что собрали
 # вместе с прошивкой, а Xray меняется быстро: транспорты чинят и добавляют.
 xray_from_github() {
@@ -717,12 +752,10 @@ xray_from_github() {
     command -v unzip >/dev/null 2>&1 || add_pkg unzip
     command -v unzip >/dev/null 2>&1 || { warn "нет unzip, распаковать нечем"; return 1; }
 
-    if [ "$_ver" = "latest" ]; then
-        _ver=$(dl --max-time 25 "$(gh https://api.github.com/repos/XTLS/Xray-core/releases/latest)" |
-               sed -n 's/.*"tag_name"[^"]*"v\([^"]*\)".*/\1/p' | head -1)
-        [ -n "$_ver" ] || { warn "не удалось спросить у GitHub последнюю версию"; return 1; }
-        sayf "последний выпуск: %s" "$_ver"
-    fi
+    # Номер версии к этому месту уже разрешён: слова сюда не доходят.
+    case "$_ver" in
+      ''|*[!0-9.]*) warnf "непонятный номер версии «%s»" "$_ver"; return 1 ;;
+    esac
 
     # Архив -- в память, распаковка -- на флеш. Наоборот нельзя: сложенные
     # рядом архив и бинарник занимают весь раздел.
@@ -758,6 +791,18 @@ xray_from_github() {
     sayf "движок готов: %s" "$XRAY_PATH"
 }
 
+# ⚠️ Место проверяем ЗДЕСЬ, до движка, а не после него. Прежде проверка стояла
+# в конце -- и мерила флеш сразу после записи тридцати пяти мегабайт, когда
+# ubifs ещё не успел их дожать. На приёмке 2026-09-07 это дало отказ «меньше
+# 2 МБ свободно» на разделе, где через минуту было свободно 21 МБ: byway не
+# установился вовсе, а движок остался лежать. Худший исход -- отказ, оставивший
+# мусор.
+#
+# Ещё и потому здесь, что сразу после записи число ВРЁТ: сжатие идёт лениво, и
+# судить по нему нельзя в принципе.
+FREE=$(free_mb)
+[ "${FREE:-99}" -ge 2 ] || { warn "на флеше меньше 2 МБ свободно"; BAD=$((BAD + 1)); }
+
 XRAY_PATH=""
 if [ "${FATAL:-0}" = 1 ]; then
     # Движок не трогаем вовсе: система не годится, и ставить на неё
@@ -774,34 +819,63 @@ elif _xb=$(uci -q get byway.main.xray_bin 2>/dev/null); [ -n "$_xb" ] && [ -x "$
 elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
    ! ls /usr/local/bin/xray-* >/dev/null 2>&1; then
     echo
-    say "Движок Xray не найден. Откуда взять:"
-    line "     1) из фида прошивки -- проще всего, версия какая собрана"
-    # Говорим до выбора, а не после. Человеку с MIPS без сопроцессора вариант
-    # 2 не подходит в принципе, и узнать об этом лучше здесь, чем отказом.
+    # ⚠️ Спрашиваем про ВЕРСИЮ, а не про источник. Откуда её брать -- наша
+    # забота: сперва GitHub, не вышло -- прошивка. Прежнее меню предлагало
+    # выбрать «из фида или с GitHub», то есть требовало от человека знать
+    # нашу кухню, а потом ещё и вписать номер версии руками словом. Владелец
+    # на приёмке 2026-09-07: «будь я человеком, впервые читающий это, нихуя
+    # бы не понял».
     if mips_nofpu; then
-        line "     2) с GitHub -- НЕ для этого процессора: MIPS выкладывают только с аппаратной плавающей точкой"
+        # На этом процессоре варианты с GitHub невозможны в принципе -- не
+        # предлагаем их вовсе, вместо того чтобы отказывать после выбора.
+        say "Движок Xray. На этом процессоре сборки с GitHub не запускаются,"
+        say "поэтому он берётся из прошивки:"
+        line "     1) поставить из прошивки  -- по умолчанию"
+        line "     2) никакой -- путь укажу сам потом"
+        _c=$(askv "Выбор" 1)
+        case "$_c" in
+          2) warn "движок не ставится: указать путь после установки"
+             warn "  uci set byway.main.xray_bin=/путь/к/xray && uci commit byway"
+             _c=3 ;;
+          *) _c=1 ;;
+        esac
     else
-        line "     2) с GitHub -- свежее, около 35 МБ на флеше"
+        say "Движок Xray. Какую версию поставить:"
+        linef "     1) проверенную с byway -- %s  (по умолчанию)" "$XRAY_TESTED"
+        line "     2) самую свежую, включая предвыпуски"
+        line "     3) самую свежую стабильную"
+        line "     4) никакую -- путь укажу сам потом"
+        line "     либо впишите номер версии, например 26.3.27"
+        _c=$(askv "Выбор" 1)
+        _ver=""
+        case "$_c" in
+          ''|1)  _ver=$XRAY_TESTED ;;
+          2)     _ver=$(xray_ver_top any) ;;
+          3)     _ver=$(xray_ver_top stable) ;;
+          4)     warn "движок не ставится: указать путь после установки"
+                 warn "  uci set byway.main.xray_bin=/путь/к/xray && uci commit byway"
+                 _c=3 ;;
+          # Номером -- чтобы не заставлять выбирать из списка того, кто уже
+          # знает, что ему нужно.
+          [0-9]*.[0-9]*) _ver=$_c ;;
+          *)     warnf "не понял ответ «%s» -- беру проверенную версию" "$_c"
+                 _ver=$XRAY_TESTED ;;
+        esac
+        # Итог складываем в _c ЯВНО: 0 -- движок уже стоит, 1 -- ставить из
+        # прошивки, 3 -- не ставить вовсе. Прежде здесь стоял разбор «всё, что
+        # не 3, считаем единицей» -- и после удачной загрузки с GitHub он
+        # ставил движок ВТОРОЙ раз, из фида. Найдено при этой же правке.
+        if [ "$_c" != 3 ]; then
+            if [ -z "$_ver" ]; then
+                warn "не удалось спросить у GitHub номер версии -- беру из прошивки"
+                _c=1
+            elif sayf "версия: %s" "$_ver"; xray_from_github; then
+                _c=0
+            else
+                _c=1
+            fi
+        fi
     fi
-    line "     3) никак -- путь укажу сам потом"
-    _c=$(askv "Выбор" 1)
-    case "$_c" in
-      2) line "        latest  -- последний СТАБИЛЬНЫЙ выпуск (по умолчанию)"
-         linef "        tested  -- на которой byway проверялся: %s" "$XRAY_TESTED"
-         line "                   это ПРЕДВЫПУСК: XTLS помечает так всё свежее стабильного"
-         line "        26.3.27 -- или любая другая, номером"
-         _ver=$(askv "Версия" latest)
-         # Слово «tested» разворачивается в номер здесь, а не ниже: дальше
-         # значение уходит в адрес выпуска на GitHub, и слово там не поймут.
-         [ "$_ver" = tested ] && _ver=$XRAY_TESTED
-         xray_from_github || _c=1 ;;
-      3) warn "движок не ставится: указать путь после установки"
-         warn "  uci set byway.main.xray_bin=/путь/к/xray && uci commit byway" ;;
-      # Ответ не из списка -- берём первый вариант, а не молча пропускаем шаг:
-      # роутер без движка выглядит как «byway не работает» безо всякой причины.
-      *) [ "$_c" = 1 ] || warnf "не понял ответ «%s» -- беру вариант 1" "$_c"
-         _c=1 ;;
-    esac
     if [ "$_c" = 1 ]; then
         say "ставлю xray-core из фида"
         add_pkg xray-core || true   # см. про set -e у вызова для модулей
@@ -827,9 +901,6 @@ if ! command -v base64 >/dev/null 2>&1; then
         say "base64 не ставится -- ключи vless, trojan и socks работают без него"
     fi
 fi
-
-FREE=$(free_mb)
-[ "${FREE:-99}" -ge 2 ] || { warn "на флеше меньше 2 МБ свободно"; BAD=$((BAD + 1)); }
 
 if [ "$BAD" -gt 0 ]; then
     echo

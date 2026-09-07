@@ -464,21 +464,21 @@ own.
 
 ## Engine version
 
-byway is not tied to a version of Xray: if no path to the engine is set, the one
-from the package is used. The installer **asks** where to get the engine, and
-there are three answers:
+byway is not tied to a version of Xray. The installer asks which **version**
+you want; where to take it from is its own problem — GitHub first, the firmware
+feed if that fails.
 
-- **the firmware feed** — the default; the version OpenWrt built;
-- **GitHub** — then it also asks which version: `latest` (the default),
-  `tested` (the one byway was verified on end to end), or any version number;
-- **nowhere** — if you will point at a path yourself later.
+- **the one verified with byway** — the default; byway was run through on it;
+- **the newest one, pre-releases included** — whatever XTLS released last;
+- **the newest stable one** — the last one without the pre-release mark;
+- **none** — if you will point at a path yourself later.
 
-⚠️ **"Newest" and "stable" are different things for Xray.** XTLS (the team that
-makes Xray) marks
-everything newer than `26.3.27` as a pre-release, so `latest` gives exactly that
-one — stable, but noticeably behind. `tested` gives the one byway was verified
-on end to end; that is a pre-release, and byway says so during installation. It
-is what runs on the developer's router.
+A version number can also be typed by hand instead of picking from the list.
+
+⚠️ **"Newest" and "stable" are different things for Xray, and the gap is wider
+than it looks.** XTLS (the team that makes Xray) marks everything newer than
+`26.3.27` as a pre-release — so "the newest stable one" is months behind, and
+what runs on the developer's router is a pre-release.
 
 ⚠️ **On MIPS without a floating-point unit there is no GitHub engine at all** —
 and that is almost every inexpensive MIPS router. XTLS publishes
