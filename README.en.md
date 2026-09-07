@@ -6,10 +6,10 @@
 
 **Split tunnelling for an OpenWrt router.** Part of your traffic goes through
 your VPN, the rest goes direct. The engine is
-[Xray](https://github.com/XTLS/Xray-core).
+[Xray-core](https://github.com/XTLS/Xray-core).
 
 ![OpenWrt 22.03+](https://img.shields.io/badge/OpenWrt-22.03%2B-00B5E2)
-![engine Xray](https://img.shields.io/badge/engine-Xray--core-333)
+![engine Xray-core](https://img.shields.io/badge/engine-Xray--core-333)
 ![IPv4 only](https://img.shields.io/badge/IP-IPv4%20only-orange)
 ![GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)
 
@@ -73,7 +73,7 @@ If you want the full toolbox, there are
 accordingly.
 
 **What it is, technically.** Neither a package nor a binary: a set of POSIX sh
-scripts plus a LuCI panel. Xray carries the traffic — byway decides what goes
+scripts plus a LuCI panel. Xray-core carries the traffic — byway decides what goes
 where, builds the engine's config, installs the kernel rules and watches that
 none of it falls apart. Plumbing, in other words.
 
@@ -86,7 +86,7 @@ none of it falls apart. Plumbing, in other words.
 | **OpenWrt 22.03 or newer** | a hard boundary, see below |
 | **`kmod-nft-tproxy`, `kmod-nft-socket`** | the installer fetches them |
 | **`curl`** | the installer fetches it |
-| **Flash space** | byway itself is under a megabyte; the Xray engine needs ~18 MB |
+| **Flash space** | byway itself is under a megabyte; the Xray-core engine needs ~18 MB |
 
 **Why 22.03 is a boundary and not a preference.** From 22.03 the firewall is
 firewall4 on nftables, and byway stands entirely on it. On 21.02 and older it is
@@ -95,7 +95,7 @@ in, and neither guests nor zones with an `input REJECT` policy would get the
 tunnel. On such a system the installer **refuses to run** and says why: half a
 working byway is worse than an honest refusal.
 
-The lower bound comes from the engine: Xray is already in the feed in 22.03, and
+The lower bound comes from the engine: Xray-core is already in the feed in 22.03, and
 byway can fetch it from GitHub itself. For
 [podkop](https://github.com/itdoginfo/podkop) that bound is one OpenWrt release higher
 only because sing-box appears in the feeds from 23.05. sing-box support is
@@ -127,7 +127,7 @@ Worth knowing before installing, not after.
   > [say so](https://github.com/Tomonj1/byway/issues).
 
 - **No `hysteria2`, `tuic`, `wireguard`** — they are not in Xray-core.
-- **One engine.** Xray for now. byway's plumbing does not depend on the engine,
+- **One engine.** Xray-core for now. byway's plumbing does not depend on the engine,
   so **a choice of engine at install time is planned** — sing-box first — but not
   today.
 - **A client with its own DNS bypasses it.** DNS decides the route: a device
@@ -142,7 +142,7 @@ Worth knowing before installing, not after.
 - **On many cheaper routers the engine can only come from the firmware.** That
   means models with a MIPS processor — a sizeable share of inexpensive
   hardware. Their processor cannot do fractional arithmetic on its own, and the
-  ready-made Xray builds on GitHub count on it, so they do not start at all.
+  ready-made Xray-core builds on GitHub count on it, so they do not start at all.
   The installer recognises such hardware and installs the version that ships
   with the firmware: it is built differently and works. Nothing for you to do —
   but there the firmware picks the engine version, not you.
@@ -199,7 +199,7 @@ same tag that is baked into it as a constant. If the tag does not exist it says
 out loud that it took the `main` branch, rather than pretending it installed a
 tagged version. The third way goes to the network once, entirely in front of you.
 
-**It asks about what is optional:** where to get the Xray engine and which
+**It asks about what is optional:** where to get the Xray-core engine and which
 version, and whether `base64` is needed (only for `vmess://` and `ss://` keys).
 Mandatory pieces are installed without questions. If it has no one to ask — run
 from a script, say — it takes the defaults and prints that it did.
@@ -247,7 +247,7 @@ cure for every fault.
 
 - **By domains and subnets.** Lists are plain files, one entry per line; an
   ordinary entry covers subdomains. If you need to be more precise, byway
-  accepts Xray's forms: `full:` (that name only), `keyword:` (a match on a
+  accepts Xray-core's forms: `full:` (that name only), `keyword:` (a match on a
   fragment), `regexp:`. `geosite:` and `ext:` are **not yet** accepted: they need a
   geodata file of a dozen megabytes, and the router has forty in total. If it
   matters to you more than the free space —
@@ -274,10 +274,10 @@ cure for every fault.
 
 - **Keys:** `vless`, `vmess`, `trojan`, `shadowsocks`, `socks`.
   **Transports:** `tcp/raw`, `ws`, `grpc`, `httpupgrade`, `xhttp`, `kcp`
-  (recent Xray versions dropped `header` and `seed` from the last one — byway
+  (recent Xray-core versions dropped `header` and `seed` from the last one — byway
   writes them only if your link has them, and says so).
   **Security:** `tls`, `reality`.
-- **Several keys at once:** pick one by hand or let Xray do it — it measures
+- **Several keys at once:** pick one by hand or let Xray-core do it — it measures
   latency and routes through the fastest live one.
 - **Subscription:** fetch a list of keys by URL and pick one.
 - **Your own outbound config** — for what byway does not parse from a link.
@@ -330,11 +330,11 @@ to such an address is by definition the traffic that has to be diverted, and
 that is visible without looking inside.
 
 ```
-dnsmasq → Xray DNS inbound → placeholder address for a listed domain
+dnsmasq → Xray-core DNS inbound → placeholder address for a listed domain
                                     ↓
                   nft rules divert that traffic
                                     ↓
-              Xray restores the domain and decides where to send it
+              Xray-core restores the domain and decides where to send it
 ```
 
 Where things go:
@@ -347,7 +347,7 @@ Where things go:
 | lists, engine config, logs | `/etc/byway/` |
 | the panel | `/www/luci-static/resources/byway/` and `.../view/byway/` |
 
-**If Xray did not come up, interception is not enabled either.** The house is
+**If Xray-core did not come up, interception is not enabled either.** The house is
 left with the internet and without the tunnel, rather than without DNS — that is
 a deliberate choice.
 
@@ -464,7 +464,7 @@ own.
 
 ## Engine version
 
-byway is not tied to a version of Xray. The installer asks which **version**
+byway is not tied to a version of Xray-core. The installer asks which **version**
 you want; where to take it from is its own problem — GitHub first, the firmware
 feed if that fails.
 
@@ -475,8 +475,8 @@ feed if that fails.
 
 A version number can also be typed by hand instead of picking from the list.
 
-⚠️ **"Newest" and "stable" are different things for Xray, and the gap is wider
-than it looks.** XTLS (the team that makes Xray) marks everything newer than
+⚠️ **"Newest" and "stable" are different things for Xray-core, and the gap is wider
+than it looks.** XTLS (the team that makes Xray-core) marks everything newer than
 `26.3.27` as a pre-release — so "the newest stable one" is months behind, and
 what runs on the developer's router is a pre-release.
 
@@ -486,11 +486,11 @@ and that is almost every inexpensive MIPS router. XTLS publishes
 on ath79, 1004Kc on mt7621 — have no coprocessor, and the binary dies on its
 first instruction with `Illegal instruction`. Picking another version does not
 help: a soft-float build does not exist in the release. The feed ships the same
-Xray built soft-float and it works — the installer recognises such a CPU
+Xray-core built soft-float and it works — the installer recognises such a CPU
 **before** downloading and takes the feed instead of spending 35 MB of your link
 and flash. Verified on `mipsel_24kc`.
 
-**It is worth keeping the engine fresh.** Xray moves fast: transports get fixed
+**It is worth keeping the engine fresh.** Xray-core moves fast: transports get fixed
 and added. If the feed's version is old, put the binary next to it by hand and
 point at the path.
 
@@ -521,7 +521,7 @@ sed -n "s/^DISTRIB_ARCH='\([^']*\)'.*/\1/p" /etc/openwrt_release
 ```
 
 ⚠️ **Not `uname -m`:** on MIPS it answers `mips` for both byte orders, while
-the Xray builds for them differ — one picked blind simply will not start. The
+the Xray-core builds for them differ — one picked blind simply will not start. The
 firmware knows better, and that is what byway asks. **On MIPS without
 an FPU this recipe does not work at all** — there the engine comes from the
 feed: `apk add xray-core` or `opkg install xray-core`. **Two engines do not
@@ -554,7 +554,7 @@ sh /tmp/byway-uninstall
 
 The script returns the network to its original state on its own: DNS goes back
 to the ISP, rules are removed, the service is unregistered. It does not touch
-the Xray engine or the network settings.
+the Xray-core engine or the network settings.
 
 ---
 
@@ -635,7 +635,7 @@ loaded, and so complained about a perfectly good set of rules.
 
 Three passes read those lines and saw neither. Hence three benches that run
 **every** branch of what byway hands to other programs: firewall rules through
-`nft -c`; the engine config and the blocking snippet through Xray itself and
+`nft -c`; the engine config and the blocking snippet through Xray-core itself and
 `dnsmasq --test`; UCI edits and cron jobs against a stand-in configuration.
 
 **Every config build is verified by the engine itself** — `xray run -test`. If

@@ -44,7 +44,7 @@ byway %s — раздельное туннелирование через VPN\n\
 модуль %s	module %s
 нет модуля %s	no module %s
 движок: %s (%s)	engine: %s (%s)
-не найден Xray (%s)	Xray not found (%s)
+не найден Xray-core (%s)	Xray-core not found (%s)
 есть %s	%s is present
 нет %s	no %s
 конфигурация %s	configuration %s
@@ -103,20 +103,20 @@ byway: неизвестная команда «%s». Список: byway\n	byway
 %s: записей %s, взяты первые %s — остальное отброшено	%s: %s entries, taking the first %s — the rest is dropped
 выбран свой конфиг, но он пуст	a custom config is selected, but it is empty
 ключ не задан	no key is set
-%s эта сборка Xray не поддерживает (проверено на 26.7.11)	%s is not supported by this Xray build (checked on 26.7.11)
+%s эта сборка Xray-core не поддерживает (проверено на 26.7.11)	%s is not supported by this Xray-core build (checked on 26.7.11)
 неизвестный вид ссылки: %s	unknown link type: %s
 vmess-ссылка не раскодировалась	the vmess link did not decode
 параметр ссылки «%s» byway в конфиг не переносит — стоит проверить, важен ли он	byway does not carry link parameter «%s» into the config — worth checking whether it matters
-encryption=%s не поддержан этой сборкой Xray: убрать параметр из ссылки либо обновить движок	encryption=%s is not supported by this Xray build: remove the parameter from the link or update the engine
+encryption=%s не поддержан этой сборкой Xray-core: убрать параметр из ссылки либо обновить движок	encryption=%s is not supported by this Xray-core build: remove the parameter from the link or update the engine
 протокол %s не собран	protocol %s is not built in
 mkcp идёт поверх UDP, а в РФ UDP душат первым делом	mkcp runs over UDP, and in Russia UDP is the first thing throttled
-header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставлены как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
-HTTP/2 из Xray удалён, замена: xhttp в режиме stream-one	HTTP/2 has been removed from Xray, replacement: xhttp in stream-one mode
-QUIC из Xray удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC has been removed from Xray, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
+header и seed у mkcp свежие Xray-core удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставлены как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
+HTTP/2 из Xray-core удалён, замена: xhttp в режиме stream-one	HTTP/2 has been removed from Xray-core, replacement: xhttp in stream-one mode
+QUIC из Xray-core удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC has been removed from Xray-core, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
 транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, httpupgrade, xhttp
 allowInsecure=1: проверка сертификата сервера отключена, соединение можно подменить	allowInsecure=1: the server certificate is not verified, the connection can be spoofed
 security=%s не поддержан	security=%s is not supported
-flow=%s с транспортом %s не работает: Xray примет конфиг и сломается в бою	flow=%s does not work with transport %s: Xray will accept the config and break in use
+flow=%s с транспортом %s не работает: Xray-core примет конфиг и сломается в бою	flow=%s does not work with transport %s: Xray-core will accept the config and break in use
 mux отключён: он не сочетается с flow=%s (Vision делит поток сам)	mux off: it does not go together with flow=%s (Vision splits the stream itself)
 mux отключён: у транспорта %s своё мультиплексирование, второй слой поверх только вредит	mux off: transport %s multiplexes on its own, a second layer on top only hurts
 выбран автовыбор, но ни одного ключа не добавлено	auto-pick is selected, but not a single key was added
@@ -160,7 +160,7 @@ xray не найден	xray not found
 конфиг собран и проверен движком: %s (%s байт)	config built and verified by the engine: %s (%s bytes)
   доменов %s (свои %s + пресеты), подсетей %s	  %s domains (%s own + presets), %s subnets
   доменов %s, подсетей %s	  %s domains, %s subnets
-  подключение: %s — Xray выбирает живую по задержке	  connection: %s — Xray picks a live one by latency
+  подключение: %s — Xray-core выбирает живую по задержке	  connection: %s — Xray-core picks a live one by latency
   подключение: %s (%s:%s), транспорт %s, защита %s	  connection: %s (%s:%s), transport %s, security %s
   пул fakeip %s, DNS-вход %s:53, tproxy %s, прокси роутера 127.0.0.1:%s	  fakeip pool %s, DNS input %s:53, tproxy %s, router proxy 127.0.0.1:%s
 движок отверг конфиг, черновик остался в %s:	the engine rejected the config, the draft is left in %s:
@@ -168,7 +168,7 @@ xray не найден	xray not found
 %s — %s байт	%s — %s bytes
 в таблице маршрутизации %s есть чужие маршруты -- byway их не трогает	routing table %s holds other routes -- byway leaves them alone
 маршрут в таблице %s оставлен: его завёл не byway	the route in table %s is left alone: byway did not create it
-Xray не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
+Xray-core не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray-core does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
 правила не приняты ядром, ничего не изменено	the kernel did not accept the rules, nothing was changed
 обвязка поднята: таблица inet %s, правило fwmark, dnsmasq -> %s	plumbing is up: table inet %s, fwmark rule, dnsmasq -> %s
 обвязка снята, dnsmasq возвращён	plumbing is down, dnsmasq returned

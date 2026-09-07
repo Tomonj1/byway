@@ -122,7 +122,7 @@ function maybeDecode(s) {
 }
 
 /* Что byway разбирает. Каждая схема проверена прогоном: конфиг собирается и
-   принимается ядром Xray. hysteria2 и tuic отсутствуют в самом Xray 26.7.11 —
+   принимается ядром Xray-core. hysteria2 и tuic отсутствуют в самом Xray-core 26.7.11 —
    это не наше ограничение. */
 var SUPPORTED = [ 'vless', 'vmess', 'trojan', 'ss', 'socks' ];
 var KNOWN = SUPPORTED.concat([ 'ssr', 'hysteria', 'hysteria2', 'hy2', 'tuic',
@@ -515,7 +515,7 @@ return view.extend({
 		o.rmempty = false;
 
 		o = s.option(form.ListValue, 'conn_mode', _('Откуда взять ключ'),
-			_('byway понимает vless, vmess, trojan, shadowsocks и socks. Автоматически — Xray замеряет задержку и ведёт трафик через самый быстрый живой ключ.'));
+			_('byway понимает vless, vmess, trojan, shadowsocks и socks. Автоматически — Xray-core замеряет задержку и ведёт трафик через самый быстрый живой ключ.'));
 		o.value('key', _('Один ключ'));
 		o.value('sub', _('Загрузка из подписки'));
 		o.value('selector', _('Несколько, вручную'));
@@ -614,7 +614,7 @@ return view.extend({
 		/* Свой конфиг — способ подключиться к тому, чего byway не понимает
 		   по ссылке. У podkop это называлось Outbound Config. */
 		o = s.option(form.TextValue, 'outbound_json', _('Конфиг аутбаунда'),
-			_('Кусок конфигурации Xray объектом: protocol, settings, при нужде streamSettings. Тег byway подставит сам.'));
+			_('Кусок конфигурации Xray-core объектом: protocol, settings, при нужде streamSettings. Тег byway подставит сам.'));
 		o.rows = 10;
 		o.monospace = true;
 		o.depends('conn_mode', 'outbound');

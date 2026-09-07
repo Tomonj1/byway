@@ -53,7 +53,12 @@ t() {
       "    удалить вместе с ключом: byway-uninstall --purge") printf %s "    remove them together with the key: byway-uninstall --purge" ;;
       "это был сухой прогон — на роутере ничего не изменилось") printf %s "that was a dry run — nothing on the router changed" ;;
       "Готово. Интернет работает, туннеля нет.") printf %s "Done. The internet works, there is no tunnel." ;;
-      "Что НЕ трогалось: движок Xray, zapret, настройки сети.") printf %s "What was NOT touched: the Xray core, zapret, your network settings." ;;
+      "Что НЕ трогалось: движок Xray-core, zapret, настройки сети.") printf %s "What was NOT touched: the Xray-core engine, zapret, your network settings." ;;
+      "Что НЕ трогалось: zapret, настройки сети.") printf %s "What was NOT touched: zapret, your network settings." ;;
+      "движок удалён: %s шт.") printf %s "the core is removed: %s file(s)" ;;
+      "движок по своему пути оставлен: %s") printf %s "the core at your own path is left alone: %s" ;;
+      "движок из прошивки оставлен -- он мог стоять до byway и нужен не только ему") printf %s "the core from the firmware is left alone -- it may predate byway and may be used by something else" ;;
+      "  снять вручную: %s") printf %s "  remove by hand: %s" ;;
       "было бы сделано:") printf %s "would be done:" ;;
       "СУХОЙ ПРОГОН: ничего не меняется") printf %s "DRY RUN: nothing is being changed" ;;
       "вычеркнуть из /etc/sysupgrade.conf строк: ") printf %s "strike out of /etc/sysupgrade.conf lines: " ;;
@@ -83,6 +88,15 @@ do_() {
 }
 
 [ "$DRY" = "1" ] && warn "СУХОЙ ПРОГОН: ничего не меняется"
+
+# Пакетный менеджер -- ради ОДНОГО совета: чем снять движок из прошивки.
+# Глагол у них разный: `apk del`, но `opkg remove`. Совет с чужим глаголом
+# не работает, и на этом уже обжигались с `opkg add`.
+PKG=""
+command -v apk  >/dev/null 2>&1 && PKG=apk
+[ -z "$PKG" ] && command -v opkg >/dev/null 2>&1 && PKG=opkg
+PKG_DEL=del
+[ "$PKG" = opkg ] && PKG_DEL=remove
 
 PURGE=0
 [ "${1:-}" = "--purge" ] && PURGE=1
@@ -329,11 +343,43 @@ fi
 echo
 if [ "$PURGE" = "1" ]; then
     say "── 6. Настройки и списки ──"
+    # ⚠️ Путь к движку читаем ДО удаления настроек: ниже они исчезнут.
+    _xb=$(uci -q get byway.main.xray_bin 2>/dev/null || true)
     do_ rm -rf /etc/byway
     do_ uci -q delete byway
     do_ rm -f /etc/config/byway
     do_ uci commit byway
     say "удалены, включая ключ VPN"
+    # ── движок ─────────────────────────────────────────────────────────
+    #
+    # Удаляем ТОЛЬКО то, что положил сам byway: файлы вида
+    # /usr/local/bin/xray-<версия> -- это его собственное имя, установщик
+    # переименовывает распакованный бинарник именно так. Пакет из прошивки
+    # (/usr/bin/xray) не трогаем: его мог поставить кто угодно и пользоваться
+    # им может не только byway -- о нём говорим вслух и даём команду.
+    #
+    # Прежде не удалялось ничего, и это было решением «движок мог стоять до
+    # нас». Наполовину верным: в случае /usr/local/bin/xray-* положили его мы
+    # и знаем об этом. На роутере с 43 МБ флеша после «полного удаления»
+    # оставалось 35 МБ занятыми -- владелец спрашивал об этом дважды.
+    _xn=0
+    for _xf in /usr/local/bin/xray-*; do
+        [ -f "$_xf" ] || continue
+        _xn=$((_xn + 1))
+        do_ rm -f "$_xf"
+    done
+    if [ "$_xn" -gt 0 ]; then
+        sayf "движок удалён: %s шт." "$_xn"
+    fi
+    # Свой путь, указанный человеком вручную, не наш -- о нём только говорим.
+    case "$_xb" in
+      ''|/usr/local/bin/xray-*) : ;;
+      *) [ -e "$_xb" ] && warnf "движок по своему пути оставлен: %s" "$_xb" ;;
+    esac
+    if [ -x /usr/bin/xray ]; then
+        warn "движок из прошивки оставлен -- он мог стоять до byway и нужен не только ему"
+        warnf "  снять вручную: %s" "${PKG:-apk} ${PKG_DEL:-del} xray-core"
+    fi
 else
     say "── 6. Настройки и списки ОСТАВЛЕНЫ ──"
     say "    /etc/config/byway и /etc/byway/ на месте"
@@ -345,5 +391,9 @@ if [ "$DRY" = "1" ]; then
     warn "это был сухой прогон — на роутере ничего не изменилось"
 else
     say "Готово. Интернет работает, туннеля нет."
-    say "Что НЕ трогалось: движок Xray, zapret, настройки сети."
+    if [ "$PURGE" = "1" ]; then
+        say "Что НЕ трогалось: zapret, настройки сети."
+    else
+        say "Что НЕ трогалось: движок Xray-core, zapret, настройки сети."
+    fi
 fi

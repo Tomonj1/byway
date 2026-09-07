@@ -88,13 +88,12 @@ t() {
       "нет unzip, распаковать нечем") printf %s "no unzip, nothing to unpack with" ;;
       "не удалось спросить у GitHub последнюю версию") printf %s "could not ask GitHub for the latest version" ;;
       "последний выпуск: %s") printf %s "latest release: %s" ;;
-      "установка Xray-core %s (%s)") printf %s "downloading Xray %s (%s)" ;;
+      "установка Xray-core %s (%s)") printf %s "installing Xray-core %s (%s)" ;;
       "не скачался") printf %s "download failed" ;;
       "не распаковался") printf %s "unpacking failed" ;;
       "скачанный движок не запускается на этом железе -- берётся из прошивки") printf %s "the downloaded core does not run on this hardware -- taking it from the feed" ;;
       "движок готов: %s") printf %s "core ready: %s" ;;
-      "Движок Xray не найден. Откуда взять:") printf %s "The Xray core was not found. Where should it come from:" ;;
-      "     1) из фида прошивки -- проще всего, версия какая собрана") printf %s "     1) the firmware feed -- simplest, whatever version was built" ;;
+      "Движок Xray-core не найден. Откуда взять:") printf %s "Xray-core was not found. Where should it come from:" ;;
       "     2) с GitHub -- свежее, около 35 МБ на флеше") printf %s "     2) GitHub -- newer, about 35 MB of flash" ;;
       "     3) никак -- путь укажу сам потом") printf %s "     3) neither -- I will set the path myself later" ;;
       "Выбор") printf %s "Choice" ;;
@@ -116,7 +115,7 @@ t() {
       "     2) с GitHub -- НЕ для этого процессора: MIPS выкладывают только с аппаратной плавающей точкой") printf %s "     2) from GitHub -- NOT for this CPU: MIPS is published hard-float only" ;;
       "на этом процессоре сборка с GitHub не запустится: MIPS там только с аппаратной плавающей точкой, а сопроцессора здесь нет") printf %s "the GitHub build will not run on this CPU: MIPS is published hard-float only, and there is no FPU here" ;;
       "  из прошивки приезжает та же версия, собранная softfloat") printf %s "  the feed ships the same version built soft-float -- taking that one" ;;
-      "Движок Xray. Какую версию поставить:") printf %s "Xray core. Which version to install:" ;;
+      "Движок Xray-core. Какую версию поставить:") printf %s "Xray-core. Which version to install:" ;;
       "     1) проверенную с byway -- %s  (по умолчанию)") printf %s "     1) the one verified with byway -- %s  (default)" ;;
       "     2) самую свежую, включая предвыпуски") printf %s "     2) the newest one, pre-releases included" ;;
       "     3) самую свежую стабильную") printf %s "     3) the newest stable one" ;;
@@ -125,13 +124,13 @@ t() {
       "версия: %s") printf %s "version: %s" ;;
       "ответ «%s» непонятен -- взята проверенная версия") printf %s "did not understand the answer «%s» -- taking the verified version" ;;
       "не удалось спросить у GitHub номер версии -- берётся из прошивки") printf %s "could not ask GitHub for a version number -- taking the firmware one" ;;
-      "Движок Xray. На этом процессоре сборки с GitHub не запускаются,") printf %s "Xray core. Builds from GitHub do not run on this CPU," ;;
+      "Движок Xray-core. На этом процессоре сборки с GitHub не запускаются,") printf %s "Xray-core. Builds from GitHub do not run on this CPU," ;;
       "поэтому он берётся из прошивки:") printf %s "so it is taken from the firmware:" ;;
       "     1) поставить из прошивки  -- по умолчанию") printf %s "     1) install from the firmware  -- default" ;;
       "     2) никакой -- путь укажу сам потом") printf %s "     2) none -- I will set the path myself later" ;;
       "непонятный номер версии «%s»") printf %s "unclear version number «%s»" ;;
       "установка xray-core из прошивки") printf %s "installing xray-core from the feed" ;;
-      "Xray не поставился из фида") printf %s "Xray did not install from the feed" ;;
+      "Xray-core не поставился из прошивки") printf %s "Xray-core did not install from the firmware" ;;
       "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray") printf %s "  and point byway at it: uci set byway.main.xray_bin=/path/to/xray" ;;
       "Поставить base64? Нужен только для ключей vmess:// и ss://") printf %s "Install base64? Needed only for vmess:// and ss:// keys" ;;
       "  весь вывод пакетного менеджера: cat %s") printf %s "  the package manager said it all here: cat %s" ;;
@@ -828,7 +827,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
     if mips_nofpu; then
         # На этом процессоре варианты с GitHub невозможны в принципе -- не
         # предлагаем их вовсе, вместо того чтобы отказывать после выбора.
-        say "Движок Xray. На этом процессоре сборки с GitHub не запускаются,"
+        say "Движок Xray-core. На этом процессоре сборки с GitHub не запускаются,"
         say "поэтому он берётся из прошивки:"
         line "     1) поставить из прошивки  -- по умолчанию"
         line "     2) никакой -- путь укажу сам потом"
@@ -840,7 +839,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
           *) _c=1 ;;
         esac
     else
-        say "Движок Xray. Какую версию поставить:"
+        say "Движок Xray-core. Какую версию поставить:"
         linef "     1) проверенную с byway -- %s  (по умолчанию)" "$XRAY_TESTED"
         line "     2) самую свежую, включая предвыпуски"
         line "     3) самую свежую стабильную"
@@ -880,7 +879,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
         say "установка xray-core из прошивки"
         add_pkg xray-core || true   # см. про set -e у вызова для модулей
         command -v xray >/dev/null 2>&1 || [ -x /usr/bin/xray ] || {
-            warn "Xray не поставился из фида"
+            warn "Xray-core не поставился из прошивки"
             pkg_why
             warn "  ${PKG:-apk} update && ${PKG:-apk} ${PKG_ADD:-add} xray-core -- либо положить бинарник вручную"
             warn "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray"

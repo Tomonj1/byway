@@ -483,7 +483,7 @@ parse_node() {
     case "$N_SCHEME" in
       vless|trojan|socks|vmess|ss) ;;
       hysteria|hysteria2|hy2|tuic)
-        dief "%s эта сборка Xray не поддерживает (проверено на 26.7.11)" "$N_SCHEME" ;;
+        dief "%s эта сборка Xray-core не поддерживает (проверено на 26.7.11)" "$N_SCHEME" ;;
       *) dief "неизвестный вид ссылки: %s" "$N_SCHEME" ;;
     esac
 
@@ -613,7 +613,7 @@ parse_node() {
     done
 
     if [ -n "$N_ENC" ] && [ "$N_ENC" != "none" ]; then
-        dief "encryption=%s не поддержан этой сборкой Xray: убрать параметр из ссылки либо обновить движок" "$N_ENC"
+        dief "encryption=%s не поддержан этой сборкой Xray-core: убрать параметр из ссылки либо обновить движок" "$N_ENC"
     fi
 
     # Общая проверка на выходе: порт приходит и из адреса, и из base64-обёртки
@@ -805,7 +805,7 @@ build_stream() {
                _k="$_k\"seed\": \"$N_SEED\""
            fi
            if [ -n "$_k" ]; then
-               warn "header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставлены как в ссылке; отвергнет движок, конфиг не заменится"
+               warn "header и seed у mkcp свежие Xray-core удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставлены как в ссылке; отвергнет движок, конфиг не заменится"
                STREAM="\"network\": \"kcp\", \"kcpSettings\": { $_k }"
            else
                STREAM="\"network\": \"kcp\""
@@ -821,12 +821,12 @@ build_stream() {
            # Удалён по-настоящему, весь транспорт: движок отвергает конфиг и
            # сам называет замену. Номер версии здесь НЕ пишем -- у выпусков
            # 26.4-26.7 заметок нет вовсе, и назвать его нечем.
-           warn "HTTP/2 из Xray удалён, замена: xhttp в режиме stream-one"
+           warn "HTTP/2 из Xray-core удалён, замена: xhttp в режиме stream-one"
            STREAM="\"network\": \"$N_TYPE\", \"httpSettings\": { \"path\": \"$N_PATH\", \"host\": [ \"$N_WSHOST\" ] }" ;;
 
       quic)
            # И этот удалён целиком; замена -- тот же xhttp, но поверх H3.
-           warn "QUIC из Xray удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом"
+           warn "QUIC из Xray-core удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом"
            _qs=${N_QSEC:-none}
            _qh=${N_HDR:-none}
            STREAM="\"network\": \"quic\", \"quicSettings\": { \"security\": \"$_qs\", \"key\": \"$N_QKEY\", \"header\": { \"type\": \"$_qh\" } }" ;;
@@ -880,7 +880,7 @@ build_stream() {
         # не предупредит. Предупреждаем мы.
         case "$N_TYPE" in
           tcp|raw) ;;
-          *) warnf "flow=%s с транспортом %s не работает: Xray примет конфиг и сломается в бою" "$N_FLOW" "$N_TYPE" ;;
+          *) warnf "flow=%s с транспортом %s не работает: Xray-core примет конфиг и сломается в бою" "$N_FLOW" "$N_TYPE" ;;
         esac
         FLOWJ=", \"flow\": \"$N_FLOW\""
     fi
@@ -2263,7 +2263,7 @@ cmd_doctor() {
         _xv=$("$XRAY" version 2>/dev/null | head -1 | cut -d' ' -f1-2)
         _d_ok "$(_f 'движок: %s (%s)' "$_xv" "$XRAY")"
     else
-        _d_bad "$(_f 'не найден Xray (%s)' "$XRAY")" "$(_f '%s xray-core либо задать byway.main.xray_bin' "$PKG_FIX")"
+        _d_bad "$(_f 'не найден Xray-core (%s)' "$XRAY")" "$(_f '%s xray-core либо задать byway.main.xray_bin' "$PKG_FIX")"
     fi
     for _c in curl nft ip uci; do
         command -v "$_c" >/dev/null 2>&1 && _d_ok "$(_f 'есть %s' "$_c")" ||
@@ -3650,7 +3650,7 @@ END
             sayf "  доменов %s, подсетей %s" "$_own" "$(count_list "$S")"
         fi
         if [ "$(u conn_mode)" = "urltest" ]; then
-            sayf "  подключение: %s — Xray выбирает живую по задержке" "${N_LABEL}"
+            sayf "  подключение: %s — Xray-core выбирает живую по задержке" "${N_LABEL}"
         else
             _lb=${N_LABEL:-$N_HOST}
             sayf "  подключение: %s (%s:%s), транспорт %s, защита %s" "$_lb" "$N_HOST" "$N_PORT" "$N_TYPE" "$N_SEC"
@@ -4477,7 +4477,7 @@ cmd_plumb() {
             # Закрываем ДО сообщения об отказе: между ними человек мог бы
             # успеть открыть страницу, и она ушла бы мимо туннеля.
             block_on
-            dief "Xray не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру" "$_l"
+            dief "Xray-core не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру" "$_l"
         fi
 
         # Затем -c: ядро проверяет правила, ничего не применяя. Только после
