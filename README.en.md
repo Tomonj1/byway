@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.2 — the first public release.** byway runs every day on one
+> **Version 0.1.3 — the first public release.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -161,7 +161,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.3/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -172,7 +172,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.2/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.3/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -180,8 +180,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.2.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.2
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.3.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.3
 sh install.sh
 ```
 
