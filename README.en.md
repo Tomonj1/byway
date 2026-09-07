@@ -98,9 +98,7 @@ working byway is worse than an honest refusal.
 The lower bound comes from the engine: Xray-core is already in the feed in 22.03, and
 byway can fetch it from GitHub itself. For
 [podkop](https://github.com/itdoginfo/podkop) that bound is one OpenWrt release higher
-only because sing-box appears in the feeds from 23.05. sing-box support is
-planned for byway too — the plumbing does not depend on the engine — and then
-this difference disappears.
+only because sing-box appears in the feeds from 23.05.
 
 The package manager is detected automatically: `apk` from 25.12, `opkg` on 24.10
 and older.
@@ -127,9 +125,14 @@ Worth knowing before installing, not after.
   > [say so](https://github.com/Tomonj1/byway/issues).
 
 - **No `hysteria2`, `tuic`, `wireguard`** — they are not in Xray-core.
-- **One engine.** Xray-core for now. byway's plumbing does not depend on the engine,
-  so **a choice of engine at install time is planned** — sing-box first — but not
-  today.
+- **One engine — Xray-core, and no second one is planned.** byway's plumbing
+  really does not depend on the engine, but sing-box supports neither the
+  `xhttp` nor the `kcp` transport, keeps no access log for byway to count usage
+  from, and splits its configs into two incompatible dialects. In return it
+  offers QUIC-based protocols, which are the first thing throttled in Russia.
+  The trade does not add up — decided 2026-09-07. In detail, with numbers and
+  with what would change our mind:
+  [why Xray-core only](docs/why-not-sing-box.en.md).
 - **A client with its own DNS bypasses it.** DNS decides the route: a device
   with Private DNS or DoH in the browser asks someone other than the router and
   gets the real address instead of our placeholder — a made-up address by which
@@ -427,18 +430,25 @@ byway update             # install it
 byway update --force     # reinstall the same version
 ```
 
-⚠️ **Update this way, not with the install one-liner.** If GitHub's domains are
-in your list — and byway's ready-made list has them — then with the tunnel up the
-router **cannot reach them itself**: the interception rules catch traffic from
-your home devices, while the router's own traffic goes past them, and `wget`
-answers `Operation not permitted`. `byway update` knows this and goes through
-byway's own proxy.
+⚠️ **Update this way, not with the install one-liner.** `byway update` knows
+about the quirk below and works whatever your settings are; the install line
+does not.
 
-If you do need the install line on a running router, use the same proxy, and
-`curl` rather than `wget` (busybox's wget cannot do proxies):
+**The router reaches the listed sites on its own** — this is on by default, and
+the switch lives on the Network tab. It needs this to update the lists and
+itself: GitHub's domains are in the ready-made list, while interception only
+catches traffic from your home devices. The router's own traffic goes past
+interception, and without this setting `wget` on the router answers
+`Operation not permitted` — the resolver handed out a placeholder address and
+there is no road to it.
+
+If you turned it off and still need the install line on a running router, go
+through byway's own proxy, and use `curl` rather than `wget` (busybox's wget
+cannot do proxies):
 
 ```sh
-sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
+  https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
 ```
 
 An update does not touch settings or lists. Clear the browser cache afterwards —
@@ -450,7 +460,8 @@ different traces.**
 | | default | what it does |
 |---|---|---|
 | `update_check` | **on** | asks GitHub once a day whether a newer release exists |
-| `auto_update` | off | installs what it found on its own, at 04:00–05:00 |
+| `auto_update` | off | installs what it found on its own, at a set hour |
+| `auto_update_hour` | `04` | that hour, by the router’s clock |
 
 A regular request from your home address is a steady "byway is installed here"
 trace, readable at the ISP without any traffic inspection. It is turned off with
@@ -464,10 +475,15 @@ trace is left exactly when the VPN is down.
 
 **Auto-update** (`auto_update`) is off deliberately: it restarts the service,
 which takes the tunnel away from the whole house. By turning it on you accept
-that this happens at 04:00–05:00 **by the router's clock**. The time is **not
-configurable**: the hour is hard-coded. Stock firmware keeps its clock on UTC,
-so 04:00 on the router is not necessarily 04:00 where you live — `byway doctor`
-will tell you when it lands for you.
+that this happens overnight, at a set hour — 04:00 by default, **by the
+router's clock**. The hour is yours to choose: `auto_update_hour`, a value of
+0–23, with a field on the Maintenance tab too.
+
+⚠️ **The router's clock is not yours.** Stock firmware keeps time in UTC, and
+then 04:00 on the router is 07:00 in Moscow and 14:00 in Vladivostok — a
+service restart in the middle of the day. `byway doctor` prints the router's
+time zone and current time on a line of its own; read it before you turn this
+on.
 
 A release is installed no sooner than three days after it appears (important ones
 immediately) and only to a release that keeps the same first two numbers:
