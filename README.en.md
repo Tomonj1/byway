@@ -26,8 +26,8 @@ your VPN, the rest goes direct. The engine is
 > | | |
 > |---|---|
 > | fully verified | Cudy WR3000S v1 (MT7981, aarch64), OpenWrt 25.12.5 |
-> | verified on a test bench | install and removal on 22.03–25.12, both package branches |
-> | never verified at all | IPv6, a foreign architecture in production, behaviour under load |
+> | verified on a test bench | install and removal on 22.03–25.12, both package branches; install on aarch64 and mipsel |
+> | never verified at all | IPv6, behaviour under load, daily life on anything but MT7981 |
 >
 > **The code was written by an AI** — Claude, to a human's brief and
 > corrections. That is said up front rather than in a footnote:
@@ -137,6 +137,12 @@ Worth knowing before installing, not after.
   service's **subnets** alongside its domains: a subnet works by address, and so
   works for whoever asked someone else for it. One does not replace the other —
   subnets complement domains.
+- **On MIPS without an FPU the engine can only come from the feed.** XTLS
+  publishes MIPS hard-float, while the common router cores — 24Kc on ath79,
+  1004Kc on mt7621 — have no FPU, and the GitHub build dies with `Illegal
+  instruction`. The installer recognises such a CPU and takes the feed's
+  version, built soft-float; that one works. The price: there the engine's
+  freshness is set by the firmware, not by you.
 
 ---
 
@@ -524,6 +530,17 @@ verified end to end — with a live tunnel, real traffic and real flash limits.
 | 23.05.6 | install; removal, dry run and `--purge` |
 | 24.10.8 | install, engine from GitHub, opkg branch; removal and `--purge` |
 | 25.12.5 | install, apk branch; settings import, clearing, list downloads |
+
+**Architectures** (qemu, initramfs, OpenWrt 25.12.5; there is no acceleration
+for non-x86, so the guest runs emulated):
+
+| target | what was verified |
+|---|---|
+| `armsr/armv8` (`aarch64_generic`) | full install from GitHub; the GitHub engine downloaded and ran |
+| `malta/le` (`mipsel_24kc`) | full install; the GitHub engine does not run, the feed one is taken |
+
+That is installation and environment, not life under load: no tunnel was
+brought up on these guests — a test bench has no key and should not have one.
 
 "Removal verified" here is meant literally: a snapshot of the system is taken
 BEFORE the install and AFTER `uninstall.sh --purge`, and they match byte for
