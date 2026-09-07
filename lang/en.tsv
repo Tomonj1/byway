@@ -313,6 +313,8 @@ report [файл]	report [file]
 == системный журнал движка (последние 20) ==	== engine syslog (last 20) ==
 ни одного готового списка не подключено	no ready-made list is connected
 ни один из подключённых списков не обновился — прежние копии остались на месте	none of the connected lists were refreshed — the previous copies stay in place
+версия та же (%s), но ставится заново -- так велит --force	same version (%s), reinstalling anyway -- that is what --force says
+  переставить ту же: byway update --force	  reinstall the same one: byway update --force
 версия %s -- новее нет	version %s -- nothing newer
 есть новая версия: %s (у вас %s)	there is a new version: %s (you have %s)
 загрузка	downloading
@@ -320,7 +322,7 @@ report [файл]	report [file]
 не распаковалось -- ничего не тронуто	unpacking failed -- nothing was touched
 в пакете нет install.sh -- ничего не тронуто	there is no install.sh in the package -- nothing was touched
 установка	installing
-посмотреть, есть ли новая версия, и поставить её	see whether there is a new version, and install it
+посмотреть, есть ли новая версия, и поставить её; --force ставит и ту же	see whether there is a new version, and install it; --force installs the same one too
 GitHub не ответил -- похоже, нет связи	GitHub did not answer -- looks like there is no connection
 на GitHub нет ни репозитория %s, ни его выпусков	GitHub has neither the %s repository nor its releases
 GitHub ответил «слишком часто спрашиваете» -- подождать час	GitHub answered «too many requests» -- wait an hour

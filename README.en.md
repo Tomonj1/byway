@@ -424,6 +424,21 @@ is on the "Overview" tab.
 ```sh
 byway update --check     # see whether a new version exists
 byway update             # install it
+byway update --force     # reinstall the same version
+```
+
+⚠️ **Update this way, not with the install one-liner.** If GitHub's domains are
+in your list — and byway's ready-made list has them — then with the tunnel up the
+router **cannot reach them itself**: the interception rules catch traffic from
+your home devices, while the router's own traffic goes past them, and `wget`
+answers `Operation not permitted`. `byway update` knows this and goes through
+byway's own proxy.
+
+If you do need the install line on a running router, use the same proxy, and
+`curl` rather than `wget` (busybox's wget cannot do proxies):
+
+```sh
+sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
 ```
 
 An update does not touch settings or lists. Clear the browser cache afterwards —
