@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.5 — the first public release.** byway runs every day on one
+> **Version 0.1.4 — the first public release.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -161,7 +161,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -172,7 +172,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -180,8 +180,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.5.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.5
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.4.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.4
 sh install.sh
 ```
 
@@ -544,11 +544,11 @@ byway-uninstall --purge      # remove everything, including the key
 DRY_RUN=1 byway-uninstall    # show what would be done, change nothing
 ```
 
-⚠️ **Installed a version before 0.1.5?** Then you do not have that file -- it
+⚠️ **Installed a version before 0.1.4?** Then you do not have that file -- it
 only appears at install time. Take it from the archive of the same tag:
 
 ```sh
-wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/uninstall.sh
+wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 
