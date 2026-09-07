@@ -163,6 +163,7 @@ xray не найден	xray not found
 конфиг не собран, собрать: byway gen	the config is not built, build it: byway gen
 %s — %s байт	%s — %s bytes
 в таблице маршрутизации %s есть чужие маршруты -- byway их не трогает	routing table %s holds other routes -- byway leaves them alone
+маршрут в таблице %s оставлен: его завёл не byway	the route in table %s is left alone: byway did not create it
 Xray не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
 правила не приняты ядром, ничего не изменено	the kernel did not accept the rules, nothing was changed
 обвязка поднята: таблица inet %s, правило fwmark, dnsmasq -> %s	plumbing is up: table inet %s, fwmark rule, dnsmasq -> %s
@@ -402,6 +403,11 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 byway включён, движок работает	byway is on, the engine is running
 byway включён, но движка нет	byway is on, but there is no engine
 byway выключен настройкой	byway is switched off in the settings
+файла службы нет	the service file is missing
+byway не поднимется ни сейчас, ни после перезагрузки: поставить заново	byway will not come up now or after a reboot: install it again
+служба в автозапуске	the service is in autostart
+служба НЕ в автозапуске	the service is NOT in autostart
+сейчас работает, но после перезагрузки туннеля не будет: /etc/init.d/byway enable	it runs now, but after a reboot there will be no tunnel: /etc/init.d/byway enable
 список доменов: %s записей (своих %s)	domain list: %s entries (%s of them your own)
 уровень журнала «%s» не годится, беру warning	log level "%s" is not usable, falling back to warning
 клиент со своим DNS проходит мимо туннеля	a client with its own DNS bypasses the tunnel
@@ -443,3 +449,13 @@ itdoginfo: подсети для сервисов, которые работаю
 автообновление: %s поднялось	auto-update: %s came up
 автообновление: %s не поднялось -- откатился на %s	auto-update: %s did not come up -- rolled back to %s
 автообновление: %s не скачалось, работает прежняя	auto-update: %s did not download, the previous one keeps running
+byway положен не установщиком -- обновление пропускается. Лечится запуском install.sh из поставки	byway was not put here by the installer -- the update is skipped. Cure: run install.sh from the delivery
+своя правка не будет перетёрта: обновление пропускается намеренно	your own edit will not be overwritten: the update is skipped on purpose
+у вас это не ночь: Москва 07:00, Екатеринбург 09:00, Владивосток 14:00 — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].zonename=...	for you that is not night: Moscow 07:00, Yekaterinburg 09:00, Vladivostok 14:00 -- a service restart in the middle of the day. Cure: LuCI (System -> General Settings -> Timezone) or uci set system.@system[0].zonename=...
+движок не запущен или упал: /etc/init.d/byway restart, затем byway status и logread -e xray	the core is not running or has crashed: /etc/init.d/byway restart, then byway status and logread -e xray
+ничего работать и не должно: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart	nothing is supposed to work: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart
+без него не ходят ни сторож обвязки, ни учёт, ни обрезка журналов: /etc/init.d/cron enable && /etc/init.d/cron start	without it the plumbing watchdog, the usage count and the log trimming all stop: /etc/init.d/cron enable && /etc/init.d/cron start
+переустановить byway либо завести вручную: */5 * * * * /usr/local/bin/byway watch и 7 * * * * /usr/local/bin/byway stat	reinstall byway or add them by hand: */5 * * * * /usr/local/bin/byway watch and 7 * * * * /usr/local/bin/byway stat
+byway работает только на firewall4, это OpenWrt 22.03 и новее — на firewall3 правило по метке не встанет	byway works only on firewall4, that is OpenWrt 22.03 and newer -- on firewall3 a mark-based rule will not go in
+их клиенты получат подставной адрес, до туннеля не дойдут и потеряют ВЕСЬ список. Лечится одним из двух: добавить сеть в byway.main.interface либо выдать ей свой DNS через dhcp_option '6,…'	their clients will get a placeholder address, never reach the tunnel and lose the WHOLE list. Two cures: add the network to byway.main.interface, or give it its own DNS via dhcp_option '6,…'
+маршрут решает DNS: устройство с «Приватным DNS», DoH в браузере или чужим резолвером в настройках уйдёт напрямую, и byway этого не увидит. Лечится либо выключением шифрованного DNS на устройствах, либо перехватом 53-го порта в firewall, либо добавлением к доменам ПОДСЕТЕЙ сервиса: подсеть работает по адресу, а значит и для того, кто спросил адрес не у нас	DNS decides the route: a device with Private DNS, DoH in the browser or someone else’s resolver in its settings goes direct, and byway never sees it. Cures: turn encrypted DNS off on the devices, or intercept port 53 in the firewall, or add the service’s SUBNETS alongside its domains -- a subnet works by address, and so works for whoever asked someone else

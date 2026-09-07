@@ -126,6 +126,8 @@ var DICT = {
 		"Обновить готовые списки": "Update the ready-made lists",
 		"Идёт загрузка…": "Loading…",
 		"готово": "done",
+		"применено": "applied",
+		"скачано, но применить не вышло — нажмите «Служба»": "downloaded, but applying failed — press the Service button",
 		"Загрузка идёт дольше, чем панель готова ждать. На роутере она продолжается — обновите страницу через минуту.": "The download is taking longer than the panel waits. It continues on the router — reload the page in a minute.",
 		"Скачать сейчас": "Download now",
 		"Домены (": "Domains (",

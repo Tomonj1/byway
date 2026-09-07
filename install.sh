@@ -65,6 +65,7 @@ t() {
       "поставка распакована: %s") printf %s "delivery unpacked: %s" ;;
       "не удалось получить поставку — скачать архив с github.com/%s и запустить install.sh из него") printf %s "could not get the delivery — download the archive from github.com/%s and run install.sh from it" ;;
       "движок записан в настройки: %s") printf %s "the core is recorded in the settings: %s" ;;
+      "движок уже указан в настройках: %s") printf %s "the core is already set in the settings: %s" ;;
       "не удалось положить %s — проверить место на флеше и права") printf %s "could not put %s in place — check free flash and permissions" ;;
       "рядом лежит НЕПОЛНАЯ поставка, не хватает:%s") printf %s "the delivery next to the script is INCOMPLETE, missing:%s" ;;
       "  беру целую с GitHub — то, что лежит рядом, использовано не будет") printf %s "  taking a whole one from GitHub — what is next to the script will not be used" ;;
@@ -138,6 +139,8 @@ t() {
       "не хватает %s условий — доставить перечисленное и запустить снова") printf %s "%s conditions are missing — install what is listed and run again" ;;
       "всё на месте") printf %s "everything is in place" ;;
       "программа и служба") printf %s "the program and the service" ;;
+      "программа и служба, автозапуск включён") printf %s "the program and the service, autostart enabled" ;;
+      "служба не встала в автозапуск -- после перезагрузки туннеля не будет; поправить: /etc/init.d/byway enable") printf %s "the service did not get into autostart -- after a reboot there will be no tunnel; fix: /etc/init.d/byway enable" ;;
       "конфигурация уже есть, остаётся без изменений") printf %s "the configuration already exists and is left alone" ;;
       "конфигурация создана из шаблона") printf %s "the configuration is created from the template" ;;
       "списки на месте") printf %s "the lists are in place" ;;
@@ -160,7 +163,7 @@ FATAL=0   # непоправимое: система не того поколе�
 # а не «последняя»: установщик и файлы, которые он кладёт, обязаны быть одного
 # тега, иначе панель окажется новее программы или наоборот.
 REPO=Tomonj1/byway
-VER=0.1.3
+VER=0.1.4
 # Версия движка, на которой byway проверялся целиком -- на живом роутере, с
 # поднятым туннелем и реальным трафиком. Правится вместе с выпуском: протухшая
 # «проверенная» хуже её отсутствия.
@@ -733,6 +736,14 @@ if [ "${FATAL:-0}" = 1 ]; then
     # Движок не трогаем вовсе: система не годится, и ставить на неё
     # тридцатипятимегабайтный бинарник -- это мусор на чужом флеше.
     say "движок не ставится: система не подходит, см. выше"
+# ⚠️ Настройку СПРАШИВАЕМ, а не угадываем. Прежде «движка нет» решалось тремя
+# способами, и ни один не смотрел в byway.main.xray_bin -- хотя ниже путь
+# записывается именно туда. `command -v` для самого частого случая бесполезен:
+# /usr/local/bin не входит в PATH OpenWrt; шаблон xray-* не ловит файл с именем
+# просто `xray`. Человек, указавший свой движок, получал предложение поставить
+# ещё один. Найдено третьим аудитом 2026-09-07.
+elif _xb=$(uci -q get byway.main.xray_bin 2>/dev/null); [ -n "$_xb" ] && [ -x "$_xb" ]; then
+    sayf "движок уже указан в настройках: %s" "$_xb"
 elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
    ! ls /usr/local/bin/xray-* >/dev/null 2>&1; then
     echo
@@ -848,7 +859,24 @@ put "$SRC/etc-init.d-byway" /etc/init.d/byway 755
 # молча -- худшее, что может сделать программа, обновляющаяся сама.
 mkdir -p /etc/byway
 md5sum /usr/local/bin/byway 2>/dev/null | cut -d' ' -f1 > /etc/byway/.binmd5 || true
-say "программа и служба"
+
+# ⚠️ Регистрация в АВТОЗАПУСКЕ. Прежде её не делал никто: install.sh только
+# клал файл службы, панель поднимала службу «сейчас» и rc.d-ссылку не
+# создавала, а `/etc/init.d/byway enable` жил ТОЛЬКО в тексте памятки
+# «Дальше» -- то есть числился шагом человека. README при этом обещал, что в
+# консоль лезть не обязательно ни разу. После первой же перезагрузки роутер
+# оставался без туннеля, и doctor об этом молчал. Найдено третьим аудитом
+# 2026-09-07; в keep-списке прошивки ссылка S90byway значилась всё это время,
+# то есть автозапуск был задуман и просто не включался.
+#
+# Безопасно делать до настройки: при `enabled=0` служба ничего не поднимает.
+/etc/init.d/byway enable >/dev/null 2>&1 || true
+if /etc/init.d/byway enabled 2>/dev/null; then
+    say "программа и служба, автозапуск включён"
+else
+    say "программа и служба"
+    warn "служба не встала в автозапуск -- после перезагрузки туннеля не будет; поправить: /etc/init.d/byway enable"
+fi
 
 # Конфигурацию не перетираем: в ней ключ и настройки человека.
 if [ -f /etc/config/byway ]; then
@@ -1069,8 +1097,7 @@ What next:
          uci set byway.main.enabled=1
          uci commit byway
 
-  2. Start it:
-         /etc/init.d/byway enable
+  2. Start it (autostart is already registered by the installer):
          /etc/init.d/byway start
 
   3. Fill the domain list, or switch on a ready-made one, and apply it:
@@ -1103,8 +1130,7 @@ cat <<'NEXT'
          uci set byway.main.enabled=1
          uci commit byway
 
-  2. Запустить:
-         /etc/init.d/byway enable
+  2. Запустить (в автозапуск установщик уже внёс):
          /etc/init.d/byway start
 
   3. Наполнить список доменов, либо включить готовый, и применить:

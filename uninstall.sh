@@ -28,6 +28,8 @@ t() {
     case "$1" in
       "── 1. Сеть возвращается в исходное ──") printf %s "── 1. The network goes back to how it was ──" ;;
       "byway уже нет — следы убираются вручную") printf %s "byway is gone already — the leftovers are cleaned by hand" ;;
+      "обвязку снять не вышло с первого раза -- повторяю через пять секунд") printf %s "removing the plumbing failed on the first try -- retrying in five seconds" ;;
+      "обвязка НЕ снята: правила nft, маршрут и резолвер могли остаться. Снять руками: byway plumb off") printf %s "the plumbing is NOT removed: nft rules, the route and the resolver may have stayed. Remove by hand: byway plumb off" ;;
       "dnsmasq всё ещё смотрит в byway — исправляется") printf %s "dnsmasq still points at byway — fixing that" ;;
       "dnsmasq возвращён провайдеру") printf %s "dnsmasq is back on the provider" ;;
       "── 2. Служба ──") printf %s "── 2. The service ──" ;;
@@ -86,7 +88,20 @@ echo
 say "── 1. Сеть возвращается в исходное ──"
 
 if [ -x /usr/local/bin/byway ]; then
-    do_ /usr/local/bin/byway plumb off
+    # ⚠️ Итог ЧИТАЕМ. Обёртка do_ глушит и вывод, и код возврата, а plumb off
+    # может не сделать ничего и вернуть единицу -- например на занятом замке
+    # обвязки. Тогда правила nft, маршрут и резолвер оставались висеть, а
+    # удаление докладывало об успехе. Найдено третьим аудитом 2026-09-07.
+    if [ "${DRY_RUN:-0}" = "1" ]; then
+        do_ /usr/local/bin/byway plumb off
+    elif /usr/local/bin/byway plumb off >/dev/null 2>&1; then
+        :
+    else
+        warn "обвязку снять не вышло с первого раза -- повторяю через пять секунд"
+        sleep 5
+        /usr/local/bin/byway plumb off >/dev/null 2>&1 ||
+            warn "обвязка НЕ снята: правила nft, маршрут и резолвер могли остаться. Снять руками: byway plumb off"
+    fi
 else
     warn "byway уже нет — следы убираются вручную"
     # ВОЗВРАЩАЕМ прежние адреса, а не стираем список. Стереть целиком можно
