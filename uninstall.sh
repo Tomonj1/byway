@@ -31,7 +31,7 @@ t() {
     case "$1" in
       "── 1. Сеть возвращается в исходное ──") printf %s "── 1. The network goes back to how it was ──" ;;
       "byway уже нет — следы убираются вручную") printf %s "byway is gone already — the leftovers are cleaned by hand" ;;
-      "обвязку снять не вышло с первого раза -- повторяю через пять секунд") printf %s "removing the plumbing failed on the first try -- retrying in five seconds" ;;
+      "обвязку снять не вышло с первого раза -- повтор через пять секунд") printf %s "removing the plumbing failed on the first try -- retrying in five seconds" ;;
       "обвязка НЕ снята: правила nft, маршрут и резолвер могли остаться. Снять руками: byway plumb off") printf %s "the plumbing is NOT removed: nft rules, the route and the resolver may have stayed. Remove by hand: byway plumb off" ;;
       "dnsmasq всё ещё смотрит в byway — исправляется") printf %s "dnsmasq still points at byway — fixing that" ;;
       "dnsmasq возвращён провайдеру") printf %s "dnsmasq is back on the provider" ;;
@@ -100,7 +100,7 @@ if [ -x /usr/local/bin/byway ]; then
     elif /usr/local/bin/byway plumb off >/dev/null 2>&1; then
         :
     else
-        warn "обвязку снять не вышло с первого раза -- повторяю через пять секунд"
+        warn "обвязку снять не вышло с первого раза -- повтор через пять секунд"
         sleep 5
         /usr/local/bin/byway plumb off >/dev/null 2>&1 ||
             warn "обвязка НЕ снята: правила nft, маршрут и резолвер могли остаться. Снять руками: byway plumb off"

@@ -63,35 +63,35 @@ t() {
       "── Установка ──") printf %s "── Installing ──" ;;
       "── Готово ──") printf %s "── Done ──" ;;
       "не похоже на OpenWrt — byway рассчитан на него") printf %s "this does not look like OpenWrt — byway is built for it" ;;
-      "поставки рядом нет — качаю её с GitHub") printf %s "no delivery next to the script — downloading it from GitHub" ;;
-      "тега v%s ещё нет — беру ветку main") printf %s "there is no v%s tag yet — taking the main branch" ;;
+      "поставки рядом нет — загрузка с GitHub") printf %s "no delivery next to the script — downloading it from GitHub" ;;
+      "тега v%s ещё нет — взята ветка main") printf %s "there is no v%s tag yet — taking the main branch" ;;
       "поставка распакована: %s") printf %s "delivery unpacked: %s" ;;
       "не удалось получить поставку — скачать архив с github.com/%s и запустить install.sh из него") printf %s "could not get the delivery — download the archive from github.com/%s and run install.sh from it" ;;
       "движок записан в настройки: %s") printf %s "the core is recorded in the settings: %s" ;;
       "движок уже указан в настройках: %s") printf %s "the core is already set in the settings: %s" ;;
       "не удалось положить %s — проверить место на флеше и права") printf %s "could not put %s in place — check free flash and permissions" ;;
       "рядом лежит НЕПОЛНАЯ поставка, не хватает:%s") printf %s "the delivery next to the script is INCOMPLETE, missing:%s" ;;
-      "  беру целую с GitHub — то, что лежит рядом, использовано не будет") printf %s "  taking a whole one from GitHub — what is next to the script will not be used" ;;
+      "  берётся целая с GitHub — то, что лежит рядом, использовано не будет") printf %s "  taking a whole one from GitHub — what is next to the script will not be used" ;;
       "конфиг не пересобрался — движок остаётся на прежнем") printf %s "the config was not rebuilt — the core stays on the previous one" ;;
-      "перезапускаю службу — туннель прервётся на несколько секунд") printf %s "restarting the service — the tunnel will drop for a few seconds" ;;
+      "перезапуск службы — туннель прервётся на несколько секунд") printf %s "restarting the service — the tunnel will drop for a few seconds" ;;
       "служба перезапущена на новой версии") printf %s "the service is restarted on the new version" ;;
       "служба не перезапустилась — сделать это руками: /etc/init.d/byway restart") printf %s "the service did not restart — do it by hand: /etc/init.d/byway restart" ;;
       "Обновлено. Если открыта панель — обновить страницу с очисткой кэша (Ctrl+F5).") printf %s "Updated. If the panel is open, reload the page with a cache reset (Ctrl+F5)." ;;
-      "нет %s -- ставлю") printf %s "no %s -- installing" ;;
+      "нет %s -- установка") printf %s "no %s -- installing" ;;
       "не поставился %s: доставить вручную") printf %s "%s did not install: add it by hand" ;;
       "нет утилиты %s -- это не похоже на рабочий OpenWrt") printf %s "no %s tool -- this does not look like a working OpenWrt" ;;
-      "нет модулей ядра:%s -- ставлю") printf %s "kernel modules missing:%s -- installing" ;;
+      "нет модулей ядра:%s -- установка") printf %s "kernel modules missing:%s -- installing" ;;
       "модули так и не встали:%s") printf %s "the modules are still not there:%s" ;;
       "  без них перехват не работает; поставить вручную:") printf %s "  without them interception does not work; install by hand:" ;;
       "не знаю, какой файл выпуска брать для %s") printf %s "I do not know which release file to take for %s" ;;
-      "на флеше %s МБ, движку нужно около 25 -- беру из фида") printf %s "%s MB on flash, the core needs about 25 -- taking it from the feed" ;;
+      "на флеше %s МБ, движку нужно около 25 -- берётся из прошивки") printf %s "%s MB on flash, the core needs about 25 -- taking it from the feed" ;;
       "нет unzip, распаковать нечем") printf %s "no unzip, nothing to unpack with" ;;
       "не удалось спросить у GitHub последнюю версию") printf %s "could not ask GitHub for the latest version" ;;
       "последний выпуск: %s") printf %s "latest release: %s" ;;
-      "качаю Xray %s (%s)") printf %s "downloading Xray %s (%s)" ;;
+      "установка Xray-core %s (%s)") printf %s "downloading Xray %s (%s)" ;;
       "не скачался") printf %s "download failed" ;;
       "не распаковался") printf %s "unpacking failed" ;;
-      "скачанный движок не запускается на этом железе -- беру из фида") printf %s "the downloaded core does not run on this hardware -- taking it from the feed" ;;
+      "скачанный движок не запускается на этом железе -- берётся из прошивки") printf %s "the downloaded core does not run on this hardware -- taking it from the feed" ;;
       "движок готов: %s") printf %s "core ready: %s" ;;
       "Движок Xray не найден. Откуда взять:") printf %s "The Xray core was not found. Where should it come from:" ;;
       "     1) из фида прошивки -- проще всего, версия какая собрана") printf %s "     1) the firmware feed -- simplest, whatever version was built" ;;
@@ -106,16 +106,16 @@ t() {
       "движок не ставится: указать путь после установки") printf %s "the core is not installed: set the path afterwards" ;;
       "движок не ставится: система не подходит, см. выше") printf %s "the core is not installed: this system does not qualify, see above" ;;
       "система не подходит -- ничего не установлено") printf %s "this system does not qualify -- nothing has been installed" ;;
-      "GitHub напрямую не отвечает — узнаю его адреса по DoH") printf %s "GitHub does not answer directly — resolving its addresses over DoH" ;;
-      "адреса получены — иду напрямую, минуя подменённый DNS") printf %s "addresses resolved — going direct, bypassing the spoofed DNS" ;;
+      "GitHub напрямую не отвечает — его адреса запрашиваются по DoH") printf %s "GitHub does not answer directly — resolving its addresses over DoH" ;;
+      "адреса получены — соединение напрямую, минуя подменённый DNS") printf %s "addresses resolved — going direct, bypassing the spoofed DNS" ;;
       "GitHub недоступен, а зеркало запрещено (NO_MIRROR=1) — установка не пойдёт") printf %s "GitHub is unreachable and the mirror is forbidden (NO_MIRROR=1) — the install will not proceed" ;;
-      "ни напрямую, ни по адресам из DoH — иду через зеркало gh-proxy") printf %s "neither directly nor by the DoH addresses — going through the gh-proxy mirror" ;;
+      "ни напрямую, ни по адресам из DoH — через зеркало gh-proxy") printf %s "neither directly nor by the DoH addresses — going through the gh-proxy mirror" ;;
       "  это ЧУЖОЙ посредник: он видит, что вы качаете, и может отдать не то.") printf %s "  it is a THIRD PARTY: it sees what you download and may serve you something else." ;;
       "  запретить: NO_MIRROR=1 sh install.sh (тогда установка просто не пойдёт)") printf %s "  to forbid it: NO_MIRROR=1 sh install.sh (the install will then simply not proceed)" ;;
-      "не понял ответ «%s» -- беру вариант 1") printf %s "did not understand the answer «%s» -- taking option 1" ;;
+      "ответ «%s» непонятен -- взят вариант 1") printf %s "did not understand the answer «%s» -- taking option 1" ;;
       "     2) с GitHub -- НЕ для этого процессора: MIPS выкладывают только с аппаратной плавающей точкой") printf %s "     2) from GitHub -- NOT for this CPU: MIPS is published hard-float only" ;;
       "на этом процессоре сборка с GitHub не запустится: MIPS там только с аппаратной плавающей точкой, а сопроцессора здесь нет") printf %s "the GitHub build will not run on this CPU: MIPS is published hard-float only, and there is no FPU here" ;;
-      "  из фида приезжает та же версия, собранная softfloat -- беру её") printf %s "  the feed ships the same version built soft-float -- taking that one" ;;
+      "  из прошивки приезжает та же версия, собранная softfloat") printf %s "  the feed ships the same version built soft-float -- taking that one" ;;
       "Движок Xray. Какую версию поставить:") printf %s "Xray core. Which version to install:" ;;
       "     1) проверенную с byway -- %s  (по умолчанию)") printf %s "     1) the one verified with byway -- %s  (default)" ;;
       "     2) самую свежую, включая предвыпуски") printf %s "     2) the newest one, pre-releases included" ;;
@@ -123,14 +123,14 @@ t() {
       "     4) никакую -- путь укажу сам потом") printf %s "     4) none -- I will set the path myself later" ;;
       "     либо впишите номер версии, например 26.3.27") printf %s "     or type a version number, for example 26.3.27" ;;
       "версия: %s") printf %s "version: %s" ;;
-      "не понял ответ «%s» -- беру проверенную версию") printf %s "did not understand the answer «%s» -- taking the verified version" ;;
-      "не удалось спросить у GitHub номер версии -- беру из прошивки") printf %s "could not ask GitHub for a version number -- taking the firmware one" ;;
+      "ответ «%s» непонятен -- взята проверенная версия") printf %s "did not understand the answer «%s» -- taking the verified version" ;;
+      "не удалось спросить у GitHub номер версии -- берётся из прошивки") printf %s "could not ask GitHub for a version number -- taking the firmware one" ;;
       "Движок Xray. На этом процессоре сборки с GitHub не запускаются,") printf %s "Xray core. Builds from GitHub do not run on this CPU," ;;
       "поэтому он берётся из прошивки:") printf %s "so it is taken from the firmware:" ;;
       "     1) поставить из прошивки  -- по умолчанию") printf %s "     1) install from the firmware  -- default" ;;
       "     2) никакой -- путь укажу сам потом") printf %s "     2) none -- I will set the path myself later" ;;
       "непонятный номер версии «%s»") printf %s "unclear version number «%s»" ;;
-      "ставлю xray-core из фида") printf %s "installing xray-core from the feed" ;;
+      "установка xray-core из прошивки") printf %s "installing xray-core from the feed" ;;
       "Xray не поставился из фида") printf %s "Xray did not install from the feed" ;;
       "  и указать путь: uci set byway.main.xray_bin=/путь/к/xray") printf %s "  and point byway at it: uci set byway.main.xray_bin=/path/to/xray" ;;
       "Поставить base64? Нужен только для ключей vmess:// и ss://") printf %s "Install base64? Needed only for vmess:// and ss:// keys" ;;
@@ -292,7 +292,7 @@ gh_probe() {
     # адрес по HTTPS и подставляем его curl напрямую. Соединение при этом
     # идёт к НАСТОЯЩЕМУ узлу GitHub, сертификат проверяется как обычно, и
     # никакой посредник в середине не появляется.
-    say "GitHub напрямую не отвечает — узнаю его адреса по DoH"
+    say "GitHub напрямую не отвечает — его адреса запрашиваются по DoH"
     _gr=""
     for _gh in raw.githubusercontent.com github.com api.github.com \
                codeload.github.com objects.githubusercontent.com; do
@@ -303,7 +303,7 @@ gh_probe() {
         GH_RES=$_gr
         if dl --max-time 8 -o /dev/null \
               "https://raw.githubusercontent.com/$REPO/refs/heads/main/install.sh"; then
-            say "адреса получены — иду напрямую, минуя подменённый DNS"
+            say "адреса получены — соединение напрямую, минуя подменённый DNS"
             return 0
         fi
         GH_RES=""
@@ -316,7 +316,7 @@ gh_probe() {
     }
     # Зеркало ЧУЖОЕ: публичный gh-proxy, тот же, что у Zapret-Manager. Мы его
     # не держим и не проверяем, что он отдаёт, -- поэтому говорим вслух.
-    warn "ни напрямую, ни по адресам из DoH — иду через зеркало gh-proxy"
+    warn "ни напрямую, ни по адресам из DoH — через зеркало gh-proxy"
     warn "  это ЧУЖОЙ посредник: он видит, что вы качаете, и может отдать не то."
     warn "  запретить: NO_MIRROR=1 sh install.sh (тогда установка просто не пойдёт)"
     GH=$MIRROR/
@@ -474,7 +474,7 @@ pkg_why() {
 # установка НЕ УДАЛАСЬ: тогда человеку и правда есть что чинить руками.
 for c in curl; do
     command -v "$c" >/dev/null 2>&1 && continue
-    sayf "нет %s -- ставлю" "$c"
+    sayf "нет %s -- установка" "$c"
     add_pkg "$c" && command -v "$c" >/dev/null 2>&1 ||
         { warnf "не поставился %s: доставить вручную" "$c"; pkg_why; BAD=$((BAD + 1)); }
 done
@@ -520,7 +520,7 @@ fetch_src() {
     # а не на ветку»).
     _urls=$(gh "https://github.com/$REPO/archive/refs/tags/v$VER.tar.gz")
     if [ "$(http_code "$_urls")" = 404 ]; then
-        warnf "тега v%s ещё нет — беру ветку main" "$VER"
+        warnf "тега v%s ещё нет — взята ветка main" "$VER"
         _urls=$(gh "https://github.com/$REPO/archive/refs/heads/main.tar.gz")
     fi
     for _u in $_urls; do
@@ -541,9 +541,9 @@ fetch_src() {
 if ! have_src; then
     if [ "$_got" -gt 0 ]; then
         warnf "рядом лежит НЕПОЛНАЯ поставка, не хватает:%s" "$_miss"
-        warn "  беру целую с GitHub — то, что лежит рядом, использовано не будет"
+        warn "  берётся целая с GitHub — то, что лежит рядом, использовано не будет"
     else
-        say "поставки рядом нет — качаю её с GitHub"
+        say "поставки рядом нет — загрузка с GitHub"
     fi
     fetch_src ||
         dief "не удалось получить поставку — скачать архив с github.com/%s и запустить install.sh из него" "$REPO"
@@ -609,7 +609,7 @@ for m in nft_tproxy nft_socket; do
     mod_ok "$m" || MISSING_MODS="$MISSING_MODS $m"
 done
 if [ -n "$MISSING_MODS" ]; then
-    sayf "нет модулей ядра:%s -- ставлю" "$MISSING_MODS"
+    sayf "нет модулей ядра:%s -- установка" "$MISSING_MODS"
     # `|| true` обязателен: add_pkg отдаёт код пакетного менеджера, а голый
     # вызов под set -e завершает установщик прямо здесь -- ДО того, как
     # напечатается объяснение и текст лечения, написанные ровно на этот
@@ -727,7 +727,7 @@ xray_from_github() {
     gh_ready
     if mips_nofpu; then
         warn "на этом процессоре сборка с GitHub не запустится: MIPS там только с аппаратной плавающей точкой, а сопроцессора здесь нет"
-        warn "  из фида приезжает та же версия, собранная softfloat -- беру её"
+        warn "  из прошивки приезжает та же версия, собранная softfloat"
         return 1
     fi
     _as=$(xray_asset) || { warnf "не знаю, какой файл выпуска брать для %s" "$(uname -m)"; return 1; }
@@ -745,7 +745,7 @@ xray_from_github() {
     # Пустой ответ df -- это «не знаю», а не «ноль»: тогда качаем и проверяем
     # делом, а не отказываем заранее.
     if [ -n "$_free" ] && [ "$_free" -lt 25 ]; then
-        warnf "на флеше %s МБ, движку нужно около 25 -- беру из фида" "$_free"
+        warnf "на флеше %s МБ, движку нужно около 25 -- берётся из прошивки" "$_free"
         return 1
     fi
 
@@ -766,7 +766,7 @@ xray_from_github() {
     # защита одна: непредсказуемое имя и удаление чужого файла перед записью.
     _z=/tmp/xray.$$.zip
     rm -f "$_z" 2>/dev/null || true
-    sayf "качаю Xray %s (%s)" "$_ver" "$_as"
+    sayf "установка Xray-core %s (%s)" "$_ver" "$_as"
     dl --max-time 300 -o "$_z" \
        "$(gh "https://github.com/XTLS/Xray-core/releases/download/v$_ver/Xray-$_as.zip")" ||
         { warn "не скачался"; rm -f "$_z"; return 1; }
@@ -783,7 +783,7 @@ xray_from_github() {
     # Проверяем, что оно вообще запускается на этом железе: неверно угаданная
     # архитектура даёт не ошибку скачивания, а «Exec format error» потом.
     if ! "/usr/local/bin/xray-$_ver" version >/dev/null 2>&1; then
-        warn "скачанный движок не запускается на этом железе -- беру из фида"
+        warn "скачанный движок не запускается на этом железе -- берётся из прошивки"
         rm -f "/usr/local/bin/xray-$_ver"
         return 1
     fi
@@ -858,7 +858,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
           # Номером -- чтобы не заставлять выбирать из списка того, кто уже
           # знает, что ему нужно.
           [0-9]*.[0-9]*) _ver=$_c ;;
-          *)     warnf "не понял ответ «%s» -- беру проверенную версию" "$_c"
+          *)     warnf "ответ «%s» непонятен -- взята проверенная версия" "$_c"
                  _ver=$XRAY_TESTED ;;
         esac
         # Итог складываем в _c ЯВНО: 0 -- движок уже стоит, 1 -- ставить из
@@ -867,7 +867,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
         # ставил движок ВТОРОЙ раз, из фида. Найдено при этой же правке.
         if [ "$_c" != 3 ]; then
             if [ -z "$_ver" ]; then
-                warn "не удалось спросить у GitHub номер версии -- беру из прошивки"
+                warn "не удалось спросить у GitHub номер версии -- берётся из прошивки"
                 _c=1
             elif sayf "версия: %s" "$_ver"; xray_from_github; then
                 _c=0
@@ -877,7 +877,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
         fi
     fi
     if [ "$_c" = 1 ]; then
-        say "ставлю xray-core из фида"
+        say "установка xray-core из прошивки"
         add_pkg xray-core || true   # см. про set -e у вызова для модулей
         command -v xray >/dev/null 2>&1 || [ -x /usr/bin/xray ] || {
             warn "Xray не поставился из фида"
@@ -892,10 +892,18 @@ fi
 # base64 нужен ТОЛЬКО для ключей vmess и ss: у vless, trojan и socks всё
 # лежит в ссылке открытым текстом. Поэтому спрашиваем, а не ставим молча --
 # на роутере с сорока мегабайтами флеша лишний пакет это не мелочь.
-if ! command -v base64 >/dev/null 2>&1; then
+# ⚠️ Судим ЗАПУСКОМ, а не наличием. `command -v base64` на этом роутере
+# отвечает `/bin/base64` -- но это ссылка на busybox, у которого апплета
+# base64 нет вовсе: `echo -n x | base64` даёт «applet not found». Проверка по
+# наличию файла молча пропускала вопрос про coreutils-base64, и человек с
+# ключом vmess:// или ss:// упирался в отказ уже в работе, без единой
+# подсказки при установке. Поймано приёмкой владельца 2026-09-07.
+have_base64() { printf x | base64 >/dev/null 2>&1; }
+
+if ! have_base64; then
     if ask "Поставить base64? Нужен только для ключей vmess:// и ss://" y; then
         add_pkg coreutils-base64 || true   # см. про set -e у вызова для модулей
-        command -v base64 >/dev/null 2>&1 ||
+        have_base64 ||
             { warn "не поставился: ключи vmess и ss разобрать не выйдет"; pkg_why; }
     else
         say "base64 не ставится -- ключи vless, trojan и socks работают без него"
@@ -1178,7 +1186,7 @@ if [ "$WAS_INSTALLED" = 1 ] && [ -n "$(uci -q get byway.main.node_url 2>/dev/nul
     if [ "$(uci -q get byway.main.enabled)" = "1" ]; then
         # Предупреждаем ДО, а не отчитываемся после: на единственном шлюзе
         # дома перезапуск -- это несколько секунд без туннеля у всех.
-        warn "перезапускаю службу — туннель прервётся на несколько секунд"
+        warn "перезапуск службы — туннель прервётся на несколько секунд"
         # Вывод НЕ в /dev/null: если служба не встала, единственное объяснение
         # почему -- как раз в нём.
         if /etc/init.d/byway restart; then
@@ -1196,31 +1204,22 @@ elif [ "$LANG_EN" = 1 ]; then
 # сам же тремя строками выше объясняет, что качать их можно только после
 # поднятого туннеля. Поймано на стенде, воспроизводилось каждый раз.
 # Переменных внутри нет, так что кавычки ничего не ломают.
-cat <<'NEXT_EN'
-What next:
+_H() { printf '\033[1;36m%s\033[0m\n' "$1"; }
+_C() { printf '       \033[0;33m%s\033[0m\n' "$1"; }
 
-  1. Put in the VPN key — in the panel, Services → Byway → Overview,
-     or from the console:
-         uci set byway.main.node_url='vless://…'
-         uci set byway.main.enabled=1
-         uci commit byway
-
-  2. Start it (autostart is already registered by the installer):
-         /etc/init.d/byway start
-
-  3. Fill the domain list, or switch on a ready-made one, and apply it:
-         uci add_list byway.main.preset=byway
-         uci commit byway && byway presets
-         /etc/init.d/byway reload
-
-     This step is third on purpose: ready-made lists are downloaded THROUGH
-     the tunnel, so the tunnel has to be up first. The reload is what puts
-     the downloaded lists into the running config — `byway presets` only
-     fetches them.
-
-  Check the environment:  byway doctor
-  See the current state:  byway
-NEXT_EN
+printf '\n\033[1;32m%s\033[0m\n' "Next:"
+_H "  1  The VPN key — web UI, Services → Byway → Overview, or by command:"
+_C "uci set byway.main.node_url='vless://…'"
+_C "uci set byway.main.enabled=1"
+_C "uci commit byway"
+_H "  2  Start it (autostart is already registered):"
+_C "/etc/init.d/byway start"
+_H "  3  Lists — AFTER the tunnel is up:"
+_C "uci add_list byway.main.preset=byway"
+_C "uci commit byway && byway presets"
+_C "/etc/init.d/byway reload"
+printf '     %s\n' "ready-made lists are fetched THROUGH the tunnel, and reload moves them into the config"
+printf '\n  %s   %s\n' "Check the environment: byway doctor" "State: byway"
 else
 # Метка в кавычках -- ОБЯЗАТЕЛЬНО. Без них оболочка разбирает тело как
 # обычную строку: обратные кавычки внутри становятся подстановкой команды,
@@ -1229,29 +1228,28 @@ else
 # сам же тремя строками выше объясняет, что качать их можно только после
 # поднятого туннеля. Поймано на стенде, воспроизводилось каждый раз.
 # Переменных внутри нет, так что кавычки ничего не ломают.
-cat <<'NEXT'
-Дальше:
+# Печатаем printf-строками, а НЕ heredoc. Метка без кавычек разбирала бы тело
+# как обычную строку -- обратные кавычки внутри стали бы подстановкой команды,
+# и `byway presets` в тексте не показывался, а ВЫПОЛНЯЛСЯ. С кавычками тело
+# не подставляет ничего, но тогда в него не вписать и цвет. printf снимает
+# обе беды разом: подстановки нет, а escape-последовательности он понимает.
+#
+# Пустых строк между шагами нет намеренно: с ними памятка расплывалась на
+# полтора экрана и читалась как текст, а не как список действий.
+_H() { printf '\033[1;36m%s\033[0m\n' "$1"; }        # заголовок шага
+_C() { printf '       \033[0;33m%s\033[0m\n' "$1"; } # команда
 
-  1. Вписать ключ VPN — в панели «Сервисы → Byway → Основное»
-     либо командой:
-         uci set byway.main.node_url='vless://…'
-         uci set byway.main.enabled=1
-         uci commit byway
-
-  2. Запустить (в автозапуск установщик уже внёс):
-         /etc/init.d/byway start
-
-  3. Наполнить список доменов, либо включить готовый, и применить:
-         uci add_list byway.main.preset=byway
-         uci commit byway && byway presets
-         /etc/init.d/byway reload
-
-     Этот шаг третий не случайно: готовые списки качаются ЧЕРЕЗ туннель,
-     значит туннель должен быть уже поднят. А перезагрузка нужна потому, что
-     `byway presets` только скачивает списки — в работающий конфиг их
-     переносит именно она.
-
-  Проверить окружение:  byway doctor
-  Посмотреть состояние: byway
-NEXT
+printf '\n\033[1;32m%s\033[0m\n' "Дальше:"
+_H "  1  Ключ VPN — в панели «Сервисы → Byway → Основное», либо командой:"
+_C "uci set byway.main.node_url='vless://…'"
+_C "uci set byway.main.enabled=1"
+_C "uci commit byway"
+_H "  2  Запуск (в автозапуск установщик уже внёс):"
+_C "/etc/init.d/byway start"
+_H "  3  Списки — ПОСЛЕ того, как туннель поднялся:"
+_C "uci add_list byway.main.preset=byway"
+_C "uci commit byway && byway presets"
+_C "/etc/init.d/byway reload"
+printf '     %s\n' "готовые списки качаются через туннель, а reload переносит их в конфиг"
+printf '\n  %s   %s\n' "Проверить окружение: byway doctor" "Состояние: byway"
 fi

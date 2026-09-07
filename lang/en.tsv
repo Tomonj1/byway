@@ -100,7 +100,7 @@ byway: неизвестная команда «%s». Список: byway\n	byway
 включён	on
 выключен	off
 для этой ссылки нужен декодер base64: %s	this link needs a base64 decoder: %s
-%s: записей %s, беру первые %s — остальное отброшено	%s: %s entries, taking the first %s — the rest is dropped
+%s: записей %s, взяты первые %s — остальное отброшено	%s: %s entries, taking the first %s — the rest is dropped
 выбран свой конфиг, но он пуст	a custom config is selected, but it is empty
 ключ не задан	no key is set
 %s эта сборка Xray не поддерживает (проверено на 26.7.11)	%s is not supported by this Xray build (checked on 26.7.11)
@@ -110,7 +110,7 @@ vmess-ссылка не раскодировалась	the vmess link did not de
 encryption=%s не поддержан этой сборкой Xray: убрать параметр из ссылки либо обновить движок	encryption=%s is not supported by this Xray build: remove the parameter from the link or update the engine
 протокол %s не собран	protocol %s is not built in
 mkcp идёт поверх UDP, а в РФ UDP душат первым делом	mkcp runs over UDP, and in Russia UDP is the first thing throttled
-header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставляю как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
+header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставлены как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
 HTTP/2 из Xray удалён, замена: xhttp в режиме stream-one	HTTP/2 has been removed from Xray, replacement: xhttp in stream-one mode
 QUIC из Xray удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC has been removed from Xray, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
 транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, httpupgrade, xhttp
@@ -312,11 +312,11 @@ report [файл]	report [file]
 ни один из подключённых списков не обновился — прежние копии остались на месте	none of the connected lists were refreshed — the previous copies stay in place
 версия %s -- новее нет	version %s -- nothing newer
 есть новая версия: %s (у вас %s)	there is a new version: %s (you have %s)
-качаю	downloading
+загрузка	downloading
 не скачалось -- ничего не тронуто	download failed -- nothing was touched
 не распаковалось -- ничего не тронуто	unpacking failed -- nothing was touched
 в пакете нет install.sh -- ничего не тронуто	there is no install.sh in the package -- nothing was touched
-ставлю	installing
+установка	installing
 посмотреть, есть ли новая версия, и поставить её	see whether there is a new version, and install it
 GitHub не ответил -- похоже, нет связи	GitHub did not answer -- looks like there is no connection
 на GitHub нет ни репозитория %s, ни его выпусков	GitHub has neither the %s repository nor its releases
@@ -352,8 +352,8 @@ IPv6 поднят, а перехват только по IPv4	IPv6 is up, interc
 готовый список «%s» отключён, а копия лежит во флеше	the ready-made list "%s" is switched off, but its copy still sits in flash
 обновить и заодно свериться с zapret: byway presets	refresh it and check against zapret while at it: byway presets
 включить обратно или убрать файл из /etc/byway/presets	switch it back on, or remove the file from /etc/byway/presets
-замок «%s» остался от прерванного прогона -- снимаю	the "%s" lock is left over from an interrupted run -- releasing it
-%s уже идёт -- жду	%s is already running -- waiting
+замок «%s» остался от прерванного прогона -- снят	the "%s" lock is left over from an interrupted run -- releasing it
+%s уже идёт -- ожидание	%s is already running -- waiting
 обвязка занята другим прогоном -- пропускаю	the plumbing is busy with another run -- skipping
 метка сменилась (%s -> %s) — переписываю правило firewall	the mark has changed (%s -> %s) — rewriting the firewall rule
   подсетей: %s	  subnets: %s
@@ -377,8 +377,8 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 автообновление включено, но происхождение файла неизвестно	auto-update is on, but the origin of the file is unknown
 автообновление включено, но byway правлен руками	auto-update is on, but byway has been edited by hand
 автообновление включено	auto-update is on
-пул $1 без длины маски -- беру умолчание	pool $1 has no mask length -- falling back to the default
-пул %s: маска /%s не годится -- беру умолчание	pool %s: mask /%s is not usable -- falling back to the default
+пул $1 без длины маски -- взято умолчание	pool $1 has no mask length -- falling back to the default
+пул %s: маска /%s не годится -- взято умолчание	pool %s: mask /%s is not usable -- falling back to the default
 пул %s лежит в приватном или зарезервированном -- он мёртв: цепочка nft отсекает такие адреса первым же правилом	pool %s is inside private or reserved space -- it is dead: the nft chain drops such addresses in its very first rule
 пул %s лежит в 172.16/12 -- он мёртв	pool %s is inside 172.16/12 -- it is dead
 пул %s лежит в 192.168/16 -- он мёртв	pool %s is inside 192.168/16 -- it is dead
@@ -386,7 +386,7 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 пул %s лежит в 100.64/10 -- он мёртв	pool %s is inside 100.64/10 -- it is dead
 доменов %s, а адресов в пуле %s — часть будет вытесняться и уводить соединения к чужому хосту. Расширить пул (byway.main.fakeip_pool) либо укоротить список	domains %s, addresses in the pool %s — some will be evicted and send connections to the wrong host. Widen the pool (byway.main.fakeip_pool) or shorten the list
 %s: источники дали больше 32 МБ — отказываюсь, прежний список на месте	%s: sources returned more than 32 MB — refusing, the previous list is kept
-настройка %s = «%s» не годится для %s, беру %s	setting %s = "%s" is not usable for %s, falling back to %s
+настройка %s = «%s» не годится для %s, взято %s	setting %s = "%s" is not usable for %s, falling back to %s
 карта: %s из %s доменов, адресов %s	map: %s of %s domains, addresses %s
 туннеля нет, и весь трафик мимо VPN закрыт: так велит настройка «не пускать мимо VPN»	no tunnel, and all traffic outside the VPN is blocked: the "no traffic outside the VPN" setting says so
 туннеля нет, и доступ к списку закрыт: доменов %s, подсети %s	no tunnel, and access to the list is blocked: domains %s, subnets %s
@@ -415,7 +415,7 @@ byway не поднимется ни сейчас, ни после переза�
   dnsmasq ответит по пину, подставного адреса не будет — в туннель они НЕ пойдут	  dnsmasq will answer from the pin, there will be no placeholder address — they will NOT go through the tunnel
 сейчас работает, но после перезагрузки туннеля не будет: /etc/init.d/byway enable	it runs now, but after a reboot there will be no tunnel: /etc/init.d/byway enable
 список доменов: %s записей (своих %s)	domain list: %s entries (%s of them your own)
-уровень журнала «%s» не годится, беру warning	log level "%s" is not usable, falling back to warning
+уровень журнала «%s» не годится, взят warning	log level "%s" is not usable, falling back to warning
 клиент со своим DNS проходит мимо туннеля	a client with its own DNS bypasses the tunnel
 замок «%s» занят не нами -- забираю	lock "%s" is held by someone else -- taking it over
 \n  \033[1;33mсобрано, но byway ВЫКЛЮЧЕН\033[0m — туннеля не будет\n	\n  \033[1;33mbuilt, but byway is OFF\033[0m — there will be no tunnel\n
@@ -439,20 +439,20 @@ itdoginfo: подсети для сервисов, которые работаю
 да	yes
 нет	no
 путь к движку отклонён: %s	the core path was rejected: %s
-движок не поднимается пять минут -- снимаю обвязку, запрет «не пускать мимо VPN» ОСТАЁТСЯ: доступа наружу нет	the core has not come up for five minutes -- removing the plumbing, the "no traffic outside the VPN" block STAYS: there is no way out
-движок не поднимается пять минут -- снимаю обвязку, дом остаётся с интернетом и без туннеля	the core has not come up for five minutes -- removing the plumbing, the house keeps the internet and loses the tunnel
+движок не поднимается пять минут -- обвязка снята, запрет «не пускать мимо VPN» ОСТАЁТСЯ: доступа наружу нет	the core has not come up for five minutes -- removing the plumbing, the "no traffic outside the VPN" block STAYS: there is no way out
+движок не поднимается пять минут -- обвязка снята, дом остаётся с интернетом и без туннеля	the core has not come up for five minutes -- removing the plumbing, the house keeps the internet and loses the tunnel
 движок вернулся -- запрет «не пускать мимо VPN» снят	the core is back -- the "no traffic outside the VPN" block is lifted
-сторож: обвязки нет при работающем движке -- поднимаю	watchdog: the plumbing is missing while the core is running -- bringing it up
-автообновление: byway правлен руками -- не трогаю	auto-update: byway has been edited by hand -- leaving it alone
-автообновление: сумма выложенной версии неизвестна -- не трогаю	auto-update: the checksum of the published version is unknown -- leaving it alone
+сторож: обвязки нет при работающем движке -- поднимается	watchdog: the plumbing is missing while the core is running -- bringing it up
+автообновление: byway правлен руками -- не трогается	auto-update: byway has been edited by hand -- leaving it alone
+автообновление: сумма выложенной версии неизвестна -- не трогается	auto-update: the checksum of the published version is unknown -- leaving it alone
 журнал обращений перевалил 4 МБ и обрезан -- учёт не ходит?	the access log passed 4 MB and was truncated -- is the accounting not running?
 движок перезапустился — сбросил кэш dnsmasq: прежние подставные адреса недействительны	the core restarted — flushed the dnsmasq cache: the previous placeholder addresses are no longer valid
 журнал обращений перевалил 4 МБ и обрезан -- задачи cron на месте?	the access log passed 4 MB and was truncated -- are the cron jobs in place?
 пресет %s: %s записей, срез до %s	preset %s: %s entries, cut down to %s
 пресет %s: отказ, записей %s против %s	preset %s: refused, %s entries against %s
-обновляю готовые списки (промежуток %s мин)	refreshing the ready-made lists (interval %s min)
+обновление готовых списков (промежуток %s мин)	refreshing the ready-made lists (interval %s min)
 новая версия byway %s (у вас %s): %s	new byway version %s (you have %s): %s
-автообновление: ставлю %s (было %s)	auto-update: installing %s (was %s)
+автообновление: установка %s (было %s)	auto-update: installing %s (was %s)
 автообновление: %s поднялось	auto-update: %s came up
 автообновление: %s не поднялось -- откатился на %s	auto-update: %s did not come up -- rolled back to %s
 автообновление: %s не скачалось, работает прежняя	auto-update: %s did not download, the previous one keeps running
