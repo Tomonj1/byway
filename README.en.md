@@ -26,7 +26,7 @@ your VPN, the rest goes direct. The engine is
 > | | |
 > |---|---|
 > | fully verified | Cudy WR3000S v1 (MT7981, aarch64), OpenWrt 25.12.5 |
-> | verified on a test bench | install and removal on 22.03–25.12, both package branches; install on aarch64 and mipsel |
+> | verified on a test bench | install and removal on 22.03–25.12, both package managers; install on aarch64 and mipsel |
 > | never verified at all | IPv6, behaviour under load, daily life on anything but MT7981 |
 >
 > **The code was written by an AI** — Claude, to a human's brief and
@@ -62,7 +62,7 @@ What usually has to bypass the tunnel is local services: banks, government
 portals and marketplaces often refuse foreign addresses and simply stop working
 over a VPN.
 
-byway solves **one** problem and does not build a second life around it. There
+byway solves **one** problem and does not try to grow into anything more. There
 is no traffic-graph screen, no private vocabulary, no subscription to someone
 else's rule sets you have to learn separately. There are lists as plain files, a
 key as a link, and five tabs in the web UI.
@@ -97,7 +97,7 @@ working byway is worse than an honest refusal.
 
 The lower bound comes from the engine: Xray is already in the feed in 22.03, and
 byway can fetch it from GitHub itself. For
-[podkop](https://github.com/itdoginfo/podkop) that bound is one branch higher
+[podkop](https://github.com/itdoginfo/podkop) that bound is one OpenWrt release higher
 only because sing-box appears in the feeds from 23.05. sing-box support is
 planned for byway too — the plumbing does not depend on the engine — and then
 this difference disappears.
@@ -132,7 +132,9 @@ Worth knowing before installing, not after.
   today.
 - **A client with its own DNS bypasses it.** DNS decides the route: a device
   with Private DNS or DoH in the browser asks someone other than the router and
-  gets the real address rather than the placeholder. `byway doctor` says so. The
+  gets the real address instead of our placeholder — a made-up address by which
+  byway recognises the traffic it should take (see [How it
+  works](#how-it-works)). `byway doctor` says so. The
   cure is either to turn encrypted DNS off on the device, or to add the
   service's **subnets** alongside its domains: a subnet works by address, and so
   works for whoever asked someone else for it. One does not replace the other —
@@ -156,14 +158,14 @@ Worth knowing before installing, not after.
 
 ## Installing
 
-One line:
+**Way 1 — one line:**
 
 ```sh
 sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.1/install.sh)"
 ```
 
-If `raw.githubusercontent.com` is unreachable, the same through a mirror. **The
-mirror is someone else's** — the public `gh-proxy`, the same one
+**Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
+**The mirror is someone else's** — the public `gh-proxy`, the same one
 [Zapret-Manager](https://github.com/StressOzz/Zapret-Manager) uses. We neither
 run it nor check what it serves. If you would rather not trust a third party
 inside a root install, take the archive the third way and read it first.
@@ -174,7 +176,7 @@ wget -T 10 -O /tmp/byway-install.sh \
   && sh /tmp/byway-install.sh
 ```
 
-As an archive, if you want to read it first:
+**Way 3 — as an archive,** if you want to read it first:
 
 ```sh
 cd /tmp
@@ -199,8 +201,8 @@ tagged version. The third way goes to the network once, entirely in front of you
 
 **It asks about what is optional:** where to get the Xray engine and which
 version, and whether `base64` is needed (only for `vmess://` and `ss://` keys).
-Mandatory pieces are installed without questions. With no terminal it takes the
-defaults and says so.
+Mandatory pieces are installed without questions. If it has no one to ask — run
+from a script, say — it takes the defaults and prints that it did.
 
 **The installer does not touch your configuration or lists** — which is why
 running it again is safe, and why updates install the same way.
@@ -262,9 +264,9 @@ cure for every fault.
   than by name need them. They do not argue with your own lists; entries are
   merged.
 
-  **byway measures their width and says it out loud:** whole hosting ranges pull
-  other people's traffic into the tunnel, and it is better to know that as a
-  number in advance than as lost speed later.
+  **byway counts how many addresses a list covers and says it out loud:** whole
+  hosting ranges pull other people's traffic into the tunnel, and it is better
+  to know that as a number in advance than as lost speed later.
 - **DNS** can stay direct or go through the VPN. Domains from the list are not
   affected: a built-in resolver answers those locally.
 
@@ -350,9 +352,10 @@ a deliberate choice.
 This is easy to get wrong, so plainly: **without the tunnel the list does not
 stop working — it starts working AROUND the VPN.** The domains resolve to real
 addresses, connections open as usual, and from your home address. Sites open,
-everything looks intact, and there is no protection — with nowhere to learn that.
+everything looks intact, there is no protection — and nothing tells you so.
 
-That is what the second failure model — **"do not let it through"** — undoes.
+That is exactly what the second failure model — **"do not let it through"** —
+is there to prevent.
 What exactly it closes depends on the list mode, and the difference is large:
 
 | mode | what stays closed until the VPN returns |
@@ -378,8 +381,9 @@ is on the "Main" tab.
 | **Advanced** | values you change once in a lifetime |
 
 > ⚠️ **Clear the browser cache after updating byway.** LuCI appends the version
-> of **LuCI itself** to a module's URL, not the file's, so a byway update does
-> not move the cache: the browser keeps showing the old tab, and there is no way
+> of **LuCI itself** to a module's URL, not the file's, so after a byway update
+> the browser does not know the file changed and keeps showing the old tab, and
+> there is no way
 > to tell by looking. Ctrl+F5 helps, but only re-fetches **the modules of the
 > open page** — you would have to do it on every tab. More reliable: F12 →
 > Network → "Disable cache" → F5, without closing the tools.
@@ -444,11 +448,13 @@ trace is left exactly when the VPN is down.
 **Auto-update** (`auto_update`) is off deliberately: it restarts the service,
 which takes the tunnel away from the whole house. By turning it on you accept
 that this happens at 04:00–05:00 **by the router's clock**. The time is **not
-configurable**: the hour is hard-coded. A stock firmware sits in UTC, in which
-case that is the morning — `byway doctor` will tell you when it lands for you.
+configurable**: the hour is hard-coded. Stock firmware keeps its clock on UTC,
+so 04:00 on the router is not necessarily 04:00 where you live — `byway doctor`
+will tell you when it lands for you.
 
 A release is installed no sooner than three days after it appears (important ones
-immediately) and only within the same minor version. If the tunnel does not come
+immediately) and only to a release that keeps the same first two numbers:
+`0.1.1` to `0.1.4` yes, `0.1.4` to `0.2.0` no. If the tunnel does not come
 up within two and a half minutes, byway puts the previous version back on its
 own.
 
@@ -457,13 +463,16 @@ own.
 ## Engine version
 
 byway is not tied to a version of Xray: if no path to the engine is set, the one
-from the package is used. The installer **asks** where to get the engine: from
-the firmware feed (the default — the version OpenWrt built), from GitHub — there you
-pick: `latest` is the default, `tested` is the one byway was verified on end to
-end, or any version number; or nowhere, if you will point at a path yourself
-later.
+from the package is used. The installer **asks** where to get the engine, and
+there are three answers:
 
-⚠️ **"Newest" and "stable" are different things for Xray.** XTLS marks
+- **the firmware feed** — the default; the version OpenWrt built;
+- **GitHub** — then it also asks which version: `latest` (the default),
+  `tested` (the one byway was verified on end to end), or any version number;
+- **nowhere** — if you will point at a path yourself later.
+
+⚠️ **"Newest" and "stable" are different things for Xray.** XTLS (the team that
+makes Xray) marks
 everything newer than `26.3.27` as a pre-release, so `latest` gives exactly that
 one — stable, but noticeably behind. `tested` gives the one byway was verified
 on end to end; that is a pre-release, and byway says so during installation. It
@@ -471,7 +480,7 @@ is what runs on the developer's router.
 
 ⚠️ **On MIPS without a floating-point unit there is no GitHub engine at all** —
 and that is almost every inexpensive MIPS router. XTLS publishes
-`mips32le` and `mips64le` hard-float only, while the common router cores — 24Kc
+`mips32le` and `mips64le` hard-float only, while the common router processors — 24Kc
 on ath79, 1004Kc on mt7621 — have no coprocessor, and the binary dies on its
 first instruction with `Illegal instruction`. Picking another version does not
 help: a soft-float build does not exist in the release. The feed ships the same
@@ -498,11 +507,12 @@ uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 ```
 
 Pick the archive for your architecture (`arm64-v8a`, `mips`, `mipsle` and so on
-— see the release's file list); **on MIPS without an FPU this recipe does not
-work at all** — there the engine comes from the feed: `apk add xray-core` or
-`opkg install xray-core`. **Two engines do not always fit side by side:**
-the binary is about 18 MB on flash, so remove the old one as soon as the new one
-works.
+— see the release's file list). To find yours, run `uname -m` on the router —
+that is the same name used in the compatibility table below. **On MIPS without
+an FPU this recipe does not work at all** — there the engine comes from the
+feed: `apk add xray-core` or `opkg install xray-core`. **Two engines do not
+always fit side by side:** the binary is about 18 MB on flash, so remove the old
+one as soon as the new one works.
 
 And [tell us about it](https://github.com/Tomonj1/byway/issues): if the engine
 changed what byway generates, that is fixed in byway rather than worked around
@@ -566,7 +576,7 @@ are verified, not operation.
 
 There was no other hardware. The list of devices byway has been run on lives in
 the [compatibility
-reports](https://github.com/Tomonj1/byway/issues?q=label%3A%D1%81%D0%BE%D0%B2%D0%BC%D0%B5%D1%81%D1%82%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D1%8C).
+reports](https://github.com/Tomonj1/byway/issues?q=label%3Acompatibility).
 If you ran it, add yours: that is the single most useful thing you can report
 right now — and a failure report beats a success one.
 
@@ -580,23 +590,30 @@ here is how the generated was told apart from the verified.
 
 **Reviews by independent agents, angle by angle.** Each agent got its own angle —
 data from outside, permissions and secrets, shell mistakes, failure behaviour,
-cleaning up after itself, races between consumers, neighbours on the router,
-limits and volumes, clocks, promises against behaviour. Every finding was then
+cleaning up after itself, two processes touching one file at once, living
+alongside other people's programs on the router, limits and volumes, clocks and
+time zones, whether the README matches what the code actually does. Every finding was then
 checked by a separate sceptic given the **opposite** task: to refute it, not to
 confirm it.
 
-There have been three reviews, all closed: the first with 106 findings, a
-separate one for the web UI with 34, and the second, in four passes, with 98.
+There have been three reviews, all closed: 106 findings in a review of the
+code, 34 in a review of the web UI, and 98 more in a second review of the code
+that ran in four passes.
 
-**What reading does not catch — and what was done about it.** Two findings were
-missed by all four passes of the second review: `chain fwd` was rejected by the
-kernel along with the entire table (`fwd` is a reserved word in nft), the subnet
-side of the kill switch had never loaded since it was written, and the error was
-muffled by `2>/dev/null || true`. What caught them was not a reader but a parser
-— `nft -c`. Hence three benches that run **every** branch of what byway hands to
-other programs: kernel rules through `nft -c`, the engine config through Xray
-itself, the blocking snippet through `dnsmasq --test`, and UCI edits and cron
-jobs against a stand-in configuration.
+**What reading does not catch — and what was done about it.** Two things were
+missed by every pass; both were caught by a parser, `nft -c`.
+
+First: a rule chain was named `fwd`, which is a reserved word in nft — so the
+kernel rejected the **whole** table along with it, and the subnet side of the
+kill switch had never loaded since the day it was written. The error was
+muffled by `2>/dev/null || true`, so nothing showed up in the log either.
+Second: the check itself ran against the previous table while it was still
+loaded, and so complained about a perfectly good set of rules.
+
+Three passes read those lines and saw neither. Hence three benches that run
+**every** branch of what byway hands to other programs: firewall rules through
+`nft -c`; the engine config and the blocking snippet through Xray itself and
+`dnsmasq --test`; UCI edits and cron jobs against a stand-in configuration.
 
 **Every config build is verified by the engine itself** — `xray run -test`. If
 it is not accepted, the working config is not replaced and the tunnel keeps
