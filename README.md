@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.1.4 — первый публичный выпуск.** byway каждый день работает на
+> **Версия 0.1.5 — первый публичный выпуск.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -151,7 +151,7 @@ sing-box планируем и в byway — обвязка от движка н�
 **Способ 1 — одной строкой:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh)"
 ```
 
 **Способ 2 — через зеркало,** если `raw.githubusercontent.com` недоступен.
@@ -162,7 +162,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -170,8 +170,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.4.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.4
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.5.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.5
 sh install.sh
 ```
 
@@ -485,16 +485,28 @@ XHTTP». Что делать:
 
 ```sh
 V=26.7.28                       # версия, на которой работало
-cd /usr/local/bin
-wget -O xray.zip "https://github.com/XTLS/Xray-core/releases/download/v$V/Xray-linux-arm64-v8a.zip"
-unzip -o xray.zip xray && mv xray "xray-$V" && chmod 755 "xray-$V"
+A=Xray-linux-arm64-v8a.zip      # см. ниже, как узнать свою
+wget -O /tmp/xray.zip "https://github.com/XTLS/Xray-core/releases/download/v$V/$A"
+unzip -o /tmp/xray.zip xray -d /usr/local/bin && rm -f /tmp/xray.zip
+mv /usr/local/bin/xray "/usr/local/bin/xray-$V" && chmod 755 "/usr/local/bin/xray-$V"
 uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 /etc/init.d/byway restart
 ```
 
-Архив выбирается под вашу архитектуру (`arm64-v8a`, `mips`, `mipsle` и так
-далее — смотрите список файлов релиза). Свою покажет команда `uname -m` на
-роутере — это то же имя, что стоит в таблице совместимости ниже. **На MIPS без
+Архив качается **в память** (`/tmp`), а не на флеш: рядом с распакованным
+бинарником он занял бы место, которого у роутера может не быть.
+
+Имя архива — под вашу архитектуру: `arm64-v8a`, `arm32-v7a`, `mips32`,
+`mips32le`, `mips64le`, `64`, `32` (полный список — в файлах выпуска Xray).
+Узнать свою:
+
+```sh
+sed -n "s/^DISTRIB_ARCH='\([^']*\)'.*/\1/p" /etc/openwrt_release
+```
+
+⚠️ **Не `uname -m`:** на MIPS он отвечает `mips` и для прямого порядка байтов,
+и для обратного, а сборки Xray для них разные — взятая наугад просто не
+запустится. Прошивка знает точнее, и byway спрашивает именно её. **На MIPS без
 блока дробных вычислений этот рецепт не сработает вовсе** — там движок берут
 из фида: `apk add xray-core` либо `opkg install xray-core`. **Два ядра рядом помещаются не
 всегда:** бинарник весит около 18 МБ на флеше, старое лучше удалить сразу
@@ -508,10 +520,21 @@ uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 
 ## Удаление
 
+Установщик кладёт удаление рядом с программой, отдельно качать нечего:
+
 ```sh
-sh uninstall.sh              # настройки и списки останутся
-sh uninstall.sh --purge      # снести всё, включая ключ
-DRY_RUN=1 sh uninstall.sh    # показать, что было бы сделано, ничего не делая
+byway-uninstall              # настройки и списки останутся
+byway-uninstall --purge      # снести всё, включая ключ
+DRY_RUN=1 byway-uninstall    # показать, что было бы сделано, ничего не делая
+```
+
+⚠️ **Ставили версию до 0.1.5?** Тогда этого файла у вас нет — он появляется
+только при установке. Взять из архива того же тега:
+
+```sh
+wget -O /tmp/byway-uninstall \
+  https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/uninstall.sh
+sh /tmp/byway-uninstall
 ```
 
 Скрипт сам возвращает сеть в исходное состояние: DNS отдаёт провайдеру, правила

@@ -199,6 +199,22 @@ function healthBox(text) {
 	}));
 }
 
+/* Строки «ВНИМАНИЕ …» из статуса. byway печатает их ради человека, а панель
+   их выбрасывала: connName разбирает вывод по первому слову, и всё, что не
+   «ключ»/«транспорт»/«подключение», просто терялось. Между тем среди них три
+   вида предупреждения о запрете «не пускать мимо VPN» -- включая «ВЕСЬ трафик
+   мимо VPN ЗАКРЫТ». Человек с закрытым трафиком видел в панели обычную
+   строку подключения. Найдено третьим аудитом 2026-09-07. */
+function connWarn(statusText) {
+	var out = [];
+	(statusText || '').split('\n').forEach(function (l) {
+		var t = l.replace(/\u001b\[[0-9;]*m/g, '').trim();
+		if (/^(ВНИМАНИЕ|WARNING)\s/.test(t))
+			out.push(t.replace(/^(ВНИМАНИЕ|WARNING)\s+/, ''));
+	});
+	return out;
+}
+
 function connName(statusText) {
 	var g = {};
 	(statusText || '').split('\n').forEach(function (l) {
@@ -383,6 +399,16 @@ return view.extend({
 
 		var health = E('div', {}, healthBox(data[1]));
 		var nameEl = E('span', { 'style': 'font-weight:bold' }, [ connName(data[2]) ]);
+		var warnEl = E('div', {});
+		var showWarn = function (txt) {
+			warnEl.innerHTML = '';
+			connWarn(txt).forEach(function (w) {
+				warnEl.appendChild(E('div', {
+					'style': 'color:#c00; font-weight:bold; margin-top:4px'
+				}, [ '\u26a0 ' + w ]));
+			});
+		};
+		showWarn(data[2]);
 
 		var refresh = function () {
 			return Promise.all([ run([ 'health' ]), run([ 'status', '--short' ]) ])
@@ -390,6 +416,7 @@ return view.extend({
 					health.innerHTML = '';
 					health.appendChild(healthBox(r[0]));
 					nameEl.textContent = connName(r[1]);
+					showWarn(r[1]);
 				});
 		};
 
@@ -414,7 +441,7 @@ return view.extend({
 		o.cfgvalue = function () { return health; };
 
 		o = ss.option(form.DummyValue, '_conn', _('Подключение'));
-		o.cfgvalue = function () { return nameEl; };
+		o.cfgvalue = function () { return E('div', {}, [ nameEl, warnEl ]); };
 
 		o = ss.option(form.Button, '_restart', _('Служба'));
 		o.inputstyle = 'action';

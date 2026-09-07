@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.4 — the first public release.** byway runs every day on one
+> **Version 0.1.5 — the first public release.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -161,7 +161,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -172,7 +172,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.4/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/Tomonj1/byway/v0.1.5/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -180,8 +180,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.4.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.4
+wget -O byway.tar.gz https://github.com/Tomonj1/byway/archive/refs/tags/v0.1.5.tar.gz
+tar xzf byway.tar.gz && cd byway-0.1.5
 sh install.sh
 ```
 
@@ -211,7 +211,7 @@ running it again is safe, and why updates install the same way.
 
 ## First run
 
-**1. The key.** Web UI: *Services → Byway → Main*, the "Key" field — the whole link
+**1. The key.** Web UI: *Services → Byway → Overview*, the "Key" field — the whole link
 from your VPN: `vless://`, `vmess://`, `trojan://`, `ss://` or `socks://`. Or in
 the console:
 
@@ -366,7 +366,7 @@ What exactly it closes depends on the list mode, and the difference is large:
 | everything through the VPN | the whole way out — this is the full kill switch |
 
 Access to the router itself (LuCI, ssh) is untouched in either case. The switch
-is on the "Main" tab.
+is on the "Overview" tab.
 
 ---
 
@@ -502,16 +502,27 @@ and says they were "removed and migrated to XHTTP". What to do:
 
 ```sh
 V=26.7.28                       # the version that worked
-cd /usr/local/bin
-wget -O xray.zip "https://github.com/XTLS/Xray-core/releases/download/v$V/Xray-linux-arm64-v8a.zip"
-unzip -o xray.zip xray && mv xray "xray-$V" && chmod 755 "xray-$V"
+A=Xray-linux-arm64-v8a.zip      # see below how to find yours
+wget -O /tmp/xray.zip "https://github.com/XTLS/Xray-core/releases/download/v$V/$A"
+unzip -o /tmp/xray.zip xray -d /usr/local/bin && rm -f /tmp/xray.zip
+mv /usr/local/bin/xray "/usr/local/bin/xray-$V" && chmod 755 "/usr/local/bin/xray-$V"
 uci set byway.main.xray_bin="/usr/local/bin/xray-$V" && uci commit byway
 /etc/init.d/byway restart
 ```
 
+The archive is downloaded **into memory** (`/tmp`), not onto flash: next to the
+unpacked binary it would take room the router may not have.
+
 Pick the archive for your architecture (`arm64-v8a`, `mips`, `mipsle` and so on
-— see the release's file list). To find yours, run `uname -m` on the router —
-that is the same name used in the compatibility table below. **On MIPS without
+— see the release's file list). To find yours:
+
+```sh
+sed -n "s/^DISTRIB_ARCH='\([^']*\)'.*/\1/p" /etc/openwrt_release
+```
+
+⚠️ **Not `uname -m`:** on MIPS it answers `mips` for both byte orders, while
+the Xray builds for them differ — one picked blind simply will not start. The
+firmware knows better, and that is what byway asks. **On MIPS without
 an FPU this recipe does not work at all** — there the engine comes from the
 feed: `apk add xray-core` or `opkg install xray-core`. **Two engines do not
 always fit side by side:** the binary is about 18 MB on flash, so remove the old
@@ -525,10 +536,20 @@ by every user separately.
 
 ## Removal
 
+The installer puts the uninstaller next to the program, nothing to download:
+
 ```sh
-sh uninstall.sh              # settings and lists stay
-sh uninstall.sh --purge      # remove everything, including the key
-DRY_RUN=1 sh uninstall.sh    # show what would be done, change nothing
+byway-uninstall              # settings and lists stay
+byway-uninstall --purge      # remove everything, including the key
+DRY_RUN=1 byway-uninstall    # show what would be done, change nothing
+```
+
+⚠️ **Installed a version before 0.1.5?** Then you do not have that file -- it
+only appears at install time. Take it from the archive of the same tag:
+
+```sh
+wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/Tomonj1/byway/v0.1.5/uninstall.sh
+sh /tmp/byway-uninstall
 ```
 
 The script returns the network to its original state on its own: DNS goes back

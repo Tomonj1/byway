@@ -2,9 +2,12 @@
 #
 # Удаление byway с OpenWrt.
 #
-#     sh uninstall.sh            снять byway, настройки и списки оставить
-#     sh uninstall.sh --purge    снять всё, включая ключ и списки
-#     DRY_RUN=1 sh uninstall.sh  показать, что было бы сделано, не делая
+# Установщик кладёт этот файл на роутер как `byway-uninstall`, поэтому
+# зовут его по имени, а не через `sh`:
+#
+#     byway-uninstall            снять byway, настройки и списки оставить
+#     byway-uninstall --purge    снять всё, включая ключ и списки
+#     DRY_RUN=1 byway-uninstall  показать, что было бы сделано, не делая
 #
 # Порядок здесь важнее содержания. byway уводит dnsmasq на свой DNS-вход, и
 # если сначала удалить программу, а потом спохватиться, дом останется с
@@ -47,7 +50,7 @@ t() {
       "удалены, включая ключ VPN") printf %s "removed, the VPN key included" ;;
       "── 6. Настройки и списки ОСТАВЛЕНЫ ──") printf %s "── 6. Settings and lists are KEPT ──" ;;
       "    /etc/config/byway и /etc/byway/ на месте") printf %s "    /etc/config/byway and /etc/byway/ are still there" ;;
-      "    удалить вместе с ключом: sh uninstall.sh --purge") printf %s "    remove them together with the key: sh uninstall.sh --purge" ;;
+      "    удалить вместе с ключом: byway-uninstall --purge") printf %s "    remove them together with the key: byway-uninstall --purge" ;;
       "это был сухой прогон — на роутере ничего не изменилось") printf %s "that was a dry run — nothing on the router changed" ;;
       "Готово. Интернет работает, туннеля нет.") printf %s "Done. The internet works, there is no tunnel." ;;
       "Что НЕ трогалось: движок Xray, zapret, настройки сети.") printf %s "What was NOT touched: the Xray core, zapret, your network settings." ;;
@@ -117,8 +120,27 @@ else
     _mine=$(uci -q get byway.main.dns_listen 2>/dev/null || true)
     [ -n "$_mine" ] || _mine=127.0.0.42
     if [ -f /etc/byway/dns-saved ]; then
+        # ⚠️ Запоминаем ТЕКУЩИЙ список до удаления: в нём могли появиться
+        # доменные записи (server=/nas.lan/192.168.1.5), заведённые уже после
+        # снимка -- руками или на странице DHCP. В снимок они не попали, а
+        # возврат по снимку сносил их вместе со всем списком. В самом byway
+        # (dns_down) это починено, а сюда, в ручную ветку, правка не доехала.
+        # Найдено третьим аудитом 2026-09-07.
+        _dcur=$(uci -q get dhcp.@dnsmasq[0].server 2>/dev/null || true)
         do_ uci -q delete dhcp.@dnsmasq[0].server
+        _dseen=" "
         for _s in $(sed -n 's/^server=//p' /etc/byway/dns-saved); do
+            case "$_dseen" in *" $_s "*) continue ;; esac
+            _dseen="$_dseen$_s "
+            do_ uci add_list "dhcp.@dnsmasq[0].server=$_s"
+        done
+        # Возвращаем только доменные записи: всё прочее -- апстримы, и про них
+        # решает снимок.
+        for _s in $_dcur; do
+            case "$_s" in /*) ;; *) continue ;; esac
+            case "$_dseen" in *" $_s "*) continue ;; esac
+            case "$_s" in *"$_mine"*) continue ;; esac
+            _dseen="$_dseen$_s "
             do_ uci add_list "dhcp.@dnsmasq[0].server=$_s"
         done
         if [ "$(sed -n '1s/^noresolv=//p' /etc/byway/dns-saved)" = "1" ]; then
@@ -247,6 +269,10 @@ fi
 echo
 say "── 5. Файлы ──"
 do_ rm -f /usr/local/bin/byway
+# Себя тоже. Удаляем ПОСЛЕДНИМ действием такого рода: файл уже прочитан
+# оболочкой целиком, дальше он ей не нужен. Оставленный, он был бы единственным
+# следом byway на роутере после удаления.
+do_ rm -f /usr/local/bin/byway-uninstall /usr/bin/byway-uninstall
 do_ rm -f /usr/bin/byway
 do_ rm -rf /www/luci-static/resources/view/byway
 do_ rm -rf /www/luci-static/resources/byway
@@ -284,6 +310,7 @@ say "программа и панель удалены"
 # узнал бы об этом после sysupgrade, когда откатываться некуда.
 KEEP_RE='^/etc/init\.d/byway$\|^/etc/rc\.d/[SK][0-9]*byway$'
 KEEP_RE="$KEEP_RE"'\|^/usr/local/bin/byway$\|^/usr/bin/byway$'
+KEEP_RE="$KEEP_RE"'\|^/usr/local/bin/byway-uninstall$\|^/usr/bin/byway-uninstall$'
 [ "$PURGE" = "1" ] && KEEP_RE="$KEEP_RE"'\|^/etc/byway/$'
 if [ -f /etc/sysupgrade.conf ]; then
     if [ "$DRY" = "1" ]; then
@@ -310,7 +337,7 @@ if [ "$PURGE" = "1" ]; then
 else
     say "── 6. Настройки и списки ОСТАВЛЕНЫ ──"
     say "    /etc/config/byway и /etc/byway/ на месте"
-    say "    удалить вместе с ключом: sh uninstall.sh --purge"
+    say "    удалить вместе с ключом: byway-uninstall --purge"
 fi
 
 echo

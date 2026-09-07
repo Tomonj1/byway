@@ -11,6 +11,17 @@
 var _ = function (s) { return lang.tr(s); };
 
 var HOSTNAME = null;
+/* Скрытая опция не должна стираться при сохранении. LuCI удаляет всё, что
+   спрятано через depends, -- и переключение режима на «Всё через VPN» уносило
+   из UCI список подключённых пресетов и период их обновления. Своя копия
+   функции: в overview.js такая уже есть, но общего модуля у вкладок нет.
+   Найдено третьим аудитом 2026-09-07. */
+function keepHidden(section_id) {
+	if (this.isActive(section_id))
+		return form.Value.prototype.remove.apply(this, arguments);
+	return Promise.resolve();
+}
+
 function setTitle() {
 	if (HOSTNAME === null)
 		HOSTNAME = (document.title.split(/\s[-|—]\s/)[0] || '').trim();
@@ -126,11 +137,19 @@ return view.extend({
 		o.value('itdoginfo-block', _('itdoginfo: заблокированное в РФ'));
 		o.value('itdoginfo-subnets', _('itdoginfo: подсети сервисов и хостеров — широкие, byway скажет насколько'));
 		o.depends('list_mode', 'lists');
+		/* ⚠️ Скрытое поле НЕ стираем. `depends` прячет опцию при переключении
+		   режима на «Всё через VPN», а LuCI на сохранении удаляет всё
+		   скрытое: список подключённых пресетов и период их обновления
+		   пропадали из UCI молча, и вернуть их было можно только руками.
+		   Найдено третьим аудитом 2026-09-07; та же защита стоит в
+		   overview.js. */
+		o.remove = keepHidden;
 
 		o = s.option(form.Value, 'lists_update', _('Обновлять сами'),
 			_('Пусто — только по кнопке. Словами: 12h, 2h37m, 1d, 90m; число — минуты. Меньше 30m нельзя.'));
 		o.placeholder = '12h';
 		o.depends('list_mode', 'lists');
+		o.remove = keepHidden;
 		o.validate = function (section, value) {
 			if (!value || value === '0') return true;
 			if (!/^([0-9]+d)?([0-9]+h)?([0-9]+m)?$|^[0-9]+$/.test(value))

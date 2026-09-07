@@ -49,6 +49,8 @@ byway %s — раздельное туннелирование через VPN\n\
 нет %s	no %s
 конфигурация %s	configuration %s
 ключ задан, режим: %s	key is set, mode: %s
+подключение	connection
+ключ	key
 правил firewall с меткой %s: %s	firewall rules with mark %s: %s
 правил firewall с нашей меткой: %s	firewall rules with our mark: %s
 %s байт	%s bytes
@@ -58,6 +60,7 @@ byway %s — раздельное туннелирование через VPN\n\
 byway: неизвестная команда «%s». Список: byway\n	byway: unknown command «%s». The list: byway\n
 транспорт   %s / %s%s\n	transport   %s / %s%s\n
 ключ        %s\n	key         %s\n
+свой конфиг	your own config
 ВНИМАНИЕ    конфиг собран для другого режима, пересобрать: byway gen\n	WARNING     config was built for another mode, rebuild it: byway gen\n
 движок      %s\n	engine      %s\n
 в tproxy    %s пакетов\n	in tproxy   %s packets\n
@@ -110,7 +113,7 @@ mkcp идёт поверх UDP, а в РФ UDP душат первым дело�
 header и seed у mkcp свежие Xray удалили (замена: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- оставляю как в ссылке; отвергнет движок, конфиг не заменится	recent Xray versions removed mkcp's header and seed (replacement: finalmask/udp header-*, mkcp-original, mkcp-aes128gcm) -- keeping them as given in the link; if the engine rejects them, the config is not replaced
 HTTP/2 из Xray удалён, замена: xhttp в режиме stream-one	HTTP/2 has been removed from Xray, replacement: xhttp in stream-one mode
 QUIC из Xray удалён, замена: xhttp stream-one поверх H3; в РФ QUIC блокируют первым делом	QUIC has been removed from Xray, replacement: xhttp stream-one over H3; QUIC is the first thing blocked in Russia
-транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, h2/http, quic, httpupgrade, xhttp
+транспорт %s не поддержан — есть ws, tcp/raw, kcp, grpc, httpupgrade, xhttp	transport %s is not supported — available: ws, tcp/raw, kcp, grpc, httpupgrade, xhttp
 allowInsecure=1: проверка сертификата сервера отключена, соединение можно подменить	allowInsecure=1: the server certificate is not verified, the connection can be spoofed
 security=%s не поддержан	security=%s is not supported
 flow=%s с транспортом %s не работает: Xray примет конфиг и сломается в бою	flow=%s does not work with transport %s: Xray will accept the config and break in use
@@ -407,6 +410,8 @@ byway выключен настройкой	byway is switched off in the setting
 byway не поднимется ни сейчас, ни после перезагрузки: поставить заново	byway will not come up now or after a reboot: install it again
 служба в автозапуске	the service is in autostart
 служба НЕ в автозапуске	the service is NOT in autostart
+  записей списка перебиты пинами в /etc/hosts: %s	  list entries overridden by pins in /etc/hosts: %s
+  dnsmasq ответит по пину, подставного адреса не будет — в туннель они НЕ пойдут	  dnsmasq will answer from the pin, there will be no placeholder address — they will NOT go through the tunnel
 сейчас работает, но после перезагрузки туннеля не будет: /etc/init.d/byway enable	it runs now, but after a reboot there will be no tunnel: /etc/init.d/byway enable
 список доменов: %s записей (своих %s)	domain list: %s entries (%s of them your own)
 уровень журнала «%s» не годится, беру warning	log level "%s" is not usable, falling back to warning
@@ -425,6 +430,7 @@ itdoginfo: подсети для сервисов, которые работаю
 обновлено до %s, %s\n	updated to %s, %s\n
 ОТКАТ с %s на %s, %s\n	ROLLBACK from %s to %s, %s\n
 он метит трафик и перехватывает те же порты — оставить что-то одно: /etc/init.d/%s stop && /etc/init.d/%s disable	it marks traffic and intercepts the same ports — keep one of the two: /etc/init.d/%s stop && /etc/init.d/%s disable
+след виден в ядре: своя таблица nft либо правило на таблицу маршрутизации %s. Оставить что-то одно: /etc/init.d/%s stop && /etc/init.d/%s disable	the trace is visible in the kernel: its own nft table, or a rule pointing at routing table %s. Keep only one of them: /etc/init.d/%s stop && /etc/init.d/%s disable
 %s=<скрыто>\n	%s=<hidden>\n
 # программа: byway %s\n	# program: byway %s\n
 # снято: %s с %s\n	# taken: %s from %s\n

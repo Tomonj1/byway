@@ -88,7 +88,13 @@ return view.extend({
 		var st = ((data[2] || {}).stdout || '');
 		var mt = st.match(/(?:транспорт|transport)\s+(\S+)/);
 		var tnow = mt ? mt[1] : '';
-		var muxOff = /^(xhttp|grpc)$/.test(tnow) || /vision/.test(st);
+		/* ⚠️ Судим по ФАКТУ, а не по имени транспорта. byway дописывает
+		   «, mux=N» в строку статуса только когда mux действительно собран,
+		   значит его отсутствие при непустой настройке и есть ответ. Прежде
+		   список имён ловил xhttp и grpc, а `vision` искался в статусе, где
+		   его нет вовсе: у ключа с flow=xtls-rprx-vision предупреждение не
+		   показывалось. Найдено третьим аудитом 2026-09-07. */
+		var muxOff = !!tnow && !/mux=/.test(st);
 
 		o = s.option(form.Value, 'mux_concurrency', 'Mux',
 			_('Сколько потоков в одно соединение. 0 — выключено, разумно 4–8. Помогает WebSocket, HTTPUpgrade и HTTP/2, где каждое соединение обходится дорого. XHTTP, gRPC и xtls-rprx-vision мультиплексируют сами — им второй слой мешает, и byway отключает mux.'));
