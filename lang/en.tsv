@@ -145,6 +145,7 @@ byway import ФАЙЛ [--no-key] — файл от byway export	byway import FIL
 настройки неизвестны и пропущены:%s	unknown settings, skipped:%s
 принято настроек: %s	settings accepted: %s
 ключ оставлен прежний	the key was left as it was
+в выгрузке ключ ЕСТЬ, но принят не был -- так велит --no-key (в панели это галочка «Оставить нынешний ключ»)	the export DOES have a key, but it was not taken -- that is what --no-key says (in the web UI it is the "Keep the current key" checkbox)
 применено. Перезапустить: /etc/init.d/byway restart	applied. To restart: /etc/init.d/byway restart
 конфиг не собрался — прежние настройки возвращаются на место	the config did not build — the previous settings are put back
 настройки из файла не приняты, прежние на месте	the settings from the file were not accepted, the previous ones are in place
