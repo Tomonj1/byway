@@ -43,6 +43,7 @@ return view.extend({
 	},
 
 	render: function (data) {
+		var impBtn = null;   /* кнопка приёма -- нужна после отрисовки */
 		setTitle();
 
 		var m = new form.Map('byway', _('Обслуживание'));
@@ -215,11 +216,12 @@ return view.extend({
 		scratch(impNoKey);
 		impNoKey.load = function () { return '0'; };
 
+		/* Порядок: вставил текст -> нажал -> прочитал ответ. Прежде «Ответ»
+		   стоял НАД кнопкой, и читалось это как «сначала ответ, потом
+		   действие». */
 		var impMsg = bwui.output('');
-		o = ss.option(form.DummyValue, '_inmsg', _('Ответ'));
-		o.cfgvalue = function () { return impMsg; };
-
 		o = ss.option(form.Button, '_take', _('Принять'));
+		impBtn = o;
 		o.inputstyle = 'negative';
 		o.inputtitle = _('Принять');
 		o.onclick = function () {
@@ -256,6 +258,9 @@ return view.extend({
 				bwui.say(impMsg, _('Приём идёт дольше, чем панель готова ждать. На роутере он продолжается — откройте вкладку заново через минуту и посмотрите «Полное состояние».'));
 			});
 		};
+
+		o = ss.option(form.DummyValue, '_inmsg', _('Ответ'));
+		o.cfgvalue = function () { return impMsg; };
 
 		/* ── Обновление ───────────────────────────────────────────────── */
 
@@ -309,7 +314,36 @@ return view.extend({
 		o = ss.option(form.DummyValue, '_status', _('Сводка'));
 		o.cfgvalue = function () { return bwui.table(data[1] || ''); };
 
-		return m.render();
+		/* Кнопка «Принять» показывается, только когда в поле есть текст.
+		   Пустая кнопка рядом с пустым полем -- это приглашение нажать её и
+		   получить отказ; владелец на приёмке спросил ровно это: «я вставил
+		   текст, а что дальше то?».
+
+		   Делаем ПОСЛЕ отрисовки и в try: виджет доступен только собранным, а
+		   если тема поменяет разметку -- кнопка просто останется видна, как
+		   была. Отказ здесь не должен ронять вкладку. */
+		return m.render().then(function (node) {
+			try {
+				var ui = impIn.getUIElement('main');
+				var btn = impBtn.map.findElement('[data-name="_take"]') ||
+					(impBtn.getUIElement('main') || {}).node;
+				var row = btn && btn.closest ? btn.closest('.cbi-value') : null;
+				if (ui && row) {
+					var sync = function () {
+						row.style.display =
+							(ui.getValue() || '').trim() ? '' : 'none';
+					};
+					sync();
+					var el = ui.node && ui.node.querySelector
+						? ui.node.querySelector('textarea') : null;
+					if (el) {
+						el.addEventListener('input', sync);
+						el.addEventListener('change', sync);
+					}
+				}
+			} catch (e) { /* кнопка останется видимой -- это не поломка */ }
+			return node;
+		});
 	},
 
 	/* Таблица «Записи» и кнопка очистки заводятся при отрисовке, по

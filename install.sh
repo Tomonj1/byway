@@ -57,8 +57,6 @@ t() {
     [ "$LANG_EN" = 1 ] || { printf %s "$1"; return 0; }
     case "$1" in
       "── Проверка окружения ──") printf %s "── Checking the environment ──" ;;
-      "[Д/н]") printf %s "[Y/n]" ;;
-      "[д/Н]") printf %s "[y/N]" ;;
       "-- по умолчанию:") printf %s "-- default:" ;;
       "── Установка ──") printf %s "── Installing ──" ;;
       "── Готово ──") printf %s "── Done ──" ;;
@@ -375,7 +373,10 @@ ask() {   # $1 вопрос, $2 умолчание y|n -- отвечает ко�
     # Буквы подсказки тоже переводятся: английский читатель видел «[Д/н]» и
     # не знал, что нажимать -- хотя ответ на латинице принимается ниже.
     # Найдено третьим аудитом 2026-09-07.
-    if [ "$2" = y ]; then _d=$(t "[Д/н]"); else _d=$(t "[д/Н]"); fi
+    # Латиница в обоих языках: в терминале работают на английской раскладке,
+    # и предложить кириллическую букву -- значит попросить переключиться ради
+    # одного нажатия. Ответ принимается любой: y, n, д, н.
+    if [ "$2" = y ]; then _d="[Y/n]"; else _d="[y/N]"; fi
     printf '\033[1;36m[?]\033[0m %s %s ' "$(t "$1")" "$_d" > /dev/tty
     read -r _a < /dev/tty || _a=""
     case "$_a" in
@@ -900,7 +901,11 @@ fi
 have_base64() { printf x | base64 >/dev/null 2>&1; }
 
 if ! have_base64; then
-    if ask "Поставить base64? Нужен только для ключей vmess:// и ss://" y; then
+    # Умолчание -- НЕТ: base64 нужен только ключам vmess:// и ss://, а
+    # подавляющее большинство ключей сегодня vless://. Ставить пакет на флеш
+    # «на всякий случай» -- не то, что делают по умолчанию на роутере с
+    # сорока мегабайтами. Просьба владельца на приёмке 2026-09-07.
+    if ask "Поставить base64? Нужен только для ключей vmess:// и ss://" n; then
         add_pkg coreutils-base64 || true   # см. про set -e у вызова для модулей
         have_base64 ||
             { warn "не поставился: ключи vmess и ss разобрать не выйдет"; pkg_why; }
@@ -1211,7 +1216,7 @@ _H "  1  The VPN key — web UI, Services → Byway → Overview, or by command:
 _C "uci set byway.main.node_url='vless://…'"
 _C "uci set byway.main.enabled=1"
 _C "uci commit byway"
-_H "  2  Start it (autostart is already registered):"
+_H "  2  Start it now — at every later boot it starts on its own:"
 _C "/etc/init.d/byway start"
 _H "  3  Lists — AFTER the tunnel is up:"
 _C "uci add_list byway.main.preset=byway"
@@ -1243,7 +1248,7 @@ _H "  1  Ключ VPN — в панели «Сервисы → Byway → Осн�
 _C "uci set byway.main.node_url='vless://…'"
 _C "uci set byway.main.enabled=1"
 _C "uci commit byway"
-_H "  2  Запуск (в автозапуск установщик уже внёс):"
+_H "  2  Запустить сейчас — при загрузке роутера дальше сам:"
 _C "/etc/init.d/byway start"
 _H "  3  Списки — ПОСЛЕ того, как туннель поднялся:"
 _C "uci add_list byway.main.preset=byway"
