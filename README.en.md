@@ -599,9 +599,8 @@ time zones, whether the README matches what the code actually does. Every findin
 checked by a separate sceptic given the **opposite** task: to refute it, not to
 confirm it.
 
-There have been three reviews, all closed: 106 findings in a review of the
-code, 34 in a review of the web UI, and 98 more in a second review of the code
-that ran in four passes.
+There have been several such reviews: of the code, of the web UI, and a second
+pass over the code that ran in four rounds. Everything they found is closed.
 
 **What reading does not catch — and what was done about it.** Two things were
 missed by every pass; both were caught by a parser, `nft -c`.
