@@ -27,7 +27,7 @@ your VPN, the rest goes direct. The engine is
 > |---|---|
 > | fully verified | Cudy WR3000S v1 (MT7981, aarch64), OpenWrt 25.12.5 |
 > | verified on a test bench | install and removal on 22.03–25.12, both package managers; install on aarch64 and mipsel |
-> | never verified at all | IPv6, behaviour under load, daily life on anything but MT7981 |
+> | never verified at all | IPv6 (written, but has never seen live traffic), behaviour under load, daily life on anything but MT7981 |
 >
 > **The code was written by an AI** — Claude, to a human's brief and
 > corrections. That is said up front rather than in a footnote:
@@ -259,6 +259,14 @@ cure for every fault.
   matters to you more than the free space —
   [say so](https://github.com/tomon-one/byway/issues), it is not hard to add. Non-Latin domains go in punycode. A line that does
   not parse is named out loud at build time and left out of the list.
+- **Both address families.** IPv4 and IPv6: their own rule sets, their own
+  fake pool, their own routing rule — all in one firewall table, not a second
+  one beside it. The "no traffic outside the VPN" block covers both as well.
+  ⚠️ **Experimental and off by default:** the rules are accepted by kernels
+  22.03 and 25.12, but the author has no IPv6 and there was nowhere to verify
+  them. Turn it on with `uci set byway.main.ipv6=1 && uci commit byway`; a
+  report on how it behaved is [the most useful thing you can
+  send](https://github.com/tomon-one/byway/issues).
 - **Two modes.** "By lists" — only what is listed goes through the VPN.
   "Everything through the VPN" — all traffic, with a separate checkbox that
   keeps `.ru`, `.su` and `.рф` domains direct.
