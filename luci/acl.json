@@ -26,10 +26,7 @@
 				"/usr/local/bin/byway": [ "exec" ],
 				"/etc/init.d/byway": [ "exec" ]
 			},
-			"uci": [ "byway" ],
-			"ubus": {
-				"luci": [ "setInitAction" ]
-			}
+			"uci": [ "byway" ]
 		}
 	}
 }

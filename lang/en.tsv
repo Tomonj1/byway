@@ -406,8 +406,6 @@ firewall4 не найден — вероятно firewall3, 21.02 и старш�
 задачи cron есть, но crond не работает	cron jobs are present, but crond is not running
 перехват и резолвер согласованы по сетям	interception and the resolver agree on which networks they cover
 час автообновления «%s» не годится, взято 04	auto-update hour «%s» will not do, 04 taken instead
-часовой пояс роутера не задан (%s) — окно обновления придётся на %s:00 UTC	the router time zone is not set (%s) — the update window will fall on %s:00 UTC
-пояс %s (%s), обновление в %s:00 по часам роутера — сейчас %s	zone %s (%s), update at %s:00 by the router clock — now %s
 в cron не хватает задач byway (watch: %s, stat: %s)	cron is missing byway jobs (watch: %s, stat: %s)
 сети с нашим резолвером, но без перехвата:%s	networks served by our resolver but not intercepted:%s
 byway включён, движок работает	byway is on, the engine is running
@@ -467,7 +465,6 @@ itdoginfo: подсети для сервисов, которые работаю
 автообновление: %s не скачалось, работает прежняя	auto-update: %s did not download, the previous one keeps running
 byway положен не установщиком -- обновление пропускается. Лечится запуском install.sh из поставки	byway was not put here by the installer -- the update is skipped. Cure: run install.sh from the delivery
 своя правка не будет перетёрта: обновление пропускается намеренно	your own edit will not be overwritten: the update is skipped on purpose
-у вас это не ночь: в Москве это на три часа позже, во Владивостоке на десять — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].zonename=...	for you that is not night: three hours later in Moscow, ten in Vladivostok -- a service restart in the middle of the day. Cure: LuCI (System -> General Settings -> Timezone) or uci set system.@system[0].zonename=...
 движок не запущен или упал: /etc/init.d/byway restart, затем byway status и logread -e xray	the core is not running or has crashed: /etc/init.d/byway restart, then byway status and logread -e xray
 ничего работать и не должно: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart	nothing is supposed to work: uci set byway.main.enabled=1 && uci commit byway && /etc/init.d/byway restart
 без него не ходят ни сторож обвязки, ни учёт, ни обрезка журналов: /etc/init.d/cron enable && /etc/init.d/cron start	without it the plumbing watchdog, the usage count and the log trimming all stop: /etc/init.d/cron enable && /etc/init.d/cron start
@@ -491,3 +488,15 @@ dnsmasq отвечает по пину сам, подставного адрес
 маршрут решает DNS: устройство с «Приватным DNS», DoH в браузере или чужим резолвером в настройках уйдёт напрямую, и byway этого не увидит. Лечится либо выключением шифрованного DNS на устройствах, либо перехватом 53-го порта в firewall, либо добавлением к доменам ПОДСЕТЕЙ сервиса: подсеть работает по адресу, а значит и для того, кто спросил адрес не у нас. Третий способ проще двух первых, но покрывает ТОЛЬКО IPv4: клиент, получивший AAAA, уйдёт мимо подсетей	DNS decides the route: a device with Private DNS, DoH in the browser or a foreign resolver in its settings goes direct, and byway will not see it. Fix it either by turning encrypted DNS off on the devices, or by intercepting port 53 in the firewall, or by adding the service SUBNETS next to the domains: a subnet works by address, and therefore also for whoever asked someone else for that address. The third way is simpler than the first two, but covers IPv4 ONLY: a client that got an AAAA record will bypass the subnets
 заворот работает по доменам списка: наполнить список либо подключить готовый	the redirect works by the domains of the list: fill the list in or connect a ready-made one
 поднять обвязку заново: byway plumb off && byway plumb on	bring the plumbing back up: byway plumb off && byway plumb on
+ОТКАТ НЕ УДАЛСЯ: на диске %s, копия в %s\n	ROLLBACK FAILED: %s is on disk, the copy is in %s\n
+часы роутера идут по UTC (timezone=%s) — окно обновления придётся на %s:00 UTC	the router clock runs on UTC (timezone=%s) - the update window will fall on %s:00 UTC
+часы %s (%s, смещение %s), обновление в %s:00 по часам роутера — сейчас %s	clock %s (%s, offset %s), update at %s:00 by the router clock - now %s
+выпуск %s не поднялся и больше не ставится сам	release %s did not come up and is no longer installed on its own
+прежняя таблица не снялась — %s	the previous table was not removed - %s
+адрес подписки указывает на сам роутер	the subscription address points at the router itself
+адрес подписки ведёт внутрь сети (%s) — byway туда не ходит	the subscription address leads inside the network (%s) - byway does not go there
+автообновление: копия для отката не сделалась -- установка ОТМЕНЕНА (место на /overlay?)	auto-update: the rollback copy was not made - installation CANCELLED (space on /overlay?)
+автообновление: ОТКАТ НЕ УДАЛСЯ -- на диске %s, копия в %s. Восстановить руками: cp %s /usr/local/bin/byway	auto-update: ROLLBACK FAILED - %s is on disk, the copy is in %s. Restore by hand: cp %s /usr/local/bin/byway
+у вас это не ночь: в Москве это на три часа позже, во Владивостоке на десять — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].timezone=... (именно timezone: zonename часы не двигает)	that is not night where you are: three hours later in Moscow, ten in Vladivostok - the service restarts in the middle of the day. Fix it in LuCI (System - General Settings - Timezone) or uci set system.@system[0].timezone=... (timezone exactly: zonename does not move the clock)
+если причина устранена — поставить вручную: byway update --force	if the cause is gone - install it by hand: byway update --force
+без ярлыка	no label
