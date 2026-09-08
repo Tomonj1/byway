@@ -10,7 +10,7 @@ your VPN, the rest goes direct. The engine is
 
 ![OpenWrt 22.03+](https://img.shields.io/badge/OpenWrt-22.03%2B-00B5E2)
 ![engine Xray-core](https://img.shields.io/badge/engine-Xray--core-333)
-![IPv4 only](https://img.shields.io/badge/IP-IPv4%20only-orange)
+![IPv6 experimental](https://img.shields.io/badge/IPv6-experimental-orange)
 ![GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)
 
 *[Русская версия](README.md)*
@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.1.5.** byway runs every day on one
+> **Version 0.2.0.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -114,15 +114,18 @@ loud.
 
 Worth knowing before installing, not after.
 
-- **IPv4 only.** With IPv6 up, some connections will bypass byway.
+- **IPv6 — experimental, off by default.** Turn it on with
+  `uci set byway.main.ipv6=1`. Both families are intercepted: their own nft
+  sets, their own fake pool (`fc00::/18`), their own routing rule.
 
-  > **IPv6 is planned — and it needs a person who has IPv6.** The reason it is
-  > missing is not laziness: the ISP byway was written on does not provide it, so
-  > there was nowhere to verify interception. Rules written blind
-  > are **worse than no rules** in an interception path — they quietly send part
-  > of the traffic the wrong way, and it can take weeks to notice. If you have
-  > IPv6 and are willing to test on your own router,
-  > [say so](https://github.com/tomon-one/byway/issues).
+  > **IPv6 has never been verified with real traffic.** The rules are accepted
+  > by kernels 25.12.5 and 22.03.7 and were read line by line — that is all.
+  > The ISP byway was written on does not provide IPv6. Rules written blind are
+  > **worse than no rules** in an interception path — they quietly send part of
+  > the traffic the wrong way, and it can take weeks to notice. If you have IPv6
+  > and are willing to test on your own router,
+  > [say so](https://github.com/tomon-one/byway/issues) — a report is needed
+  > exactly here.
 
 - **No `hysteria2`, `tuic`, `wireguard`** — they are not in Xray-core.
 - **One engine — Xray-core, and no second one is planned.** byway's plumbing
@@ -164,7 +167,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -175,7 +178,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -183,8 +186,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.1.5.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.5
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.0.tar.gz
+tar xzf byway.tar.gz && cd byway-0.2.0
 sh install.sh
 ```
 
@@ -445,7 +448,7 @@ than `wget` (busybox's wget cannot do proxies):
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
 ```
 
 An update does not touch settings or lists. Clear the browser cache afterwards —
@@ -576,7 +579,7 @@ DRY_RUN=1 byway-uninstall    # show what would be done, change nothing
 only appears at install time. Take it from the archive of the same tag:
 
 ```sh
-wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/uninstall.sh
+wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 

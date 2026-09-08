@@ -288,7 +288,22 @@ service_started() {
 	# продолжаются -- и остаются в системном журнале.
 	(
 		for _try in 1 2 3; do
-			"$BYWAY" plumb on && exit 0
+			if "$BYWAY" plumb on; then
+				# ⚠️ Файл убираем ЗДЕСЬ, а не только в stop. Цикл кончается
+				# обычно через секунду, а номер лежал в файле до следующей
+				# остановки службы -- то есть неделями, и к тому моменту
+				# принадлежал уже постороннему процессу.
+				#
+				# Свой номер берём из /proc/self: $$ в подоболочке -- это
+				# номер РОДИТЕЛЯ, не наш. Сверяем перед удалением, иначе
+				# затрём чужую запись, если родитель ещё не успел писать.
+				read _me _rest < /proc/self/stat 2>/dev/null || _me=""
+				if [ -n "$_me" ] &&
+				   [ "$(cat /var/run/byway-plumb.pid 2>/dev/null)" = "$_me" ]; then
+					rm -f /var/run/byway-plumb.pid 2>/dev/null
+				fi
+				exit 0
+			fi
 			[ "$_try" = 3 ] && break
 			logger -t byway "обвязка не поднялась с попытки $_try, жду и пробую снова"
 			sleep 10
@@ -319,10 +334,19 @@ stop_service() {
 		# замок держит её внук `byway plumb on`. Убив только её, мы оставляли
 		# замок занятым, и следующий за этим `plumb off` уходил ждать
 		# тридцать секунд и отказывал, ничего не сняв.
-		kill "$_pp" 2>/dev/null || true
-		for _cp in $(pgrep -P "$_pp" 2>/dev/null || true); do
-			kill "$_cp" 2>/dev/null || true
-		done
+		# ⚠️ И только если номер ВСЁ ЕЩЁ наш. Цикл давно кончился, номер
+		# переиспользован ядром, и kill от root уходил в постороннее --
+		# на шлюзе это dnsmasq, odhcpd, crond или uhttpd, а следом
+		# pgrep -P добивал его детей. Последствие -- от «пропал DNS» до
+		# «пропал интернет и панель», причём byway отчитывался об
+		# успехе. Вероятность росла с временем непрерывной работы.
+		# Найдено четвёртым аудитом, заход 3.
+		if tr '\0' ' ' < "/proc/$_pp/cmdline" 2>/dev/null | grep -q byway; then
+			kill "$_pp" 2>/dev/null || true
+			for _cp in $(pgrep -P "$_pp" 2>/dev/null || true); do
+				kill "$_cp" 2>/dev/null || true
+			done
+		fi
 		rm -f /var/run/byway-plumb.pid 2>/dev/null || true
 	fi
 	# --service, а не голый off: эта форма НЕ ставит метку «сняли руками».

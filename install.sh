@@ -66,6 +66,9 @@ t() {
       "поставка распакована: %s") printf %s "delivery unpacked: %s" ;;
       "не удалось получить поставку — скачать архив с github.com/%s и запустить install.sh из него") printf %s "could not get the delivery — download the archive from github.com/%s and run install.sh from it" ;;
       "движок записан в настройки: %s") printf %s "the core is recorded in the settings: %s" ;;
+      "движок не найден: byway установлен, но служба не поднимется") printf %s "core not found: byway is installed, but the service will not start" ;;
+      "  указать путь: uci set byway.main.xray_bin=/путь/к/xray && uci commit byway") printf %s "  set the path: uci set byway.main.xray_bin=/path/to/xray && uci commit byway" ;;
+      "движок не поднялся — смотреть: logread -e byway") printf %s "the core did not come up — see: logread -e byway" ;;
       "движок уже указан в настройках: %s") printf %s "the core is already set in the settings: %s" ;;
       "не удалось положить %s — проверить место на флеше и права") printf %s "could not put %s in place — check free flash and permissions" ;;
       "рядом лежит НЕПОЛНАЯ поставка, не хватает:%s") printf %s "the delivery next to the script is INCOMPLETE, missing:%s" ;;
@@ -180,7 +183,7 @@ FATAL=0   # непоправимое: система не того поколе�
 # а не «последняя»: установщик и файлы, которые он кладёт, обязаны быть одного
 # тега, иначе панель окажется новее программы или наоборот.
 REPO=tomon-one/byway
-VER=0.1.5
+VER=0.2.0
 # Версия движка, на которой byway проверялся целиком -- на живом роутере, с
 # поднятым туннелем и реальным трафиком. Правится вместе с выпуском: протухшая
 # «проверенная» хуже её отсутствия.
@@ -843,7 +846,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
         case "$_c" in
           2) warn "движок не ставится: указать путь после установки"
              warn "  uci set byway.main.xray_bin=/путь/к/xray && uci commit byway"
-             _c=3 ;;
+             _c=9 ;;
           *) _c=1 ;;
         esac
     else
@@ -861,7 +864,7 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
           3)     _ver=$(xray_ver_top stable) ;;
           4)     warn "движок не ставится: указать путь после установки"
                  warn "  uci set byway.main.xray_bin=/путь/к/xray && uci commit byway"
-                 _c=3 ;;
+                 _c=9 ;;
           # Номером -- чтобы не заставлять выбирать из списка того, кто уже
           # знает, что ему нужно.
           [0-9]*.[0-9]*) _ver=$_c ;;
@@ -869,10 +872,19 @@ elif ! command -v xray >/dev/null 2>&1 && [ ! -x /usr/bin/xray ] &&
                  _ver=$XRAY_TESTED ;;
         esac
         # Итог складываем в _c ЯВНО: 0 -- движок уже стоит, 1 -- ставить из
-        # прошивки, 3 -- не ставить вовсе. Прежде здесь стоял разбор «всё, что
+        # прошивки, 9 -- не ставить вовсе. Прежде здесь стоял разбор «всё, что
         # не 3, считаем единицей» -- и после удачной загрузки с GitHub он
         # ставил движок ВТОРОЙ раз, из фида. Найдено при этой же правке.
-        if [ "$_c" != 3 ]; then
+        #
+        # ⚠️ Служебный код -- 9, и это не вкусовщина. Он был 3, то есть
+        # СОВПАДАЛ с номером пункта меню «самую свежую стабильную»: ответ «3»
+        # проходил в case, честно спрашивал у GitHub номер выпуска, а потом
+        # оба блока установки пропускались этим самым условием. Роутер
+        # оставался с полностью установленным byway БЕЗ движка, служба не
+        # стартовала, а установщик отчитывался успехом -- предупреждение
+        # печатал только пункт 4. Хуже отказа: отказ виден. Найдено четвёртым
+        # аудитом, заход 3.
+        if [ "$_c" != 9 ]; then
             if [ -z "$_ver" ]; then
                 warn "не удалось спросить у GitHub номер версии -- берётся из прошивки"
                 _c=1
@@ -1054,6 +1066,13 @@ if [ -z "$(uci -q get byway.main.xray_bin)" ]; then
     if [ -n "$XRAY_PATH" ] && [ -x "$XRAY_PATH" ]; then
         uci set byway.main.xray_bin="$XRAY_PATH" && uci commit byway
         sayf "движок записан в настройки: %s" "$XRAY_PATH"
+    else
+        # Движка нет НИ ОДНОГО, и молчать об этом нельзя: byway при этом
+        # установлен целиком, а служба не стартует. Без этой ветки установка
+        # объявлялась удавшейся -- и человек шёл искать поломку в панели.
+        warn "движок не найден: byway установлен, но служба не поднимется"
+        warn "  указать путь: uci set byway.main.xray_bin=/путь/к/xray && uci commit byway"
+        BAD=$((BAD + 1))
     fi
 fi
 
@@ -1218,10 +1237,19 @@ if [ "$WAS_INSTALLED" = 1 ] && [ -n "$(uci -q get byway.main.node_url 2>/dev/nul
         warn "перезапуск службы — туннель прервётся на несколько секунд"
         # Вывод НЕ в /dev/null: если служба не встала, единственное объяснение
         # почему -- как раз в нём.
-        if /etc/init.d/byway restart; then
+        # Судим ДЕЛОМ. Код возврата у restart ненулевым быть не может:
+        # rc.common при USE_PROCD=1 берёт его у service_started, а та
+        # возвращает 0 на всех ветках. Ветка else не выполнялась никогда.
+        /etc/init.d/byway restart || true
+        _rok=0
+        for _rw in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if pgrep -f '/etc/byway/config.json' >/dev/null 2>&1; then _rok=1; break; fi
+            sleep 1
+        done
+        if [ "$_rok" = 1 ]; then
             say "служба перезапущена на новой версии"
         else
-            warn "служба не перезапустилась — сделать это руками: /etc/init.d/byway restart"
+            warn "движок не поднялся — смотреть: logread -e byway"
         fi
     fi
     say "Обновлено. Если открыта панель — обновить страницу с очисткой кэша (Ctrl+F5)."

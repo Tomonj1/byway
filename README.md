@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.1.5.** byway каждый день работает на
+> **Версия 0.2.0.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -108,14 +108,17 @@ byway хуже честного отказа.
 
 Стоит знать до установки, а не после.
 
-- **Только IPv4.** При поднятом IPv6 часть соединений пойдёт мимо byway.
+- **IPv6 — экспериментально, по умолчанию выключен.** Включается
+  `uci set byway.main.ipv6=1`. Заворачиваются оба семейства: свои наборы nft,
+  свой подставной пул (`fc00::/18`), своё правило маршрутизации.
 
-  > **IPv6 планируется — и для этого нужен человек с IPv6.** Провайдер, на
-  > котором byway писался, его не даёт, и проверить перехват было негде.
-  > Правила, написанные вслепую, в перехвате **хуже их отсутствия** — они молча
-  > уводят часть трафика не туда, и заметить это можно спустя недели. Есть IPv6
-  > и готовность проверять у себя —
-  > [напишите](https://github.com/tomon-one/byway/issues).
+  > **Настоящим трафиком IPv6 не проверялся ни разу.** Правила приняты ядрами
+  > 25.12.5 и 22.03.7, разобраны построчно — и только. Провайдер, на котором
+  > byway писался, IPv6 не даёт. Правила, написанные вслепую, в перехвате
+  > **хуже их отсутствия**: они молча уводят часть трафика не туда, и заметить
+  > это можно спустя недели. Есть IPv6 и готовность проверять у себя —
+  > [напишите](https://github.com/tomon-one/byway/issues), отчёт нужен именно
+  > здесь.
 
 - **Нет `hysteria2`, `tuic`, `wireguard`** — их нет в Xray-core.
 - **Одно ядро — Xray-core, и второго не планируется.** Обвязка byway от движка
@@ -154,7 +157,7 @@ byway хуже честного отказа.
 **Способ 1 — одной строкой:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
 ```
 
 **Способ 2 — через зеркало,** если `raw.githubusercontent.com` недоступен.
@@ -165,7 +168,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -173,8 +176,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.1.5.tar.gz
-tar xzf byway.tar.gz && cd byway-0.1.5
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.0.tar.gz
+tar xzf byway.tar.gz && cd byway-0.2.0
 sh install.sh
 ```
 
@@ -432,7 +435,7 @@ byway update --force     # переставить ту же версию зан�
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
 ```
 
 **Проверка версии и установка — разные вещи, и следят они по-разному.**
@@ -559,7 +562,7 @@ DRY_RUN=1 byway-uninstall    # показать, что было бы сдела
 
 ```sh
 wget -O /tmp/byway-uninstall \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.1.5/uninstall.sh
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 

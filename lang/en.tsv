@@ -147,7 +147,6 @@ byway import ФАЙЛ [--no-key] — файл от byway export	byway import FIL
 в выгрузке ключ ЕСТЬ, но принят не был -- так велит --no-key (в панели это галочка «Оставить нынешний ключ»)	the export DOES have a key, but it was not taken -- that is what --no-key says (in the web UI it is the "Keep the current key" checkbox)
 перезапуск службы — туннель прервётся на несколько секунд	restarting the service — the tunnel will drop for a few seconds
 применено, служба перезапущена	applied, the service is restarted
-применено, но служба не перезапустилась: /etc/init.d/byway restart	applied, but the service did not restart: /etc/init.d/byway restart
 применено. byway выключен настройкой -- включить: uci set byway.main.enabled=1 && uci commit byway	applied. byway is switched off in the settings -- turn it on: uci set byway.main.enabled=1 && uci commit byway
 конфиг не собрался — прежние настройки возвращаются на место	the config did not build — the previous settings are put back
 настройки из файла не приняты, прежние на месте	the settings from the file were not accepted, the previous ones are in place
@@ -171,7 +170,6 @@ xray не найден	xray not found
 в таблице маршрутизации %s есть чужие маршруты -- byway их не трогает	routing table %s holds other routes -- byway leaves them alone
 маршрут в таблице %s оставлен: его завёл не byway	the route in table %s is left alone: byway did not create it
 Xray-core не отвечает на %s:53 — обвязка не поднята, dnsmasq возвращён провайдеру	Xray-core does not answer on %s:53 — the plumbing was not raised, dnsmasq returned to the provider
-правила не приняты ядром, ничего не изменено	the kernel did not accept the rules, nothing was changed
 обвязка поднята: таблица inet %s, правило fwmark, dnsmasq -> %s	plumbing is up: table inet %s, fwmark rule, dnsmasq -> %s
 движок не запущен — обвязку не поднимаю, жду не досиживая	the engine is not running — not raising the plumbing, no point sitting out the wait
 обвязка снята, резолвер оставлен на месте	plumbing is down, the resolver is left as it is
@@ -500,3 +498,20 @@ dnsmasq отвечает по пину сам, подставного адрес
 у вас это не ночь: в Москве это на три часа позже, во Владивостоке на десять — перезапуск службы среди дня. Лечится в LuCI (Система → Общие настройки → Часовой пояс) либо uci set system.@system[0].timezone=... (именно timezone: zonename часы не двигает)	that is not night where you are: three hours later in Moscow, ten in Vladivostok - the service restarts in the middle of the day. Fix it in LuCI (System - General Settings - Timezone) or uci set system.@system[0].timezone=... (timezone exactly: zonename does not move the clock)
 если причина устранена — поставить вручную: byway update --force	if the cause is gone - install it by hand: byway update --force
 без ярлыка	no label
+IPv6 поднят и заворачивается наравне с IPv4	IPv6 is up and goes through the tunnel alongside IPv4
+IPv6 включён в настройках, но правила для него в ядре нет	IPv6 is enabled in the settings, but there is no rule for it in the kernel
+ключей для автовыбора: %s	keys for auto-select: %s
+подсети списка: %s адресов, крупнейший блок /%s	list subnets: %s addresses, largest block /%s
+self_mark %s пересекается битами с mark %s	self_mark %s shares bits with mark %s
+self_mark %s не влезает в 32 бита -- взято умолчание 0x400000	self_mark %s does not fit in 32 bits -- default 0x400000 used
+self_mark пересекается битами с mark %s -- взято %s	self_mark shares bits with mark %s -- %s used
+применено, но движок не поднялся — смотреть: logread -e byway	applied, but the engine did not come up -- see: logread -e byway
+правила не приняты ядром, обвязка не поднята	the kernel rejected the rules, plumbing is not up
+автообновление включено, но суточная проверка версий выключена	auto-update is on, but the daily version check is off
+ключи для автовыбора не заданы	no keys set for auto-select
+добавить на вкладке «Основное» либо: uci add_list byway.main.node_urls=vless://…	add on the Main tab, or: uci add_list byway.main.node_urls=vless://...
+свой конфиг аутбаунда задан	custom outbound config is set
+вписать кусок JSON на вкладке «Основное»	paste the JSON snippet on the Main tab
+ставить нечего: uci set byway.main.update_check=1 && uci commit byway	nothing to install: uci set byway.main.update_check=1 && uci commit byway
+в туннель уйдёт и чужой трафик, и скорость упадёт: проверить subnets.lst	other traffic will go into the tunnel and speed will drop: check subnets.lst
+byway возьмёт другое значение сам; задать своё: uci set byway.main.self_mark=0x400000	byway picks another value itself; to set your own: uci set byway.main.self_mark=0x400000
