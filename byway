@@ -99,7 +99,7 @@ set -e
 # Здесь и ниже лежит остаток третьего аудита -- стенды, панель, соседи по
 # роутеру, документация. Разбор: docs/audit/2026-09-07.md. Выйдет со следующим
 # выпуском, когда правок накопится на него.
-BYWAY_NUM="0.2.0"
+BYWAY_NUM="0.2.1"
 BYWAY_NAME="Causeway"
 BYWAY_VERSION="$BYWAY_NUM ($BYWAY_NAME)"
 # Откуда берутся обновления. Отдельной строкой, а не внутри адреса: тот,
@@ -292,6 +292,22 @@ self_mark() {
 # строка выше уже проверена образцом.
 self_mark_dec() {
     printf '%d' "$(( $(self_mark) ))"
+}
+
+# Имя хоста из строки резолвера -- или пусто, если там адрес.
+#
+# Нужно ровно для одного вопроса: надо ли этому резолверу bootstrap. Адрес
+# разрешать не надо, имя -- надо, и без него движок уйдёт спрашивать имя
+# сервера у самого этого сервера.
+dns_host() {   # 1 -- строка вида https://ЧТО-ТО/путь
+    _dh=${1#*://}; _dh=${_dh%%/*}
+    # Литерал IPv6 пишется в скобках -- это адрес, а не имя.
+    case "$_dh" in \[*) return 0 ;; esac
+    _dh=${_dh%%:*}
+    case "$_dh" in
+      # Что угодно, кроме цифр и точек, -- имя.
+      *[!0-9.]*) printf '%s' "$_dh" ;;
+    esac
 }
 
 rule_re() {
@@ -3016,7 +3032,7 @@ cmd_doctor() {
 # всегда описка или настройка из версии новее этой.
 EXPORT_KEYS="enabled conn_mode node_url sub_url outbound_json conn_label
              list_mode ru_direct preset interface fakeip_pool dns_upstream
-             dns_listen tproxy_port local_proxy_port redirect_port
+             dns_upstream2 dns_bootstrap dns_listen tproxy_port local_proxy_port redirect_port
              router_via_vpn mark self_mark log_level ipv6 fakeip6_pool
              show_usage mux_concurrency probe_interval guard
              lists_update dns_route on_failure node_urls lang update_check
@@ -3170,7 +3186,7 @@ cmd_update() {
 # Про ключ печатается ФОРМА, а не значение: схема, транспорт, защита. Для
 # разбора «почему не собирается» этого хватает, а адрес и uuid не нужны.
 REPORT_KEYS="enabled conn_mode list_mode ru_direct preset interface
-             fakeip_pool dns_upstream dns_listen tproxy_port local_proxy_port
+             fakeip_pool dns_upstream dns_upstream2 dns_bootstrap dns_listen tproxy_port local_proxy_port
              redirect_port router_via_vpn mark self_mark log_level ipv6 fakeip6_pool
              show_usage mux_concurrency probe_interval guard
              lang xray_bin conn_label"
@@ -3835,6 +3851,87 @@ $_rs
              '^(https|tcp|udp|tls|quic)://[A-Za-z0-9._:/?=&%+-]+$' \
              https://8.8.8.8/dns-query "конфига движка")
 
+    # Запасной резолвер. Xray перебирает серверы ПО ПОРЯДКУ и уходит к
+    # следующему, когда предыдущий ответил отказом или не ответил вовсе, --
+    # это не параллельный запрос и не балансировка.
+    #
+    # Зачем: сервер был один, и когда он молчит, запрос просто гибнет. Замер
+    # на живом роутере 2026-09-08: десять «context deadline exceeded» за
+    # восемнадцать часов -- apple, googleapis, несколько CDN. Снаружи это
+    # «сайт не открылся, обновил -- заработало», и не ловится ничем: health
+    # дёргает один домен, он отвечает, всё зелёное.
+    #
+    # ⚠️ Стоит ВЫШЕ fakedns в списке. Пустой ответ DoH движок считает
+    # неудачей и идёт к следующему серверу -- значит у запроса появляется
+    # вторая честная попытка ДО того, как дело дойдёт до подставного адреса.
+    #
+    # Но известную граблю это НЕ снимает, проверено на живом 2026-09-09:
+    # домен без A-записи (_dmarc.example.com) по-прежнему получает адрес из
+    # пула, потому что пустыми отвечают ОБА сервера, и fakedns остаётся
+    # последним. Второй сервер лечит МОЛЧАНИЕ, а не пустой ответ.
+    #
+    # Умолчание -- другой провайдер и другой путь, иначе запасной не запасной:
+    # у Google оба адреса (8.8.8.8 и 8.8.4.4) лежат за одним и тем же AS.
+    # Отключается словом none.
+    _du2=$(u dns_upstream2)
+    case "$_du2" in
+      none|off|-)
+        DNS_UP2="" ;;
+      *)
+        DNS_UP2=$(val_or dns_upstream2 "$_du2" \
+                  '^(https|tcp|udp|tls|quic)://[A-Za-z0-9._:/?=&%+-]+$' \
+                  https://1.1.1.1/dns-query "конфига движка") ;;
+    esac
+    # Тот же адрес дважды -- не запас, а лишняя строка в конфиге.
+    [ "$DNS_UP2" = "$DNS_UP" ] && DNS_UP2=""
+
+    # ── bootstrap: кем разрешать ИМЯ самого резолвера ────────────────────
+    #
+    # Резолвер можно задать адресом (https://8.8.8.8/dns-query) или именем
+    # (https://dns.google/dns-query). Имя надо сперва разрешить -- а
+    # спрашивать byway умеет только у этого же сервера. Круг, ответа нет, и
+    # дом остаётся без DNS МОЛЧА: конфиг собирается, движок стартует,
+    # проверки зелёные.
+    #
+    # ⚠️ До 2026-09-09 имя вписать НИЧТО не мешало: образец проверки
+    # пропускает буквы, а предупреждение жило только в подсказке панели.
+    #
+    # Bootstrap разрывает круг: обычный простой резолвер, которого спрашивают
+    # РОВНО имена DoH-серверов и больше ничего. `domains` держит его в этих
+    # рамках, `skipFallback` не даёт при его отказе уйти спрашивать имя у
+    # того самого сервера, чьё имя разрешаем.
+    #
+    # Зачем вообще имя: у части провайдеров адрес не фиксирован. dns.nextdns.io
+    # крутит anycast -- гоняться за его адресами бессмысленно, а именем он
+    # вписывается и работает.
+    _bh=""
+    for _u in "$DNS_UP" "$DNS_UP2"; do
+        [ -n "$_u" ] || continue
+        _h=$(dns_host "$_u")
+        [ -n "$_h" ] && _bh="$_bh${_bh:+, }\"full:$_h\""
+    done
+    DNSBOOT=""
+    if [ -n "$_bh" ]; then
+        _bs=$(val_or dns_bootstrap "$(u dns_bootstrap)" \
+              '^([0-9]{1,3}(\.[0-9]{1,3}){3}|(tcp|udp)://[0-9.]{7,15})(:[0-9]{1,5})?$' \
+              "" "конфига движка")
+        if [ -n "$_bs" ]; then
+            DNSBOOT='
+      { "address": "'"$_bs"'", "domains": [ '"$_bh"' ], "skipFallback": true },'
+        else
+            # Отказ ГРОМКИЙ и с возвратом к рабочему. Собрать конфиг с именем
+            # без bootstrap -- значит выдать дом без DNS и отчитаться успехом.
+            warn "резолвер задан именем, а bootstrap не задан — разрешать имя нечем, взяты поставочные адреса"
+            warn "  вписать: uci set byway.main.dns_bootstrap=77.88.8.8 && uci commit byway"
+            DNS_UP=https://8.8.8.8/dns-query
+            DNS_UP2=https://1.1.1.1/dns-query
+        fi
+    fi
+
+    DNS_UP2LINE=""
+    [ -n "$DNS_UP2" ] && DNS_UP2LINE='
+      "'"$DNS_UP2"'",'
+
     DNS_LISTEN=$(val_or dns_listen "$(dns_addr)" \
                  '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' 127.0.0.42 "конфига движка")
     TP_PORT=$(val_or tproxy_port "$(u tproxy_port)" '^[0-9]{1,5}$' 1602 "конфига движка")
@@ -4050,8 +4147,8 @@ $_rs
 
   "dns": {
     $DNSHOSTS
-    "servers": [
-      "$DNS_UP",
+    "servers": [$DNSBOOT
+      "$DNS_UP",$DNS_UP2LINE
       {
         "address": "fakedns",
         "domains": [

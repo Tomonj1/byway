@@ -19,7 +19,7 @@ your VPN, the rest goes direct. The engine is
 
 > ### ⚠️ Read this before installing
 >
-> **Version 0.2.0.** byway runs every day on one
+> **Version 0.2.1.** byway runs every day on one
 > router: 1500 domains, 300 subnets, and a family that notices breakage
 > immediately. But still just **one** — the author had no other hardware.
 >
@@ -167,7 +167,7 @@ Worth knowing before installing, not after.
 **Way 1 — one line:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh)"
 ```
 
 **Way 2 — through a mirror,** if `raw.githubusercontent.com` is unreachable.
@@ -178,7 +178,7 @@ inside a root install, take the archive the third way and read it first.
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -186,8 +186,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.0.tar.gz
-tar xzf byway.tar.gz && cd byway-0.2.0
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.1.tar.gz
+tar xzf byway.tar.gz && cd byway-0.2.1
 sh install.sh
 ```
 
@@ -456,7 +456,7 @@ than `wget` (busybox's wget cannot do proxies):
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh)"
 ```
 
 An update does not touch settings or lists. Clear the browser cache afterwards —
@@ -495,7 +495,7 @@ on.
 
 A release is installed no sooner than three days after it appears (important ones
 immediately) and only to a release that keeps the same first two numbers:
-`0.1.1` to `0.1.4` yes, `0.1.4` to `0.2.0` no. If the tunnel does not come
+`0.1.1` to `0.1.4` yes, `0.1.4` to `0.2.1` no. If the tunnel does not come
 up within two and a half minutes, byway puts the previous version back on its
 own.
 
@@ -587,7 +587,7 @@ DRY_RUN=1 byway-uninstall    # show what would be done, change nothing
 only appears at install time. Take it from the archive of the same tag:
 
 ```sh
-wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/uninstall.sh
+wget -O /tmp/byway-uninstall   https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 

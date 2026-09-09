@@ -18,7 +18,7 @@
 
 > ### ⚠️ Прочитайте до установки
 >
-> **Версия 0.2.0.** byway каждый день работает на
+> **Версия 0.2.1.** byway каждый день работает на
 > одном роутере: 1500 доменов, 300 подсетей, семья, которая сразу замечает
 > поломку. Но всё ещё на **одном** — другого железа у автора не было.
 >
@@ -157,7 +157,7 @@ byway хуже честного отказа.
 **Способ 1 — одной строкой:**
 
 ```sh
-sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
+sh -c "$(wget -O - https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh)"
 ```
 
 **Способ 2 — через зеркало,** если `raw.githubusercontent.com` недоступен.
@@ -168,7 +168,7 @@ root — берите архив третьим способом и читайт
 
 ```sh
 wget -T 10 -O /tmp/byway-install.sh \
-  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh" \
+  "https://v4.gh-proxy.org/raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh" \
   && sh /tmp/byway-install.sh
 ```
 
@@ -176,8 +176,8 @@ wget -T 10 -O /tmp/byway-install.sh \
 
 ```sh
 cd /tmp
-wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.0.tar.gz
-tar xzf byway.tar.gz && cd byway-0.2.0
+wget -O byway.tar.gz https://github.com/tomon-one/byway/archive/refs/tags/v0.2.1.tar.gz
+tar xzf byway.tar.gz && cd byway-0.2.1
 sh install.sh
 ```
 
@@ -443,7 +443,7 @@ byway update --force     # переставить ту же версию зан�
 
 ```sh
 sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/install.sh)"
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/install.sh)"
 ```
 
 **Проверка версии и установка — разные вещи, и следят они по-разному.**
@@ -478,7 +478,7 @@ sh -c "$(curl -fsSL --proxy http://127.0.0.1:1603 \
 
 Выпуск ставится не раньше чем через трое суток после выхода (важные — сразу)
 и только внутри той же версии до второй цифры: с `0.1.1` на `0.1.4` — да,
-с `0.1.4` на `0.2.0` — нет. Если туннель не поднялся за две с половиной
+с `0.1.4` на `0.2.1` — нет. Если туннель не поднялся за две с половиной
 минуты — byway возвращает прежнюю версию сам.
 
 ---
@@ -570,7 +570,7 @@ DRY_RUN=1 byway-uninstall    # показать, что было бы сдела
 
 ```sh
 wget -O /tmp/byway-uninstall \
-  https://raw.githubusercontent.com/tomon-one/byway/v0.2.0/uninstall.sh
+  https://raw.githubusercontent.com/tomon-one/byway/v0.2.1/uninstall.sh
 sh /tmp/byway-uninstall
 ```
 

@@ -515,3 +515,5 @@ self_mark пересекается битами с mark %s -- взято %s	self
 ставить нечего: uci set byway.main.update_check=1 && uci commit byway	nothing to install: uci set byway.main.update_check=1 && uci commit byway
 в туннель уйдёт и чужой трафик, и скорость упадёт: проверить subnets.lst	other traffic will go into the tunnel and speed will drop: check subnets.lst
 byway возьмёт другое значение сам; задать своё: uci set byway.main.self_mark=0x400000	byway picks another value itself; to set your own: uci set byway.main.self_mark=0x400000
+резолвер задан именем, а bootstrap не задан — разрешать имя нечем, взяты поставочные адреса	the resolver is given by name, but no bootstrap is set -- there is nothing to resolve the name with, stock addresses taken
+  вписать: uci set byway.main.dns_bootstrap=77.88.8.8 && uci commit byway	  set it: uci set byway.main.dns_bootstrap=77.88.8.8 && uci commit byway
